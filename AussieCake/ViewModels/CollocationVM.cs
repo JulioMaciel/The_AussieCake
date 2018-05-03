@@ -5,8 +5,6 @@ using AussieCake.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AussieCake.ViewModels
 {
@@ -105,10 +103,10 @@ namespace AussieCake.ViewModels
 
 		private void LoadTries()
 		{
-			if (DBController.CollocationAttempts == null)
+			if (AttemptController.CollocationAttempts == null)
 				return;
 
-			var triesFromUser = DBController.CollocationAttempts
+			var triesFromUser = AttemptController.CollocationAttempts
 																				.Where(x => x.IdUser == UserController.ActiveId && x.IdCollocation == Id);
 			
 			if (!triesFromUser.Any())
@@ -129,7 +127,7 @@ namespace AussieCake.ViewModels
 			foreach (var senId in SentencesId)
 			{
 				int senIdInt = Convert.ToInt16(senId);
-				sentences.Add(DBController.Sentences.FirstOrDefault(x => x.Id == senIdInt));
+				sentences.Add(SentenceController.Sentences.FirstOrDefault(x => x.Id == senIdInt));
 			}
 
 			return sentences;

@@ -1,12 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AussieCake.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AussieCake.ViewModels;
+﻿using AussieCake.Controllers;
 using AussieCake.Models;
+using AussieCake.ViewModels;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AussieCake.Util.Tests
 {
@@ -35,23 +30,23 @@ namespace AussieCake.Util.Tests
 			var sen9 = new SentenceVM("An opportunity has been created.");
 			var sen10 = new SentenceVM("We're going to taking up the role which is vital.");
 
-			Assert.IsTrue(QuestionInSentence.CheckSentenceContainsCollection(col1, sen1));
-			Assert.IsTrue(QuestionInSentence.CheckSentenceContainsCollection(col2, sen2));
-			Assert.IsTrue(QuestionInSentence.CheckSentenceContainsCollection(col3, sen3));
-			Assert.IsTrue(QuestionInSentence.CheckSentenceContainsCollection(col4, sen4));
-			Assert.IsTrue(QuestionInSentence.CheckSentenceContainsCollection(col5, sen5));
+			Assert.IsTrue(SentenceController.CheckSentenceContainsCollection(col1, sen1));
+			Assert.IsTrue(SentenceController.CheckSentenceContainsCollection(col2, sen2));
+			Assert.IsTrue(SentenceController.CheckSentenceContainsCollection(col3, sen3));
+			Assert.IsTrue(SentenceController.CheckSentenceContainsCollection(col4, sen4));
+			Assert.IsTrue(SentenceController.CheckSentenceContainsCollection(col5, sen5));
 
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col1, sen5));
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col2, sen4));
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col3, sen2));
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col4, sen3));
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col5, sen1));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col1, sen5));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col2, sen4));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col3, sen2));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col4, sen3));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col5, sen1));
 
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col1, sen6));
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col2, sen7));
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col3, sen8));
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col4, sen9));
-			Assert.IsFalse(QuestionInSentence.CheckSentenceContainsCollection(col5, sen10));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col1, sen6));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col2, sen7));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col3, sen8));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col4, sen9));
+			Assert.IsFalse(SentenceController.CheckSentenceContainsCollection(col5, sen10));
 		}
 	}
 }

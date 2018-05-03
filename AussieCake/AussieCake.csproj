@@ -107,26 +107,27 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Context\FakeData.cs" />
+    <Compile Include="Context\ScriptFileCommands.cs" />
     <Compile Include="Context\SqLiteCommands.cs" />
     <Compile Include="Controllers\AttemptController.cs" />
     <Compile Include="Controllers\DBController.cs" />
-    <Compile Include="Controllers\QuestionController.cs" />
+    <Compile Include="Controllers\CollocationController.cs" />
     <Compile Include="Controllers\SentenceController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\VerbController.cs" />
     <Compile Include="Models\Base\ModelsType.cs" />
     <Compile Include="Models\Verb.cs" />
+    <Compile Include="Util\CakePaths.cs" />
     <Compile Include="Util\Importance.cs" />
-    <Compile Include="Util\QuestionInSentence.cs" />
-    <Compile Include="Util\SentenceInText.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
     <Compile Include="Util\WPF\Footer.cs" />
-    <Compile Include="Util\WPF\HelperWPF.cs" />
     <Compile Include="Util\WPF\SentenceWPF.cs" />
     <Compile Include="ViewModels\Base\IQuestion.cs" />
     <Compile Include="ViewModels\CollocationAttemptVM.cs" />
     <Compile Include="ViewModels\CollocationVM.cs" />
     <Compile Include="ViewModels\SentenceVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
+    <Compile Include="ViewModels\VerbVM.cs" />
     <Compile Include="Views\Sentences.xaml.cs">
       <DependentUpon>Sentences.xaml</DependentUpon>
     </Compile>

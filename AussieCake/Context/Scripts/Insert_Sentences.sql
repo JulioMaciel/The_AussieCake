@@ -29,3 +29,9 @@ insert into Sentence values(NULL, 'The Tinochorus is closely related to some oth
 insert into Sentence values(NULL, 'This was manifest in the above mentioned two or three exceptional cases.', NULL);
 insert into Sentence values(NULL, 'The free access of air will likewise be excluded.', NULL);
 insert into Sentence values(NULL, 'Rose told him how she had been brought to give her consent.', NULL);
+insert into Sentence values(NULL, 'Not until then did they become aware of the grumble of broken water ahead.', NULL);
+insert into Sentence values(NULL, 'It suddenly became evident how fast the heavy raft was moving.', NULL);
+insert into Sentence values(NULL, 'Whenever Jack approached him his confusion became visible and acute.', NULL);
+insert into Sentence values(NULL, 'It was not long, however, before he had to change his superior attitude.', NULL);
+insert into Sentence values(NULL, 'Her attention wandered, and finally she committed the capital crime of bridge.', NULL);
+insert into Sentence values(NULL, 'Jack, watched Garrod, and drew his own conclusions.', NULL);

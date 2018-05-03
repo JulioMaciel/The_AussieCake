@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AussieCake.ViewModels;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AussieCake.ViewModels;
 
 namespace AussieCake.Util
 {
-  public enum Importance
+	public enum Importance
   {
     PTE_IELTS_Official = 0,
     Reliable_resource = 1,

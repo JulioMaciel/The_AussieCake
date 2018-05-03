@@ -1,13 +1,8 @@
 ﻿using AussieCake.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AussieCake.ViewModels
 {
-  public class SentenceVM
+	public class SentenceVM
   {
     public int Id { get; private set; }
 

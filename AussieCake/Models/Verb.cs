@@ -1,9 +1,4 @@
 ﻿using AussieCake.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AussieCake.Models
 {
@@ -15,6 +10,10 @@ namespace AussieCake.Models
 		public string Gerund { get; set; } // Present Participle
 		public string Person { get; set; }
 
+		public Verb()
+		{
+		}
+
 		public Verb(string infinitive, string past, string pastParticiple, string gerund, string person)
 		{
 			Infinitive = infinitive;
@@ -24,8 +23,13 @@ namespace AussieCake.Models
 			Person = person;
 		}
 
-		public Verb()
-		{				
+		public Verb(VerbVM viewModel)
+		{
+			Infinitive = viewModel.Infinitive;
+			Past = viewModel.Past;
+			PastParticiple = viewModel.PastParticiple;
+			Gerund = viewModel.Gerund;
+			Person = viewModel.Person;
 		}
 	}
 }

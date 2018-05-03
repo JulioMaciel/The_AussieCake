@@ -3,8 +3,6 @@ using AussieCake.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AussieCake.ViewModels
 {
@@ -41,7 +39,7 @@ namespace AussieCake.ViewModels
 
 		public DateTime GetLastLogin()
 		{
-      return DBController.CollocationAttempts.Max(x => x.When);
+      return AttemptController.CollocationAttempts.Max(x => x.When);
     }
 
   }

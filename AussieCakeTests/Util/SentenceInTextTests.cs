@@ -1,6 +1,4 @@
-﻿using System;
-using AussieCake.Controllers;
-using AussieCake.Util;
+﻿using AussieCake.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AussieCakeTests.Util

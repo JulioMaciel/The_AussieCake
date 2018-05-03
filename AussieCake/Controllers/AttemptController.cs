@@ -1,21 +1,32 @@
 ﻿using AussieCake.Models;
 using AussieCake.ViewModels;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AussieCake.Controllers
 {
-  public static class AttemptController
-  {
-    public static void Insert(CollocationAttemptVM collocation)
+	public class AttemptController : SqLiteHelper
+	{
+		public static List<CollocationAttemptVM> CollocationAttempts { get; private set; }
+
+		public static void Insert(CollocationAttemptVM collocation)
     {
       var model = new CollocationAttempt(collocation);
-      SqLiteHelper.InsertCollocationAttempt(model);
-      DBController.LoadAttemptsViewModel();
-      DBController.LoadCollocationsViewModel();
-    }
-  }
+      InsertCollocationAttempt(model);
+      LoadAttemptsViewModel();
+			CollocationController.LoadCollocationsViewModel();
+		}
+
+		public static void LoadAttemptsViewModel()
+		{
+			if (CollocationAttempts == null)
+				CollocationAttempts = new List<CollocationAttemptVM>();
+
+			foreach (var col in CollocationAttemptsDB)
+			{
+				var vm = new CollocationAttemptVM(col);
+				if (!CollocationAttempts.Contains(vm))
+					CollocationAttempts.Add(vm);
+			}
+		}
+	}
 }

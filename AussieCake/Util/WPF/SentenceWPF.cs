@@ -1,18 +1,12 @@
 ﻿using AussieCake.Controllers;
 using AussieCake.ViewModels;
-using AussieCake.Views;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace AussieCake.Util
 {
@@ -88,7 +82,7 @@ namespace AussieCake.Util
 			btn_edit.IsEnabled = false;
 			btn_edit.Click += (source, e) =>
 			{
-				var edited = DBController.Sentences.FirstOrDefault(s => s.Id == sen.Id);
+				var edited = SentenceController.Sentences.FirstOrDefault(s => s.Id == sen.Id);
 				edited.Text = txt_sen.Text;
 				edited.PtBr = txt_ptBr.Text;
 				SentenceController.Update(edited);
@@ -111,7 +105,7 @@ namespace AussieCake.Util
 			btn_remove.Opacity = 0.9;
 			btn_remove.Click += (source, e) =>
 			{
-				var removed = DBController.Sentences.FirstOrDefault(s => s.Id == sen.Id);
+				var removed = SentenceController.Sentences.FirstOrDefault(s => s.Id == sen.Id);
 				SentenceController.Remove(removed);
 				line.Visibility = Visibility.Collapsed;
 			};
@@ -125,7 +119,7 @@ namespace AussieCake.Util
 		private static Image GetIconButton(string iconFile)
 		{
 			var btn_icon = new Image();
-			btn_icon.Source = new BitmapImage(new Uri(SqLiteHelper.CakePath + @"\\Images\\Icons\\" + iconFile + ".ico"));
+			btn_icon.Source = new BitmapImage(new Uri(CakePaths.GetIconPath(iconFile)));
 			return btn_icon;
 		}
 

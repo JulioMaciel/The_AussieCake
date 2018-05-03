@@ -1,49 +1,38 @@
-﻿using AussieCake.Controllers;
-using AussieCake.Helper;
+﻿using AussieCake.Helper;
 using AussieCake.Models;
+using AussieCake.Util;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 
 /// <summary>
 /// The Entity Framework Database Context.
 /// </summary>
-public static class SqLiteHelper
+public class SqLiteHelper : SqLiteCommands
 {
-	public static string CakePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\AussieCake";
-	private static string DBPath = CakePath + "\\Cake.sqlite";
-
   private static string InsertSQL = "insert into {0} values(NULL, ";
 	private static string UpdateSQL = "update {0} set {1} where Id = {2}";
 	private static string RemoveSQL = "delete from {0} where Id = {1}";
-	
-	private static SqLiteCommands SqLiteCommands { get; set; }
 
-	public static List<Collocation> CollocationsDB { get; set; }
-	public static List<User> UsersDB { get; set; }
-	public static List<CollocationAttempt> CollocationAttemptsDB { get; set; }
-	public static List<Sentence> SentencesDB { get; set; }
-	public static List<Verb> VerbsDB { get; set; }
+	protected static List<Collocation> CollocationsDB { get; set; }
+	protected static List<User> UsersDB { get; set; }
+	protected static List<CollocationAttempt> CollocationAttemptsDB { get; set; }
+	protected static List<Sentence> SentencesDB { get; set; }
+	protected static List<Verb> VerbsDB { get; set; }
 
 	public static void InitializeDB()
 	{
-		if (!File.Exists(DBPath))
-			SQLiteConnection.CreateFile(DBPath);
-
-		SqLiteCommands = new SqLiteCommands(DBPath);
-
 		CreateIfEmptyDB();
 		GetRawsFromDB();
   }
 
 	#region GetDB
 
-	private static void GetCollocationsDB()
+	protected static void GetCollocationsDB()
 	{		
-		var dataset = SqLiteCommands.GetTable(ModelsType.Collocation);
+		var dataset = GetTable(ModelsType.Collocation);
 
 		CollocationsDB = dataset.Tables[0]
 									 				 .AsEnumerable()
@@ -60,9 +49,9 @@ public static class SqLiteHelper
 													 .ToList();
 	}
 
-	private static void GetUsersDB()
+	protected static void GetUsersDB()
 	{
-		var dataset = SqLiteCommands.GetTable(ModelsType.User);
+		var dataset = GetTable(ModelsType.User);
 
 		UsersDB = dataset.Tables[0]
 														.AsEnumerable()
@@ -73,9 +62,9 @@ public static class SqLiteHelper
 													 .ToList();
 	}
 
-	private static void GetSentencesDB()
+	protected static void GetSentencesDB()
 	{
-		var dataset = SqLiteCommands.GetTable(ModelsType.Sentence);
+		var dataset = GetTable(ModelsType.Sentence);
 
 		SentencesDB = dataset.Tables[0]
 														.AsEnumerable()
@@ -86,9 +75,9 @@ public static class SqLiteHelper
 													 .ToList();
 	}
 
-	private static void GetCollocationAttemptsDB()
+	protected static void GetCollocationAttemptsDB()
 	{
-		var dataset = SqLiteCommands.GetTable(ModelsType.CollocationAttempt);
+		var dataset = GetTable(ModelsType.CollocationAttempt);
 		
 		CollocationAttemptsDB = dataset.Tables[0]
 														.AsEnumerable()
@@ -101,9 +90,9 @@ public static class SqLiteHelper
 													 .ToList();
 	}
 
-	public static void GetVerbsDB()
+	protected static void GetVerbsDB()
 	{
-		var dataset = SqLiteCommands.GetTable(ModelsType.Verb);
+		var dataset = GetTable(ModelsType.Verb);
 
 		VerbsDB = dataset.Tables[0]
 														.AsEnumerable()
@@ -120,62 +109,62 @@ public static class SqLiteHelper
 
 	#region Inserts
 
-	public static void InsertCollocation(Collocation col)
+	protected static void InsertCollocation(Collocation col)
 	{
 		string query = string.Format(InsertSQL +
 																"'{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}')",
 																  ModelsType.Collocation.ToDescriptionString(),
 																	col.Prefixes, col.Component1, col.LinkWords, col.Component2, 
 																	col.Suffixes, col.PtBr, col.SentencesId);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//insert in memory
 		GetCollocationsDB();
 	}
 
-	public static void InsertUser(User user)
+	protected static void InsertUser(User user)
 	{
 		string query = string.Format(InsertSQL + 
 																	"'{1}', '{2}')", 
 																	ModelsType.User.ToDescriptionString(),
 																	user.Logins, user.Password);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//insert in memory
 		GetUsersDB();
 	}
-  
-  public static void InsertSentence(Sentence sen)
+
+	protected static void InsertSentence(Sentence sen)
 	{
 		string query = string.Format(InsertSQL +
 																"'{1}', '{2}')",
 																	ModelsType.Sentence.ToDescriptionString(),
 																	sen.Text, sen.PtBr);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//insert in memory
 		GetSentencesDB();
 	}
 
-	public static void InsertCollocationAttempt(CollocationAttempt col)
+	protected static void InsertCollocationAttempt(CollocationAttempt col)
 	{
 		string query = string.Format(InsertSQL +
 																"'{1}', '{2}', '{3}', '{4}')",
 																	ModelsType.CollocationAttempt.ToDescriptionString(),
 																	col.IdUser, col.IdCollocation, col.IsCorrect, col.When);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//insert in memory
 		GetCollocationAttemptsDB(); // talvez pegar o id da question e chamar metodo para atualizar
 	}
 
-	public static void InsertVerb(Verb verb)
+	protected static void InsertVerb(Verb verb)
 	{
 		string query = string.Format(InsertSQL +
 																	"'{1}', '{2}', '{3}', '{4}', '{5}')",
 																	ModelsType.Verb.ToDescriptionString(),
 																	verb.Infinitive, verb.Past, verb.PastParticiple, verb.Person, verb.Gerund);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//insert in memory
 		GetUsersDB();
@@ -185,7 +174,7 @@ public static class SqLiteHelper
 
 	#region Updates
 
-	public static void UpdateCollocation(Collocation col)
+	protected static void UpdateCollocation(Collocation col)
 	{
 		var oldCol = CollocationsDB.FirstOrDefault(c => c.Id == col.Id);
 		int field = 0;
@@ -238,13 +227,13 @@ public static class SqLiteHelper
 																	ModelsType.Collocation.ToDescriptionString(),
 																	columnsToUpdate,
 																	col.Id);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//update in memory
 		oldCol = col;
 	}
 
-	public static void UpdateUser(User user)
+	protected static void UpdateUser(User user)
 	{
 		var oldUser = UsersDB.FirstOrDefault(c => c.Id == user.Id);
 		int field = 0;
@@ -267,13 +256,13 @@ public static class SqLiteHelper
 																	ModelsType.User.ToDescriptionString(),
 																	columnsToUpdate,
 																	user.Id);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//update in memory
 		oldUser = user;
 	}
 
-	public static void UpdateSentence(Sentence sen)
+	protected static void UpdateSentence(Sentence sen)
 	{
 		var oldSen = SentencesDB.FirstOrDefault(c => c.Id == sen.Id);
 		int field = 0;
@@ -296,13 +285,13 @@ public static class SqLiteHelper
 																	ModelsType.Sentence.ToDescriptionString(),
 																	columnsToUpdate,
 																	sen.Id);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//update in memory
 		oldSen = sen;
 	}
 
-	public static void UpdateCollocationAttempt(CollocationAttempt col)
+	protected static void UpdateCollocationAttempt(CollocationAttempt col)
 	{
 		var oldcol = CollocationAttemptsDB.FirstOrDefault(c => c.Id == col.Id);
 		int field = 0;
@@ -331,7 +320,7 @@ public static class SqLiteHelper
 																	ModelsType.CollocationAttempt.ToDescriptionString(),
 																	columnsToUpdate,
 																	col.Id);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		//update in memory
 		oldcol = col;
@@ -341,45 +330,45 @@ public static class SqLiteHelper
 
 	#region Removes
 
-	public static void RemoveCollocation(Collocation col)
+	protected static void RemoveCollocation(Collocation col)
 	{
 		string query = string.Format(RemoveSQL,
 																	ModelsType.Collocation.ToDescriptionString(),
 																	col.Id);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		// in memory
 		CollocationsDB.Remove(col);
 	}
 
-	public static void RemoveUser(User user)
+	protected static void RemoveUser(User user)
 	{
 		string query = string.Format(RemoveSQL,
 																	ModelsType.User.ToDescriptionString(),
 																	user.Id);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		// in memory
 		UsersDB.Remove(user);
 	}
 
-	public static void RemoveSentence(Sentence sen)
+	protected static void RemoveSentence(Sentence sen)
 	{
 		string query = string.Format(RemoveSQL,
 																	ModelsType.Sentence.ToDescriptionString(),
 																	sen.Id);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		// in memory
 		SentencesDB.Remove(sen);
 	}
 
-	public static void RemoveCollocationAttempt(CollocationAttempt col)
+	protected static void RemoveCollocationAttempt(CollocationAttempt col)
 	{
 		string query = string.Format(RemoveSQL,
 																	ModelsType.CollocationAttempt.ToDescriptionString(),
 																	col.Id);
-		SqLiteCommands.SendQuery(query);
+		SendQuery(query);
 
 		// in memory
 		CollocationAttemptsDB.Remove(col);
@@ -387,7 +376,7 @@ public static class SqLiteHelper
 
 	#endregion
 
-	private static void GetRawsFromDB()
+	protected static void GetRawsFromDB()
 	{
 		GetCollocationsDB();
 		GetSentencesDB();
@@ -396,41 +385,41 @@ public static class SqLiteHelper
 		GetVerbsDB();
 	}
 
-	private static void CreateIfEmptyDB()
+	protected static void CreateIfEmptyDB()
 	{
-		SqLiteCommands.SendQuery("CREATE TABLE IF NOT EXISTS 'Collocation' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Prefixes' TEXT, 'Component1' TEXT NOT NULL, 'LinkWords' TEXT, 'Component2' TEXT NOT NULL, 'Suffixes' TEXT, 'PtBr' TEXT, 'Importance' INTEGER NOT NULL, 'SentencesId' TEXT )");
-		SqLiteCommands.SendQuery("CREATE TABLE IF NOT EXISTS 'CollocationAttempt' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'IdUser' INTEGER NOT NULL, 'IdCollocation' INTEGER NOT NULL, 'IsCorrect' INTEGER NOT NULL, 'When' TEXT NOT NULL )");
-		SqLiteCommands.SendQuery("CREATE TABLE IF NOT EXISTS 'Sentence' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_Sentence' PRIMARY KEY AUTOINCREMENT, 'Text' TEXT NOT NULL, 'PtBr' TEXT NULL)");
-		SqLiteCommands.SendQuery("CREATE TABLE IF NOT EXISTS 'User' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_User' PRIMARY KEY AUTOINCREMENT, 'Logins' TEXT NOT NULL, 'Password' TEXT )");
-		SqLiteCommands.SendQuery("CREATE TABLE IF NOT EXISTS 'Verb' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Infinitive' TEXT NOT NULL, 'Past' TEXT NOT NULL, 'PP' TEXT NOT NULL, 'Gerund' TEXT NOT NULL, 'Person' TEXT NOT NULL )");
+		SendQuery("CREATE TABLE IF NOT EXISTS 'Collocation' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Prefixes' TEXT, 'Component1' TEXT NOT NULL, 'LinkWords' TEXT, 'Component2' TEXT NOT NULL, 'Suffixes' TEXT, 'PtBr' TEXT, 'Importance' INTEGER NOT NULL, 'SentencesId' TEXT )");
+		SendQuery("CREATE TABLE IF NOT EXISTS 'CollocationAttempt' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'IdUser' INTEGER NOT NULL, 'IdCollocation' INTEGER NOT NULL, 'IsCorrect' INTEGER NOT NULL, 'When' TEXT NOT NULL )");
+		SendQuery("CREATE TABLE IF NOT EXISTS 'Sentence' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_Sentence' PRIMARY KEY AUTOINCREMENT, 'Text' TEXT NOT NULL, 'PtBr' TEXT NULL)");
+		SendQuery("CREATE TABLE IF NOT EXISTS 'User' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_User' PRIMARY KEY AUTOINCREMENT, 'Logins' TEXT NOT NULL, 'Password' TEXT )");
+		SendQuery("CREATE TABLE IF NOT EXISTS 'Verb' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Infinitive' TEXT NOT NULL, 'Past' TEXT NOT NULL, 'PP' TEXT NOT NULL, 'Gerund' TEXT NOT NULL, 'Person' TEXT NOT NULL )");
 
 		InsertStaticValues();
 	}
 
-	private static void InsertStaticValues()
+	protected static void InsertStaticValues()
 	{
-		var isVerbTableEmpty = SqLiteCommands.GetTable(ModelsType.Verb).Tables[0].Rows.Count == 0;
+		var isVerbTableEmpty = GetTable(ModelsType.Verb).Tables[0].Rows.Count == 0;
 		if (isVerbTableEmpty)
 		{
-			var verb_lines = File.ReadAllLines(CakePath + "\\Context\\Scripts\\Insert_Verbs.sql");
+			var verb_lines = File.ReadAllLines(CakePaths.ScriptVerbs);
 			var verb_joined = String.Join(Environment.NewLine, verb_lines);
-			SqLiteCommands.SendQuery(verb_joined);
+			SendQuery(verb_joined);
 		}
 
-		var IsCollocationTableEmpty = SqLiteCommands.GetTable(ModelsType.Collocation).Tables[0].Rows.Count == 0;
+		var IsCollocationTableEmpty = GetTable(ModelsType.Collocation).Tables[0].Rows.Count == 0;
 		if (IsCollocationTableEmpty)
 		{
-			var col_lines = File.ReadAllLines(CakePath + "\\Context\\Scripts\\Insert_Collocations.sql");
+			var col_lines = File.ReadAllLines(CakePaths.ScriptCollocations);
 			var col_joined = String.Join(Environment.NewLine, col_lines);
-			SqLiteCommands.SendQuery(col_joined);
+			SendQuery(col_joined);
 		}
 
-    var IsSentenceTableEmpty = SqLiteCommands.GetTable(ModelsType.Sentence).Tables[0].Rows.Count == 0;
+    var IsSentenceTableEmpty = GetTable(ModelsType.Sentence).Tables[0].Rows.Count == 0;
     if (IsSentenceTableEmpty)
     {
-      var sen_lines = File.ReadAllLines(CakePath + "\\Context\\Scripts\\Insert_Sentences.sql");
+      var sen_lines = File.ReadAllLines(CakePaths.ScriptSentences);
       var sen_joined = String.Join(Environment.NewLine, sen_lines);
-      SqLiteCommands.SendQuery(sen_joined);
+      SendQuery(sen_joined);
     }
   }
 }
