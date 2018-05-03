@@ -1,0 +1,50 @@
+﻿<Page x:Class="AussieCake.Views.Sentences"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			xmlns:fa="http://schemas.fontawesome.io/icons/"
+      xmlns:local="clr-namespace:AussieCake.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="Sentences">
+
+	<StackPanel>
+		<!--<fa:ImageAwesome Icon="Spinner" Spin="True" Height="48" Width="48" />-->
+    <StackPanel Name="stk_insert" Background="#C2D1E6">
+			<Grid Margin="0,10,0,10">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="1*" />
+					<ColumnDefinition Width="7*" />
+					<ColumnDefinition Width="1*" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<Label Grid.Row="0" Grid.Column="0" Content="Sentence:" FontSize="14" FontWeight="Bold" />
+				<TextBox Name="txt_sentence" Grid.Row="0" Grid.Column="1" Height="28" Margin="0,0,0,4" 
+								 VerticalContentAlignment="Center" />
+
+				<Label Grid.Row="1" Grid.Column="0" Content="PtBr:" FontSize="14" FontWeight="Bold" />
+				<TextBox Name="txt_ptBr" Grid.Row="1" Grid.Column="1" Background="#edfaeb" Height="28" 
+								 VerticalContentAlignment="Center"  />
+
+				<Button Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Margin="4" HorizontalAlignment="Center" 
+								VerticalAlignment="Center" Background="White" Click="Insert_Click" Name="btnInsert">
+					<Image Source="../Images/Icons/add.ico" Width="42" Height="42"/>
+				</Button>
+
+			</Grid>
+		</StackPanel>
+    
+		<StackPanel Name="stk_filter">
+		</StackPanel>
+    
+		<ScrollViewer Height="420">
+      <StackPanel Name="stk_sentences" />
+		</ScrollViewer>
+    
+	</StackPanel>
+</Page>
