@@ -1,4 +1,5 @@
-﻿using AussieCake.Models;
+﻿using AussieCake.Context;
+using AussieCake.Models;
 using AussieCake.ViewModels;
 using System.Collections.Generic;
 using System.Net;
@@ -13,7 +14,11 @@ namespace AussieCake.Controllers
 		public static void Insert(VerbVM verbVM)
 		{
 			var verb = new Verb(verbVM);
-			InsertVerb(verb);
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				InsertVerb(verb);
+				ScriptFileCommands.WriteVerbOnFile(verb);
+			});
 		}
 
 		public static void LoadVerbsViewModel()
@@ -56,8 +61,8 @@ namespace AussieCake.Controllers
 			newVerb.PastParticiple = GetVerbAfterTheIndex(htmlCode, "<h4>Participle</h4>", "<li><i class=\"verbtxt\">", true);
 			newVerb.Person = GetVerbAfterTheIndex(htmlCode, "<h4>Indicative</h4>", "it </i><i class=\"verbtxt\">");
 			newVerb.Gerund = GetVerbAfterTheIndex(htmlCode, "<p>Present continuous</p>", "am </i><i class=\"verbtxt\">");
-
-			VerbController.Insert(newVerb);
+			
+			Insert(newVerb);
 
 			return newVerb;
 		}

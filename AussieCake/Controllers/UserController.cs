@@ -2,6 +2,7 @@
 using AussieCake.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace AussieCake.Controllers
 {
@@ -16,14 +17,17 @@ namespace AussieCake.Controllers
         return;
 
       var model = new User(user);
-      InsertUser(model);
-      LoadUsersViewModel();
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				InsertUser(model);
+				LoadUsersViewModel();
+			});
     }
 
     public static void Update(UserVM user)
     {
       var model = new User(user);
-      UpdateUser(model);
+			Application.Current.Dispatcher.Invoke(() => UpdateUser(model));
       var oldVM = Users.FirstOrDefault(x => x.Id == user.Id);
       oldVM = user;
     }
@@ -31,7 +35,7 @@ namespace AussieCake.Controllers
     public static void Remove(UserVM user)
     {
       var model = new User(user);
-      RemoveUser(model);
+			Application.Current.Dispatcher.Invoke(() => RemoveUser(model));
       Users.Remove(user);
     }
 

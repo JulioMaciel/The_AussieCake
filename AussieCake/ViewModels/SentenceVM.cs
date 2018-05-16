@@ -15,7 +15,7 @@ namespace AussieCake.ViewModels
       PtBr = ptBr;
     }
 
-    public SentenceVM(string text) : this(text, string.Empty)
+    public SentenceVM(string text)
     {
     }
 

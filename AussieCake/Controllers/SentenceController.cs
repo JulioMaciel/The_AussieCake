@@ -5,10 +5,12 @@ using AussieCake.Util.WPF;
 using AussieCake.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace AussieCake.Controllers
 {
@@ -23,15 +25,20 @@ namespace AussieCake.Controllers
 			if (Sentences.Any(s => s.Text == sentence.Text))
 				return;
 
+
 			var model = new Sentence(sentence);
-			InsertSentence(model);
-			LoadSentencesViewModel();
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				InsertSentence(model);
+				LoadSentencesViewModel();
+				Footer.AddInfo();
+			});
 		}
 
 		public static void Update(SentenceVM sentence)
 		{
 			var model = new Sentence(sentence);
-			UpdateSentence(model);
+			Application.Current.Dispatcher.Invoke(() => UpdateSentence(model));
 			var oldVM = Sentences.FirstOrDefault(x => x.Id == sentence.Id);
 			oldVM = sentence;
 		}
@@ -39,7 +46,7 @@ namespace AussieCake.Controllers
 		public static void Remove(SentenceVM sentence)
 		{
 			var model = new Sentence(sentence);
-			RemoveSentence(model);
+			Application.Current.Dispatcher.Invoke(() => RemoveSentence(model));
 			Sentences.Remove(sentence);
 		}
 
@@ -65,11 +72,25 @@ namespace AussieCake.Controllers
 				htmlCode = await client.DownloadStringTaskAsync(url);
 			}
 
-			var cleanedCode = WebUtility.HtmlDecode(htmlCode);
-			cleanedCode = cleanedCode.NormalizeWhiteSpace();
-			cleanedCode = Regex.Replace(cleanedCode, "<.*?>", " ");
-			cleanedCode = Regex.Replace(cleanedCode, "\\r|\\n|\\t", "");
-			cleanedCode = cleanedCode.Trim(' ');
+			string cleanedCode = CleanHtmlCode(htmlCode);
+
+			await SaveSentencesFromString(cleanedCode);
+		}
+
+		public async static Task SaveSentencesFromStaticResource()
+		{
+			string htmlCode = string.Empty;
+
+			string[] filePaths = Directory.GetFiles(CakePaths.ResourceBooksFolder, "*.htm",
+																				 searchOption: SearchOption.TopDirectoryOnly);
+			int i = 0;
+			Parallel.For(0, filePaths.Length, x =>
+			{
+				htmlCode += File.ReadAllText(filePaths[i]);
+				i++;
+			});
+
+			string cleanedCode = CleanHtmlCode(htmlCode);
 
 			await SaveSentencesFromString(cleanedCode);
 		}
@@ -78,16 +99,12 @@ namespace AussieCake.Controllers
 		{
 			var sentences = GetSentencesFromSource(source);
 			sentences = sentences.Where(s => (s.Length >= 40 && s.Length <= 80) &&
-																			(s.EndsWith(".") || s.EndsWith("!") || s.EndsWith("?"))).ToList();
+																			((s.EndsWith(".") && !s.EndsWith("Dr.") && !s.EndsWith("Mr.") && !s.EndsWith("Ms.")) || 
+																				s.EndsWith("!") || s.EndsWith("?"))).ToList();
 
 			var savedSentences = await GetCollocationsSentenceFromList(sentences);
-
-			if (savedSentences.Any())
-				ScriptFileCommands.WriteSentencesOnFile(savedSentences);
-
+			
 			await Task.Run(() => InsertSentencesFound(savedSentences));
-
-			await Footer.LogFooterOperation(ModelsType.Sentence, OperationType.Created, savedSentences.Count);
 		}
 
 		public static bool CheckSentenceContainsCollection(CollocationVM col, SentenceVM sentence)
@@ -120,6 +137,9 @@ namespace AussieCake.Controllers
 				position.Comp2Pos = comp2.Item2;
 				col.Positions.Add(position);
 
+				col.SentencesId.Add(sentence.Id);
+				CollocationController.Update(col);
+
 				return true;
 			}
 
@@ -129,6 +149,16 @@ namespace AussieCake.Controllers
 		#endregion
 
 		#region Private Methods
+
+		private static string CleanHtmlCode(string htmlCode)
+		{
+			var cleanedCode = WebUtility.HtmlDecode(htmlCode);
+			cleanedCode = cleanedCode.NormalizeWhiteSpace();
+			cleanedCode = Regex.Replace(cleanedCode, "<.*?>", " ");
+			cleanedCode = Regex.Replace(cleanedCode, "\\r|\\n|\\t", "");
+			cleanedCode = cleanedCode.Trim(' ');
+			return cleanedCode;
+		}
 
 		private static List<string> GetSentencesFromSource(string source)
 		{
@@ -142,7 +172,7 @@ namespace AussieCake.Controllers
 
 			var tasks = CollocationController.Collocations.Select(async col =>
 			{
-				await Task.Run(async () =>
+				await Task.Run(() =>
 				{
 					foreach (var sen in sentences)
 					{
@@ -150,7 +180,7 @@ namespace AussieCake.Controllers
 							if (!result.Contains(sen))
 								result.Add(sen);
 					}
-					await Footer.IncreaseProgress();
+					Footer.IncreaseProgress();
 				});
 			});
 			await Task.WhenAll(tasks);
@@ -162,14 +192,16 @@ namespace AussieCake.Controllers
 		{
 			var tasks = sentencesFound.Select(async found =>
 			{
-				await Task.Run(async () =>
+				await Task.Run(() =>
 				{
-					var vm = new SentenceVM(found, string.Empty);
+					var vm = new SentenceVM(found);
 					Insert(vm);
-					await Footer.IncreaseProgress();
+					Footer.IncreaseProgress();
 				});
 			}).ToList();
 			await Task.WhenAll(tasks);
+
+			Application.Current.Dispatcher.Invoke(() => ScriptFileCommands.WriteSentencesOnFile(sentencesFound));
 		}
 
 		private static (bool, int) CheckSentenceContainsComponent(string comp, bool isAVerb, string sentence)
@@ -185,7 +217,7 @@ namespace AussieCake.Controllers
 				if (staticVerb == null)
 				{
 					staticVerb = VerbController.ConjugateUnknownVerb(comp);
-					Footer.AddExtraInfo(ModelsType.Verb, 1);
+					Footer.AddExtraInfo(ModelsType.Verb);
 				}
 
 				var position = sentence.GetPosition(staticVerb.Gerund);
@@ -237,7 +269,6 @@ namespace AussieCake.Controllers
 		}
 
 		#endregion
-
 	}
 
 	internal enum PartResult

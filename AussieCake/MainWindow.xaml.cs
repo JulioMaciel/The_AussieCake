@@ -21,7 +21,7 @@ namespace AussieCake
 		{
 			frame_content.NavigationService.Navigate(new Sentences());
       btnSentences.IsEnabled = false;
-      lblTopic.Content = ModelsType.Sentence.ToDescriptionString() + 's';
+      lblTopic.Content = ModelsType.Sentence.ToDescString() + 's';
 		}
 	}
 }

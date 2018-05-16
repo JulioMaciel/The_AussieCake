@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AussieCake"        
         WindowStartupLocation="CenterScreen"
-        Title="Aussie Cake" Height="600" Width="1000">
+        Title="Aussie Cake" Height="600" Width="1000"
+				ResizeMode="NoResize">
   <Window.Resources>
     <ResourceDictionary>
       <Style x:Key="BaseButtonStyle" TargetType="{x:Type Button}">

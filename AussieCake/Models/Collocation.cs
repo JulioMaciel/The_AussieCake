@@ -22,14 +22,27 @@ namespace AussieCake.Models
 		public Collocation(CollocationVM viewModel)
 		{
 			Id = viewModel.Id;
-			Prefixes = String.Join(";", viewModel.Prefixes.ToArray());
+
+			if (viewModel.Prefixes != null)
+				Prefixes = String.Join(";", viewModel.Prefixes.ToArray());
+
 			Component1 = viewModel.Component1;
-			LinkWords = String.Join(";", viewModel.LinkWords.ToArray());
+
+			if (viewModel.LinkWords != null)
+				LinkWords = String.Join(";", viewModel.LinkWords.ToArray());
+
 			Component2 = viewModel.Component2;
-			Suffixes = String.Join(";", viewModel.Suffixes.ToArray());
-			PtBr = viewModel.PtBr;
+
+			if (viewModel.Suffixes != null)
+				Suffixes = String.Join(";", viewModel.Suffixes.ToArray());
+
+			if (viewModel.PtBr != null)
+				PtBr = viewModel.PtBr;
+
       Importance = (int)viewModel.Importance;
-			SentencesId = String.Join(";", viewModel.SentencesId.ToArray());
+
+			if (viewModel.SentencesId != null)
+				SentencesId = String.Join(";", viewModel.SentencesId.ToArray());
 		}
 
 		public Collocation(string prefixes, string component1, string linkWords, string component2, string suffixes, string ptBr, int importance, string sentencesId)

@@ -10,7 +10,10 @@ namespace AussieCake.Context
 	public class ScriptFileCommands
 	{
 		public static void WriteSentencesOnFile(List<string> savedSentences)
-		{			
+		{
+			if (!savedSentences.Any())
+				return;
+
 			var actualFile = File.ReadAllLines(CakePaths.ScriptSentences);
 
 			using (var tw = new StreamWriter(CakePaths.ScriptSentences, true))
@@ -39,6 +42,6 @@ namespace AussieCake.Context
 			}
 		}
 
-
+		// Collocations script é fixo, pq são do pdf do PTE
 	}
 }

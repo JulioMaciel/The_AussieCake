@@ -91,10 +91,11 @@ namespace AussieCake.ViewModels
 
 		private void LoadSentencesId(Collocation col)
 		{
+			SentencesId = new List<int>();
+
 			if (string.IsNullOrEmpty(col.SentencesId))
 				return;
 
-			SentencesId = new List<int>();
 			var sen = col.SentencesId.Split(';').ToList();
 			foreach (var id in sen)
 				if (!string.IsNullOrEmpty(id))
@@ -135,7 +136,8 @@ namespace AussieCake.ViewModels
 
 		public double GetAvaregeFromLastDays(int lastDays)
 		{
-			return Math.Round((double)(100 * Tries.Where(x => x.IsCorrect && x.When >= DateTime.Now.AddDays(-lastDays)).ToList().Count / (Tries.Count)));
+			return Math.Round((double)(100 * Tries.Where(x => x.IsCorrect && 
+																												x.When >= DateTime.Now.AddDays(-lastDays)).ToList().Count / (Tries.Count)));
 		}
 		
 	}

@@ -24,11 +24,8 @@ namespace AussieCake.Helper
 			{
 				SQLiteConnection.CreateFile(CakePaths.Database);
 			}
-			else
-			{
-				// Creates the connection
-				ConnectionString = "Data Source=" + CakePaths.Database + "; Version=3";
-			}
+
+			ConnectionString = "Data Source=" + CakePaths.Database + "; Version=3";
 		}
 
 		/// <summary>
@@ -55,7 +52,6 @@ namespace AussieCake.Helper
 					SqlCmd.CommandText = Query;
 					Connection.Open();
 					SqlCmd.ExecuteNonQuery();
-					//Connection.Close(); // teste
 				}
 			}
 		}
@@ -96,7 +92,7 @@ namespace AussieCake.Helper
 		/// <returns>All the returned values into a dataset</returns>
 		protected static DataSet GetTable(ModelsType type)
 		{
-			string query = "SELECT * FROM " + type.ToDescriptionString();
+			string query = "SELECT * FROM " + type.ToDescString();
 			DataSet data = new DataSet();
 
 			using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))

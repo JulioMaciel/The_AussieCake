@@ -1018,3 +1018,13 @@ insert into Verb values(NULL, 'extract', 'extracted', 'extracted', 'extracts', '
 insert into Verb values(NULL, 'facilitate', 'facilitated', 'facilitated', 'facilitates', 'facilitating');
 insert into Verb values(NULL, 'focus', 'focused', 'focused', 'focuses', 'focusing');
 insert into Verb values(NULL, 'gather', 'gathered', 'gathered', 'gathers', 'gathering');
+insert into Verb values(NULL, 'perform', 'performed', 'performed', 'performs', 'performing');
+insert into Verb values(NULL, 'process', 'processed', 'processed', 'processes', 'processing');
+insert into Verb values(NULL, 'promote', 'promoted', 'promoted', 'promotes', 'promoting');
+insert into Verb values(NULL, 'publish', 'published', 'published', 'publishes', 'publishing');
+insert into Verb values(NULL, 'require', 'required', 'required', 'requires', 'requiring');
+insert into Verb values(NULL, 'record', 'recorded', 'recorded', 'records', 'recording');
+insert into Verb values(NULL, 'shift', 'shifted', 'shifted', 'shifts', 'shifting');
+insert into Verb values(NULL, 'disagree', 'disagreed', 'disagreed', 'disagrees', 'disagreeing');
+insert into Verb values(NULL, 'transmit', 'transmitted', 'transmitted', 'transmits', 'transmitting');
+insert into Verb values(NULL, 'undertake', 'undertook', 'undertaken', 'undertakes', 'undertaking');

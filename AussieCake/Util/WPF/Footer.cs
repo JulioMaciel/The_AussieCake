@@ -13,26 +13,30 @@ namespace AussieCake.Util.WPF
 		private static ProgressBar ProgBar = ((MainWindow)Application.Current.MainWindow).progressBar;
 		private static Stopwatch Watcher;
 		private static ModelsType ExtraModel;
+		private static int Quantity = 0;
 		private static int ExtraQuantity = 0;
-		private static TaskScheduler Ts_scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 		private static IProgress<string> Reporter;
 
-		public static async Task LogFooterOperation(ModelsType type, OperationType operation, int quantity)
+		public static void LogFooterOperation(ModelsType type, OperationType operation, int quantity = 0)
 		{
-			await Task.Factory.StartNew(() =>
+			Application.Current.Dispatcher.Invoke(() =>
 			{
 				LabelFooter.Visibility = Visibility.Visible;
 				ProgBar.Visibility = Visibility.Collapsed;
 
-				var finalInfo = quantity + " ";
-				finalInfo += type.ToDescriptionString();
-				finalInfo += quantity <= 1 ? " was " : "s were ";
+				if (quantity != 0)
+					Quantity = quantity;
+
+				var finalInfo = Quantity + " ";
+				finalInfo += type.ToDescString();
+				finalInfo += Quantity <= 1 ? " was " : "s were ";
 
 				finalInfo += operation == OperationType.Created ? "created" :
-								 operation == OperationType.Removed ? "removed" :
-								 operation == OperationType.Updated ? "updated" : string.Empty;
+										 operation == OperationType.Removed ? "removed" :
+										 operation == OperationType.Updated ? "updated" :
+										 operation == OperationType.Load ? "loaded" : string.Empty;
 
-				finalInfo += ExtraQuantity != 0 ? (" and " + ExtraQuantity + " " + ExtraModel.ToDescriptionString()) : string.Empty;
+				finalInfo += ExtraQuantity != 0 ? (" and " + ExtraQuantity + " " + ExtraModel.ToDescString()) : string.Empty;
 				finalInfo += ExtraQuantity == 1 ? " was " : (ExtraQuantity > 1 ? "s were " : string.Empty);
 
 				finalInfo += " in ";
@@ -40,15 +44,16 @@ namespace AussieCake.Util.WPF
 				finalInfo += " seconds.";
 
 				LabelFooter.Content = finalInfo;
+				Quantity = 0;
 				ExtraQuantity = 0;
-			}, System.Threading.CancellationToken.None,
-				 TaskCreationOptions.None,
-				 Ts_scheduler);
+				ProgBar.Value = 0;
+				Watcher.Stop();
+			});
 		}
 
-		public static async Task StartProgress(int max)
+		public static void StartProgress(int max)
 		{
-			await Task.Factory.StartNew(() =>
+			Application.Current.Dispatcher.Invoke(() =>
 			{
 				LabelFooter.Visibility = Visibility.Collapsed;
 				ProgBar.Visibility = Visibility.Visible;
@@ -59,39 +64,26 @@ namespace AussieCake.Util.WPF
 
 				Watcher = new Stopwatch();
 				Watcher.Start();
-			}, System.Threading.CancellationToken.None,
-				 TaskCreationOptions.None,
-				 Ts_scheduler);
+			});
 		}
 
-		public static async Task IncreaseProgress()
+		public static void IncreaseProgress()
 		{
-			await Task.Factory.StartNew(() =>
-			{
-				Reporter.Report("1");
-				//if (ProgBar.Value == 1400)
-				//	ProgBar.Value = 1;
-
-				//ProgBar.Value++;
-			}, System.Threading.CancellationToken.None,
-				 TaskCreationOptions.None,
-				 Ts_scheduler);
+			Application.Current.Dispatcher.Invoke(() => Reporter.Report("1"));
 		}
 
-		public static async Task AddExtraInfo(ModelsType extraType, int extraQuantity)
+		public static void AddInfo()
 		{
-			await Task.Factory.StartNew(() =>
+			Application.Current.Dispatcher.Invoke(() => Quantity++);
+		}
+
+		public static void AddExtraInfo(ModelsType extraType)
+		{
+			Application.Current.Dispatcher.Invoke(() =>
 			{
-				if (ExtraQuantity == 0)
-				{
-					ExtraModel = extraType;
-					ExtraQuantity = extraQuantity;
-				}
-				else
-					ExtraModel++;
-			}, System.Threading.CancellationToken.None,
-				 TaskCreationOptions.None,
-				 Ts_scheduler);
+				ExtraModel = extraType;
+				ExtraQuantity++;
+			});
 		}
 	}
 
@@ -99,6 +91,7 @@ namespace AussieCake.Util.WPF
 	{
 		Created,
 		Removed,
-		Updated
+		Updated,
+		Load,
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using AussieCake.Models;
 using AussieCake.ViewModels;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace AussieCake.Controllers
 {
@@ -11,9 +12,12 @@ namespace AussieCake.Controllers
 		public static void Insert(CollocationAttemptVM collocation)
     {
       var model = new CollocationAttempt(collocation);
-      InsertCollocationAttempt(model);
-      LoadAttemptsViewModel();
-			CollocationController.LoadCollocationsViewModel();
+			Application.Current.Dispatcher.Invoke(() => 
+			{
+				InsertCollocationAttempt(model);
+				LoadAttemptsViewModel();
+				CollocationController.LoadCollocationsViewModel();
+			});
 		}
 
 		public static void LoadAttemptsViewModel()

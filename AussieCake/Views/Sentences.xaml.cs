@@ -25,23 +25,28 @@ namespace AussieCake.Views
 
 		private void LoadSentencesOnGrid(bool isGridUpdate)
 		{
-      foreach (var sen in SentenceController.Sentences)
-      {
+			if (!isGridUpdate)
+				Footer.StartProgress(1);
+
+			foreach (var sen in SentenceController.Sentences)
         SentenceWPF.AddSentenceRow(stk_sentences, sen, isGridUpdate);
-      }
+
+			if (!isGridUpdate)
+				Footer.LogFooterOperation(ModelsType.Sentence, OperationType.Load, SentenceController.Sentences.Count());
 		}
 
     private async void Insert_Click(object sender, RoutedEventArgs e)
     {
 			var sen = txt_sentence.Text;
 			var ptBr = txt_ptBr.Text;
-
-      if (string.IsNullOrEmpty(sen))
-        return;
 						
 			Footer.StartProgress(CollocationController.Collocations.Count());
 
-			if (sen.StartsWith("http") || sen.StartsWith("www"))
+			if (string.IsNullOrEmpty(sen))
+			{
+				await SentenceController.SaveSentencesFromStaticResource();
+			}
+			else if (sen.StartsWith("http") || sen.StartsWith("www"))
 			{
 				await SentenceController.SaveSentencesFromSite(sen);
 			}
@@ -52,14 +57,15 @@ namespace AussieCake.Views
 			else
       {
 				var vm = new SentenceVM(sen, ptBr);
-				SentenceController.Insert(vm);
-				Footer.LogFooterOperation(ModelsType.Sentence, OperationType.Created, 1);
+				SentenceController.Insert(vm);				
 			}
 			
 			LoadSentencesOnGrid(true);
 			txt_sentence.Text = string.Empty;
 			txt_ptBr.Text = string.Empty;
-			btnInsert.IsEnabled = true;			
+			btnInsert.IsEnabled = true;
+			Footer.LogFooterOperation(ModelsType.Sentence, OperationType.Created);
 		}
+
 	}
 }

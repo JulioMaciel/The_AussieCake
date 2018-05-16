@@ -1355,7 +1355,7 @@ insert into Collocation values(NULL, NULL, 'make[v]', 'an', 'assumption', NULL, 
 insert into Collocation values(NULL, NULL, 'make[v]', 'an', 'impact', NULL, NULL, 0, NULL);
 insert into Collocation values(NULL, NULL, 'make[v]', 'an', 'impression', NULL, NULL, 0, NULL);
 insert into Collocation values(NULL, NULL, 'make[v]', 'an', 'observation', NULL, NULL, 0, NULL);
-insert into Collocation values(NULL, NULL, 'makea[v]', NULL, 'judgement', NULL, NULL, 0, NULL);
+insert into Collocation values(NULL, NULL, 'make[v]', 'a', 'judgement', NULL, NULL, 0, NULL);
 insert into Collocation values(NULL, NULL, 'male', NULL, 'dominance', NULL, NULL, 0, NULL);
 insert into Collocation values(NULL, NULL, 'manual', NULL, 'worker', NULL, NULL, 0, NULL);
 insert into Collocation values(NULL, NULL, 'manufacturing', NULL, 'sector', NULL, NULL, 0, NULL);
