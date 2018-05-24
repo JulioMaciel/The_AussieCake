@@ -1027,4 +1027,6 @@ insert into Verb values(NULL, 'record', 'recorded', 'recorded', 'records', 'reco
 insert into Verb values(NULL, 'shift', 'shifted', 'shifted', 'shifts', 'shifting');
 insert into Verb values(NULL, 'disagree', 'disagreed', 'disagreed', 'disagrees', 'disagreeing');
 insert into Verb values(NULL, 'transmit', 'transmitted', 'transmitted', 'transmits', 'transmitting');
-insert into Verb values(NULL, 'undertake', 'undertook', 'undertaken', 'undertakes', 'undertaking');insert into Verb values(NULL, 'evaluate', 'evaluated', 'evaluated', 'evaluates', 'evaluating');
+insert into Verb values(NULL, 'undertake', 'undertook', 'undertaken', 'undertakes', 'undertaking');
+insert into Verb values(NULL, 'evaluate', 'evaluated', 'evaluated', 'evaluates', 'evaluating');
+insert into Verb values(NULL, 'interpret', 'interpreted', 'interpreted', 'interprets', 'interpreting');

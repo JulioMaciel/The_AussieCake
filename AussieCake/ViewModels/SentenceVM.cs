@@ -8,13 +8,15 @@ namespace AussieCake.ViewModels
 
     public string Text { get; set; }
     public string PtBr { get; set; }
+		public bool IsActive { get; set; }
 
-		public SentenceVM(string text)
+		public SentenceVM(string text, bool isActive)
 		{
 			Text = text;
+			IsActive = isActive;
 		}
 
-		public SentenceVM(string text, string ptBr) : this(text)
+		public SentenceVM(string text, string ptBr, bool isActive) : this(text, isActive)
     {
       PtBr = ptBr;
     }
@@ -24,6 +26,7 @@ namespace AussieCake.ViewModels
       Id = sentence.Id;
       Text = sentence.Text;
       PtBr = sentence.PtBr;
+			IsActive = sentence.IsActive;
     }
   }
 }

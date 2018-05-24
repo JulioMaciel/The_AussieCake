@@ -180,12 +180,12 @@ namespace AussieCake.Controllers
 				{
 					foreach (var sen in sentences)
 					{
-						if (DoesSentenceContainsCollection(col, new SentenceVM(sen)))
+						if (DoesSentenceContainsCollection(col, new SentenceVM(sen, false)))
 							if (!result.Contains(sen))
 							{
 								result.Add(sen);
 								// debug, erase next Logger line
-								Logger.LogItem(new LoggedItem(ModelType.Sentence, sen));
+								//Logger.LogItem(new LoggedItem(ModelType.Sentence, sen));
 							}
 					}
 					Logger.IncreaseProgress();
@@ -200,7 +200,7 @@ namespace AussieCake.Controllers
 		{
 			foreach (var found in sentencesFound)
 			{
-				var vm = new SentenceVM(found);
+				var vm = new SentenceVM(found, false);
 				Insert(vm);
 				Logger.IncreaseProgress();
 			}

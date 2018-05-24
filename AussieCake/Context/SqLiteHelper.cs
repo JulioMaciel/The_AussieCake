@@ -47,7 +47,8 @@ public class SqLiteHelper : SqLiteCommands
 														 dataRow.Field<string>("Suffixes"),
                              dataRow.Field<string>("PtBr"),
                              Convert.ToInt16(dataRow.Field<Int64>("Importance")),
-                             dataRow.Field<string>("SentencesId")))
+                             dataRow.Field<string>("SentencesId"),
+														 Convert.ToBoolean(dataRow.Field<Int64>("IsActive"))))
 													 .ToList();
 	}
 
@@ -73,7 +74,8 @@ public class SqLiteHelper : SqLiteCommands
 													 .Select(dataRow => new Sentence(
 														 Convert.ToInt16(dataRow.Field<Int64>("Id")),
 														 dataRow.Field<string>("Text"),
-														 dataRow.Field<string>("PtBr")))
+														 dataRow.Field<string>("PtBr"),
+														 Convert.ToBoolean(dataRow.Field<Int64>("IsActive"))))
 													 .ToList();
 	}
 
@@ -114,10 +116,10 @@ public class SqLiteHelper : SqLiteCommands
 	protected static void InsertCollocation(Collocation col)
 	{
 		string query = string.Format(InsertSQL +
-																"'{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}')",
+																"'{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}')",
 																  ModelType.Collocation.ToDescString(),
 																	col.Prefixes, col.Component1, col.LinkWords, col.Component2, 
-																	col.Suffixes, col.PtBr, col.SentencesId);
+																	col.Suffixes, col.PtBr, col.SentencesId, col.IsActive);
 		SendQuery(query);
 
 		//insert in memory
@@ -139,9 +141,9 @@ public class SqLiteHelper : SqLiteCommands
 	protected static void InsertSentence(Sentence sen)
 	{
 		string query = string.Format(InsertSQL +
-																"'{1}', '{2}')",
+																"'{1}', '{2}', '{3}')",
 																	ModelType.Sentence.ToDescString(),
-																	sen.Text, sen.PtBr);
+																	sen.Text, sen.PtBr, sen.IsActive);
 		SendQuery(query);
 
 		//insert in memory
@@ -223,6 +225,12 @@ public class SqLiteHelper : SqLiteCommands
 			columnsToUpdate += "SentencesId = " + "'" + col.SentencesId + "'";
 			field++;
 		}
+		if (oldCol.IsActive != col.IsActive)
+		{
+			columnsToUpdate += field > 0 ? ", " : string.Empty;
+			columnsToUpdate += "IsActive = " + "'" + col.IsActive + "'";
+			field++;
+		}
 
 		//update DB
 		string query = string.Format(UpdateSQL,
@@ -279,6 +287,12 @@ public class SqLiteHelper : SqLiteCommands
 		{
 			columnsToUpdate += field > 0 ? ", " : string.Empty;
 			columnsToUpdate += "PtBr = " + "'" + sen.PtBr + "'";
+			field++;
+		}
+		if (oldSen.IsActive != sen.IsActive)
+		{
+			columnsToUpdate += field > 0 ? ", " : string.Empty;
+			columnsToUpdate += "IsActive = " + "'" + sen.IsActive + "'";
 			field++;
 		}
 
@@ -389,9 +403,9 @@ public class SqLiteHelper : SqLiteCommands
 
 	private static void CreateIfEmptyDB()
 	{
-		SendQuery("CREATE TABLE IF NOT EXISTS 'Collocation' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Prefixes' TEXT, 'Component1' TEXT NOT NULL, 'LinkWords' TEXT, 'Component2' TEXT NOT NULL, 'Suffixes' TEXT, 'PtBr' TEXT, 'Importance' INTEGER NOT NULL, 'SentencesId' TEXT )");
+		SendQuery("CREATE TABLE IF NOT EXISTS 'Collocation' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Prefixes' TEXT, 'Component1' TEXT NOT NULL, 'LinkWords' TEXT, 'Component2' TEXT NOT NULL, 'Suffixes' TEXT, 'PtBr' TEXT, 'Importance' INTEGER NOT NULL, 'SentencesId' TEXT, 'IsActive' INTEGER NOT NULL )");
 		SendQuery("CREATE TABLE IF NOT EXISTS 'CollocationAttempt' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'IdUser' INTEGER NOT NULL, 'IdCollocation' INTEGER NOT NULL, 'IsCorrect' INTEGER NOT NULL, 'When' TEXT NOT NULL )");
-		SendQuery("CREATE TABLE IF NOT EXISTS 'Sentence' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_Sentence' PRIMARY KEY AUTOINCREMENT, 'Text' TEXT NOT NULL, 'PtBr' TEXT NULL)");
+		SendQuery("CREATE TABLE IF NOT EXISTS 'Sentence' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_Sentence' PRIMARY KEY AUTOINCREMENT, 'Text' TEXT NOT NULL, 'PtBr' TEXT NULL, 'IsActive' INTEGER NOT NULL)");
 		SendQuery("CREATE TABLE IF NOT EXISTS 'User' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_User' PRIMARY KEY AUTOINCREMENT, 'Logins' TEXT NOT NULL, 'Password' TEXT )");
 		SendQuery("CREATE TABLE IF NOT EXISTS 'Verb' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Infinitive' TEXT NOT NULL, 'Past' TEXT NOT NULL, 'PP' TEXT NOT NULL, 'Gerund' TEXT NOT NULL, 'Person' TEXT NOT NULL )");
 

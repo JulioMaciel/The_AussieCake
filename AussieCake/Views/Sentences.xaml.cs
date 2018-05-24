@@ -41,7 +41,8 @@ namespace AussieCake.Views
 
 			var sen = txt_sentence.Text;
 			var ptBr = txt_ptBr.Text;
-			var vm = new SentenceVM(sen, ptBr);
+			// add isActive checkbox on interface
+			var vm = new SentenceVM(sen, ptBr, false);
 
 			if (string.IsNullOrEmpty(sen))
 			{

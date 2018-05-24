@@ -21,7 +21,9 @@ namespace AussieCake.ViewModels
 		public string PtBr { get; set; }
     public Importance Importance { get; set; }
     public List<int> SentencesId { get; set; }
-		
+
+		public bool IsActive { get; set; }
+
 		public bool IsComp1Verb { get; private set; }
 		public bool IsComp2Verb { get; private set; }
 
@@ -34,7 +36,7 @@ namespace AussieCake.ViewModels
 		public List<StringPositions> Positions { get; set; }
 
 		public CollocationVM(List<string> prefixes, string comp1, bool isComp1Verb, List<string> linkWords, string comp2, 
-                        bool isComp2Verb, List<string> suffixes, string ptBr, Importance importance, List<int> sentencesId)
+                        bool isComp2Verb, List<string> suffixes, string ptBr, Importance importance, List<int> sentencesId, bool isActive)
 		{
 			Prefixes = prefixes;
 			Component1 = comp1 + (isComp1Verb ? "[v]" : string.Empty);
@@ -46,6 +48,7 @@ namespace AussieCake.ViewModels
 			PtBr = ptBr;
       Importance = importance;
       SentencesId = sentencesId;
+			IsActive = isActive;
 		}
 
 		public CollocationVM(Collocation col)
@@ -56,6 +59,7 @@ namespace AussieCake.ViewModels
 			Suffixes = string.IsNullOrEmpty(col.Suffixes) ? null : col.Suffixes.Split(';').ToList();
 			PtBr = string.IsNullOrEmpty(col.PtBr) ? null : col.PtBr;
       Importance = (Importance)col.Importance;
+			IsActive = col.IsActive;
 
 			Positions = new List<StringPositions>();
 

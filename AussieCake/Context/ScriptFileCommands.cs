@@ -21,7 +21,7 @@ namespace AussieCake.Context
 				foreach (var sen in savedSentences)
 				{
 					if (!actualFile.Any(s => s.Contains(sen)))
-						tw.WriteLine("insert into Sentence values(NULL, '" + sen + "', NULL);");
+						tw.WriteLine("insert into Sentence values(NULL, '" + sen + "', NULL, 0);");
 					else
 						Console.WriteLine("Sentence already stored: " + sen);
 				}

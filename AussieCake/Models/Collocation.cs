@@ -15,6 +15,8 @@ namespace AussieCake.Models
     public int Importance { get; set; }
     public string SentencesId { get; set; } // it's a concatenate list
 
+		public bool IsActive { get; set; }
+
 		public Collocation()
 		{
 		}
@@ -43,9 +45,11 @@ namespace AussieCake.Models
 
 			if (viewModel.SentencesId != null)
 				SentencesId = String.Join(";", viewModel.SentencesId.ToArray());
+
+			IsActive = viewModel.IsActive;
 		}
 
-		public Collocation(string prefixes, string component1, string linkWords, string component2, string suffixes, string ptBr, int importance, string sentencesId)
+		public Collocation(string prefixes, string component1, string linkWords, string component2, string suffixes, string ptBr, int importance, string sentencesId, bool isActive)
 		{
 			Prefixes = prefixes;
 			Component1 = component1;
@@ -55,10 +59,11 @@ namespace AussieCake.Models
 			PtBr = ptBr;
       Importance = importance;
 			SentencesId = sentencesId;
+			IsActive = isActive;
 		}
 
-		public Collocation(int id, string prefixes, string component1, string linkWords, string component2, string suffixes, string ptBr, int importance, string sentencesId)
-			: this(prefixes, component1, linkWords, component2, suffixes, ptBr, importance, sentencesId)
+		public Collocation(int id, string prefixes, string component1, string linkWords, string component2, string suffixes, string ptBr, int importance, string sentencesId, bool isActive)
+			: this(prefixes, component1, linkWords, component2, suffixes, ptBr, importance, sentencesId, isActive)
 		{
 			Id = id;
 		}

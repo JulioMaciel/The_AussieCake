@@ -21,45 +21,50 @@ namespace AussieCake.Util.WPF
 
 		public static void LogOperation(OperationType operation)
 		{
-			LabelFooter.Visibility = Visibility.Visible;
-			ProgBar.Visibility = Visibility.Collapsed;
-
-			var logInfo = string.Empty;
-			var logPattern = "\n{0} \"{1}\"{2} was {3}.";
-
-			foreach (var item in Items)
+			Application.Current.Dispatcher.Invoke(() =>
 			{
-				logInfo += string.Format(logPattern, item.Model.ToDescString(), item.Name,
-					(item.Id != null ? " (Id " + item.Id + ")" : string.Empty),
-					operation.ToDescString());
-			}
+				LabelFooter.Visibility = Visibility.Visible;
+				ProgBar.Visibility = Visibility.Collapsed;
 
-			var footerInfo = string.Empty;
+				var logInfo = string.Empty;
+				var logPattern = "\n{0} \"{1}\"{2} was {3}.";
 
-			var itemsGroup = Items.GroupBy(i => i.Model);
-			foreach (var group in itemsGroup)
-			{
-				if (!string.IsNullOrEmpty(footerInfo))
-					footerInfo += ", ";
+				foreach (var item in Items)
+				{
+					logInfo += string.Format(logPattern, item.Model.ToDescString(), item.Name,
+						(item.Id != null ? " (Id " + item.Id + ")" : string.Empty),
+						operation.ToDescString());
+				}
 
-				footerInfo += group.Count() + " " + group.FirstOrDefault().Model;
-				footerInfo += group.Count() > 1 ? "s" : string.Empty;
-			}
+				var footerInfo = string.Empty;
 
-			if (itemsGroup.Count() == 0)
-				footerInfo += "Nothing";
+				var itemsGroup = Items.GroupBy(i => i.Model);
+				foreach (var group in itemsGroup)
+				{
+					if (!string.IsNullOrEmpty(footerInfo))
+						footerInfo += ", ";
 
-			footerInfo += itemsGroup.Count() > 1 ? " were " : " was ";
+					footerInfo += group.Count() + " " + group.FirstOrDefault().Model;
+					footerInfo += group.Count() > 1 ? "s" : string.Empty;
+				}
 
-			footerInfo += operation.ToDescString() + " in " + Watcher.Elapsed.TotalSeconds + " seconds.";
-			LabelFooter.Content = footerInfo;
+				if (itemsGroup.Count() == 0)
+					footerInfo += "Nothing";
 
-			logInfo = logInfo.Insert(0, "*************\n" + DateTime.Now.ToString("dd/MM/yy, HH:mm") + ": " + footerInfo);
+				footerInfo += itemsGroup.Count() > 1 ? " were " : " was ";
 
-			using (StreamWriter writetext = new StreamWriter(CakePaths.Log, true))
-				writetext.WriteLine(logInfo);
+				footerInfo += operation.ToDescString() + " in " + Watcher.Elapsed.TotalSeconds + " seconds.";
+				LabelFooter.Content = footerInfo;
 
-			ProgBar.Value = 0;
+				logInfo = logInfo.Insert(0, "*************\n" + DateTime.Now.ToString("dd/MM/yy, HH:mm") + ": " + footerInfo);
+
+				using (StreamWriter writetext = new StreamWriter(CakePaths.Log, true))
+					writetext.WriteLine(logInfo);
+
+				ProgBar.Value = 0;
+
+			});
+
 			Watcher.Stop();
 		}
 
@@ -71,12 +76,16 @@ namespace AussieCake.Util.WPF
 
 		public static void LogLoading(ModelType model, int quantity)
 		{
-			LabelFooter.Visibility = Visibility.Visible;
-			ProgBar.Visibility = Visibility.Collapsed;
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				LabelFooter.Visibility = Visibility.Visible;
+				ProgBar.Visibility = Visibility.Collapsed;
 
-			LabelFooter.Content = quantity + " " + model.ToDescString() + "s were loaded in " + Watcher.Elapsed.TotalSeconds + " seconds.";
+				LabelFooter.Content = quantity + " " + model.ToDescString() + "s were loaded in " + Watcher.Elapsed.TotalSeconds + " seconds.";
 
-			ProgBar.Value = 0;
+				ProgBar.Value = 0;
+			});
+
 			Watcher.Stop();
 		}
 
@@ -84,12 +93,15 @@ namespace AussieCake.Util.WPF
 		{
 			Items = new List<LoggedItem>();
 
-			LabelFooter.Visibility = Visibility.Collapsed;
-			ProgBar.Visibility = Visibility.Visible;
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				LabelFooter.Visibility = Visibility.Collapsed;
+				ProgBar.Visibility = Visibility.Visible;
 
-			Reporter = new Progress<String>(str => ProgBar.Value++);
+				Reporter = new Progress<String>(str => ProgBar.Value++);
 
-			ProgBar.Maximum = max;
+				ProgBar.Maximum = max;
+			});
 
 			Watcher = new Stopwatch();
 			Watcher.Start();
@@ -97,7 +109,7 @@ namespace AussieCake.Util.WPF
 
 		public static void IncreaseProgress()
 		{
-			Reporter.Report("1");
+			Application.Current.Dispatcher.Invoke(() => Reporter.Report("1"));
 		}
 
 		public static void LogItem(LoggedItem item)
