@@ -84,14 +84,15 @@ namespace AussieCake.Util
 			btn_edit.IsEnabled = false;
 			btn_edit.Click += (source, e) =>
 			{
-				Footer.StartProgress(1);
+				Logger.StartProgress(1);
 				var edited = SentenceController.Sentences.FirstOrDefault(s => s.Id == sen.Id);
 				edited.Text = txt_sen.Text;
 				edited.PtBr = txt_ptBr.Text;
 				SentenceController.Update(edited);
 				btn_edit.IsEnabled = false;
 				btn_edit.Opacity = 0.5;
-				Footer.LogFooterOperation(ModelsType.Sentence, OperationType.Updated);
+				var loggedItem = new LoggedItem(ModelType.Sentence, edited.Text, edited.Id);
+				Logger.LogOperation(OperationType.Updated, loggedItem);
 			};
 			Grid.SetRow(btn_edit, 0);
 			Grid.SetColumn(btn_edit, 1);
@@ -109,11 +110,12 @@ namespace AussieCake.Util
 			btn_remove.Opacity = 0.9;
 			btn_remove.Click += (source, e) =>
 			{
-				Footer.StartProgress(1);
+				Logger.StartProgress(1);
 				var removed = SentenceController.Sentences.FirstOrDefault(s => s.Id == sen.Id);
 				SentenceController.Remove(removed);
 				line.Visibility = Visibility.Collapsed;
-				Footer.LogFooterOperation(ModelsType.Sentence, OperationType.Removed);
+				var loggedItem = new LoggedItem(ModelType.Sentence, removed.Text, removed.Id);
+				Logger.LogOperation(OperationType.Removed, loggedItem);
 			};
 			Grid.SetRow(btn_remove, 0);
 			Grid.SetColumn(btn_remove, 2);

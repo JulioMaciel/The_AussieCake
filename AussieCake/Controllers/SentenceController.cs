@@ -5,6 +5,7 @@ using AussieCake.Util.WPF;
 using AussieCake.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,20 +26,17 @@ namespace AussieCake.Controllers
 			if (Sentences.Any(s => s.Text == sentence.Text))
 				return;
 
-
 			var model = new Sentence(sentence);
-			Application.Current.Dispatcher.Invoke(() =>
-			{
-				InsertSentence(model);
-				LoadSentencesViewModel();
-				Footer.AddInfo();
-			});
+
+			InsertSentence(model);
+			LoadSentencesViewModel();
+			Logger.LogItem(new LoggedItem(ModelType.Sentence, model.Text));
 		}
 
 		public static void Update(SentenceVM sentence)
 		{
 			var model = new Sentence(sentence);
-			Application.Current.Dispatcher.Invoke(() => UpdateSentence(model));
+			UpdateSentence(model);
 			var oldVM = Sentences.FirstOrDefault(x => x.Id == sentence.Id);
 			oldVM = sentence;
 		}
@@ -46,7 +44,7 @@ namespace AussieCake.Controllers
 		public static void Remove(SentenceVM sentence)
 		{
 			var model = new Sentence(sentence);
-			Application.Current.Dispatcher.Invoke(() => RemoveSentence(model));
+			RemoveSentence(model);
 			Sentences.Remove(sentence);
 		}
 
@@ -57,7 +55,6 @@ namespace AussieCake.Controllers
 
 			foreach (var sen in SentencesDB)
 			{
-				//var vm = new SentenceVM(sen);
 				if (!Sentences.Any(v => v.Id == sen.Id))
 					Sentences.Add(new SentenceVM(sen));
 			}
@@ -77,73 +74,80 @@ namespace AussieCake.Controllers
 			await SaveSentencesFromString(cleanedCode);
 		}
 
-		public async static Task SaveSentencesFromStaticResource()
+		public async static Task SaveSentencesFromHtmlBooks()
 		{
 			string htmlCode = string.Empty;
 
-			string[] filePaths = Directory.GetFiles(CakePaths.ResourceBooksFolder, "*.htm",
+			string[] filePaths = Directory.GetFiles(CakePaths.ResourceHtmlBooks, "*.htm",
 																				 searchOption: SearchOption.TopDirectoryOnly);
-			int i = 0;
-			Parallel.For(0, filePaths.Length, x =>
-			{
-				htmlCode += File.ReadAllText(filePaths[i]);
-				i++;
-			});
+			foreach (var path in filePaths)
+				htmlCode += File.ReadAllText(path);
 
 			string cleanedCode = CleanHtmlCode(htmlCode);
 
 			await SaveSentencesFromString(cleanedCode);
 		}
 
+		public async static Task SaveSentencesFromTxtBooks()
+		{
+			string allStringBooks = string.Empty;
+			string[] filePaths = Directory.GetFiles(CakePaths.ResourceTxtBooks, "*.txt",
+																				 searchOption: SearchOption.TopDirectoryOnly);
+			
+			foreach (var path in filePaths)
+				allStringBooks += File.ReadAllText(path);
+
+			await SaveSentencesFromString(allStringBooks);
+		}
+
 		public async static Task SaveSentencesFromString(string source)
 		{
 			var sentences = GetSentencesFromSource(source);
 			sentences = sentences.Where(s => (s.Length >= 40 && s.Length <= 80) &&
-																			((s.EndsWith(".") && !s.EndsWith("Dr.") && !s.EndsWith("Mr.") && !s.EndsWith("Ms.")) || 
+																			((s.EndsWith(".") && !s.EndsWith("Dr.") && !s.EndsWith("Mr.") && !s.EndsWith("Ms.")) ||
 																				s.EndsWith("!") || s.EndsWith("?"))).ToList();
 
 			var savedSentences = await GetCollocationsSentenceFromList(sentences);
-			
-			await Task.Run(() => InsertSentencesFound(savedSentences));
+
+			InsertSentencesFound(savedSentences);
 		}
 
-		public static bool CheckSentenceContainsCollection(CollocationVM col, SentenceVM sentence)
+		public static bool DoesSentenceContainsCollection(CollocationVM col, SentenceVM sentence)
 		{
-			var pref = CheckSentenceContainsPart(col.Prefixes, sentence.Text);
-			if (pref == PartResult.PartNotFound)
+			// start checking the comp2 because it's here where is the biggest chance of returning false
+			var comp2 = CheckSentenceContainsComponent(col.Component2, col.IsComp2Verb, sentence.Text);
+			if (!comp2.Item1)
 				return false;
 
 			var comp1 = CheckSentenceContainsComponent(col.Component1, col.IsComp1Verb, sentence.Text);
 			if (!comp1.Item1)
 				return false;
 
+			if (comp1.Item2 > comp2.Item2)
+				return false;
+
 			var link = CheckSentenceContainsPart(col.LinkWords, sentence.Text);
 			if (link == PartResult.PartNotFound)
 				return false;
 
-			var comp2 = CheckSentenceContainsComponent(col.Component2, col.IsComp2Verb, sentence.Text);
-			if (!comp2.Item1)
+			var pref = CheckSentenceContainsPart(col.Prefixes, sentence.Text);
+			if (pref == PartResult.PartNotFound)
 				return false;
 
 			var suf = CheckSentenceContainsPart(col.Suffixes, sentence.Text);
 			if (suf == PartResult.PartNotFound)
 				return false;
 
-			if (comp1.Item2 < comp2.Item2 ? true : false)
-			{
-				var position = new StringPositions();
-				position.IdSentence = sentence.Id;
-				position.Comp1Pos = comp1.Item2;
-				position.Comp2Pos = comp2.Item2;
-				col.Positions.Add(position);
+			var position = new StringPositions();
+			position.IdSentence = sentence.Id;
+			position.Comp1Pos = comp1.Item2;
+			position.Comp2Pos = comp2.Item2;
+			col.Positions.Add(position);
 
-				col.SentencesId.Add(sentence.Id);
-				CollocationController.Update(col);
+			col.SentencesId.Add(sentence.Id);
+			CollocationController.Update(col);
 
-				return true;
-			}
-
-			return false;
+			return true;
 		}
 
 		#endregion
@@ -176,11 +180,15 @@ namespace AussieCake.Controllers
 				{
 					foreach (var sen in sentences)
 					{
-						if (CheckSentenceContainsCollection(col, new SentenceVM(sen)))
+						if (DoesSentenceContainsCollection(col, new SentenceVM(sen)))
 							if (!result.Contains(sen))
+							{
 								result.Add(sen);
+								// debug, erase next Logger line
+								Logger.LogItem(new LoggedItem(ModelType.Sentence, sen));
+							}
 					}
-					Footer.IncreaseProgress();
+					Logger.IncreaseProgress();
 				});
 			});
 			await Task.WhenAll(tasks);
@@ -188,20 +196,16 @@ namespace AussieCake.Controllers
 			return result;
 		}
 
-		private static async Task InsertSentencesFound(List<string> sentencesFound)
+		private static void InsertSentencesFound(List<string> sentencesFound)
 		{
-			var tasks = sentencesFound.Select(async found =>
+			foreach (var found in sentencesFound)
 			{
-				await Task.Run(() =>
-				{
-					var vm = new SentenceVM(found);
-					Insert(vm);
-					Footer.IncreaseProgress();
-				});
-			}).ToList();
-			await Task.WhenAll(tasks);
+				var vm = new SentenceVM(found);
+				Insert(vm);
+				Logger.IncreaseProgress();
+			}
 
-			Application.Current.Dispatcher.Invoke(() => ScriptFileCommands.WriteSentencesOnFile(sentencesFound));
+			ScriptFileCommands.WriteSentencesOnFile(sentencesFound);
 		}
 
 		private static (bool, int) CheckSentenceContainsComponent(string comp, bool isAVerb, string sentence)
@@ -217,7 +221,7 @@ namespace AussieCake.Controllers
 				if (staticVerb == null)
 				{
 					staticVerb = VerbController.ConjugateUnknownVerb(comp);
-					Footer.AddExtraInfo(ModelsType.Verb);
+					Logger.LogItem(new LoggedItem(ModelType.Verb, staticVerb.Infinitive));
 				}
 
 				var position = sentence.GetPosition(staticVerb.Gerund);

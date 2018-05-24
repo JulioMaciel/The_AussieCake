@@ -14,11 +14,9 @@ namespace AussieCake.Controllers
 		public static void Insert(VerbVM verbVM)
 		{
 			var verb = new Verb(verbVM);
-			Application.Current.Dispatcher.Invoke(() =>
-			{
-				InsertVerb(verb);
-				ScriptFileCommands.WriteVerbOnFile(verb);
-			});
+			
+			InsertVerb(verb);
+			ScriptFileCommands.WriteVerbOnFile(verb);			
 		}
 
 		public static void LoadVerbsViewModel()

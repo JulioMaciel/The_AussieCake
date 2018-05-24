@@ -115,12 +115,13 @@
     <Compile Include="Controllers\SentenceController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\VerbController.cs" />
-    <Compile Include="Models\Base\ModelsType.cs" />
+    <Compile Include="Models\Base\ModelType.cs" />
     <Compile Include="Models\Verb.cs" />
     <Compile Include="Util\CakePaths.cs" />
+    <Compile Include="Util\EnumExtensions.cs" />
     <Compile Include="Util\Importance.cs" />
     <Compile Include="Util\StringExtensions.cs" />
-    <Compile Include="Util\WPF\Footer.cs" />
+    <Compile Include="Util\WPF\Logger.cs" />
     <Compile Include="Util\WPF\SentenceWPF.cs" />
     <Compile Include="Util\WPF\WatermarkService.cs" />
     <Compile Include="ViewModels\Base\IQuestion.cs" />
@@ -200,12 +201,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\HtmlBooks\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Context\Scripts\Insert_Collocations.sql" />
     <Content Include="Context\Scripts\Insert_Sentences.sql" />
     <Content Include="Context\Scripts\Insert_Verbs.sql" />
+    <Resource Include="Logs\Log.txt" />
     <Resource Include="Images\Icons\add.ico" />
     <Resource Include="Images\Icons\add_blue.ico" />
     <Resource Include="Images\Icons\remove.ico" />

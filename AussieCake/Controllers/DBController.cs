@@ -25,22 +25,22 @@ namespace AussieCake.Controllers
 
 		private async static void CreateStaticAssossiations()
 		{
-			var tasks = SentenceController.Sentences.Select(async sen =>
-			{
-				await Task.Run(() =>
-				{
-					foreach (var col in CollocationController.Collocations)
-						SentenceController.CheckSentenceContainsCollection(col, sen);
-				});
-			}).ToList();
-			await Task.WhenAll(tasks);
-
-			// fazer async
-			//foreach (var sen in SentenceController.Sentences)
+			//var tasks = SentenceController.Sentences.Select(async sen =>
 			//{
-			//	foreach (var col in CollocationController.Collocations)
-			//		SentenceController.CheckSentenceContainsCollection(col, sen);
-			//}
+			//	await Task.Run(() =>
+			//	{
+			//		foreach (var col in CollocationController.Collocations)
+			//			SentenceController.DoesSentenceContainsCollection(col, sen);
+			//	});
+			//}).ToList();
+			//await Task.WhenAll(tasks);
+
+			//fazer async
+			foreach (var sen in SentenceController.Sentences)
+			{
+				foreach (var col in CollocationController.Collocations)
+					SentenceController.DoesSentenceContainsCollection(col, sen);
+			}
 		}
 
 	}

@@ -13,7 +13,10 @@ namespace AussieCake.Util
 		public static string ScriptCollocations = Project + Script + "\\Insert_Collocations.sql";
 		public static string ScriptVerbs = Project + Script + "\\Insert_Verbs.sql";
 
-		public static string ResourceBooksFolder = Project + "\\Resources\\HtmlBooks";
+		public static string ResourceHtmlBooks = Project + "\\Resources\\Books\\html";
+		public static string ResourceTxtBooks = Project + "\\Resources\\Books\\txt";
+
+		public static string Log = Project + "\\Logs\\Log.txt";
 
 		public static string GetIconPath(string icon)
 		{

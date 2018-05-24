@@ -90,7 +90,7 @@ namespace AussieCake.Helper
 		/// <param name="query">SQL statement</param>
 		/// <param name="tableName">Name of the table</param>
 		/// <returns>All the returned values into a dataset</returns>
-		protected static DataSet GetTable(ModelsType type)
+		protected static DataSet GetTable(ModelType type)
 		{
 			string query = "SELECT * FROM " + type.ToDescString();
 			DataSet data = new DataSet();

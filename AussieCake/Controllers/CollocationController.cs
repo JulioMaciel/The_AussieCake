@@ -11,36 +11,34 @@ namespace AussieCake.Controllers
 		public static List<CollocationVM> Collocations { get; private set; }
 
 		public static void Insert(CollocationVM collocation)
-    {
-      if (Collocations.Any(s => s.Component1 == collocation.Component1 && s.Component2 == collocation.Component2))
-        return;
+		{
+			if (Collocations.Any(s => s.Component1 == collocation.Component1 && s.Component2 == collocation.Component2))
+				return;
 
 			var model = new Collocation(collocation);
-			Application.Current.Dispatcher.Invoke(() =>
-			{
-				InsertCollocation(model);
-				LoadCollocationsViewModel();
-			});
+
+			InsertCollocation(model);
+			LoadCollocationsViewModel();
 		}
 
-    public static void Update(CollocationVM collocation)
-    {
-      var model = new Collocation(collocation);
-			Application.Current.Dispatcher.Invoke(() => UpdateCollocation(model));
-      var oldVM = Collocations.FirstOrDefault(x => x.Id == collocation.Id);
-      oldVM = collocation;
-    }
+		public static void Update(CollocationVM collocation)
+		{
+			var model = new Collocation(collocation);
+			UpdateCollocation(model);
+			var oldVM = Collocations.FirstOrDefault(x => x.Id == collocation.Id);
+			oldVM = collocation;
+		}
 
-    public static void Remove(CollocationVM collocation)
-    {
-      var model = new Collocation(collocation);
-			Application.Current.Dispatcher.Invoke(() => RemoveCollocation(model));
-      Collocations.Remove(collocation);
-    }
+		public static void Remove(CollocationVM collocation)
+		{
+			var model = new Collocation(collocation);
+			RemoveCollocation(model);
+			Collocations.Remove(collocation);
+		}
 
-    public static CollocationVM GetCollocation(int id)
-    {
-      return Collocations.FirstOrDefault(x => x.Id == id);
+		public static CollocationVM GetCollocation(int id)
+		{
+			return Collocations.FirstOrDefault(x => x.Id == id);
 		}
 
 		public static void LoadCollocationsViewModel()

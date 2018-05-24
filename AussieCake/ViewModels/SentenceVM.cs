@@ -9,14 +9,14 @@ namespace AussieCake.ViewModels
     public string Text { get; set; }
     public string PtBr { get; set; }
 
-    public SentenceVM(string text, string ptBr)
-    {
-      Text = text;
-      PtBr = ptBr;
-    }
+		public SentenceVM(string text)
+		{
+			Text = text;
+		}
 
-    public SentenceVM(string text)
+		public SentenceVM(string text, string ptBr) : this(text)
     {
+      PtBr = ptBr;
     }
 
     public SentenceVM(Sentence sentence)

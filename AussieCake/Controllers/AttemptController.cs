@@ -10,14 +10,12 @@ namespace AussieCake.Controllers
 		public static List<CollocationAttemptVM> CollocationAttempts { get; private set; }
 
 		public static void Insert(CollocationAttemptVM collocation)
-    {
-      var model = new CollocationAttempt(collocation);
-			Application.Current.Dispatcher.Invoke(() => 
-			{
-				InsertCollocationAttempt(model);
-				LoadAttemptsViewModel();
-				CollocationController.LoadCollocationsViewModel();
-			});
+		{
+			var model = new CollocationAttempt(collocation);
+
+			InsertCollocationAttempt(model);
+			LoadAttemptsViewModel();
+			CollocationController.LoadCollocationsViewModel();
 		}
 
 		public static void LoadAttemptsViewModel()

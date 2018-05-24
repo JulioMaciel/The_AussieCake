@@ -17,17 +17,15 @@ namespace AussieCake.Controllers
         return;
 
       var model = new User(user);
-			Application.Current.Dispatcher.Invoke(() =>
-			{
-				InsertUser(model);
-				LoadUsersViewModel();
-			});
+			
+			InsertUser(model);
+			LoadUsersViewModel();
     }
 
     public static void Update(UserVM user)
     {
       var model = new User(user);
-			Application.Current.Dispatcher.Invoke(() => UpdateUser(model));
+			UpdateUser(model);
       var oldVM = Users.FirstOrDefault(x => x.Id == user.Id);
       oldVM = user;
     }
@@ -35,7 +33,7 @@ namespace AussieCake.Controllers
     public static void Remove(UserVM user)
     {
       var model = new User(user);
-			Application.Current.Dispatcher.Invoke(() => RemoveUser(model));
+			RemoveUser(model);
       Users.Remove(user);
     }
 

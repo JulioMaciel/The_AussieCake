@@ -34,7 +34,7 @@ public class SqLiteHelper : SqLiteCommands
 
 	protected static void GetCollocationsDB()
 	{		
-		var dataset = GetTable(ModelsType.Collocation);
+		var dataset = GetTable(ModelType.Collocation);
 
 		CollocationsDB = dataset.Tables[0]
 									 				 .AsEnumerable()
@@ -53,7 +53,7 @@ public class SqLiteHelper : SqLiteCommands
 
 	protected static void GetUsersDB()
 	{
-		var dataset = GetTable(ModelsType.User);
+		var dataset = GetTable(ModelType.User);
 
 		UsersDB = dataset.Tables[0]
 														.AsEnumerable()
@@ -66,7 +66,7 @@ public class SqLiteHelper : SqLiteCommands
 
 	protected static void GetSentencesDB()
 	{
-		var dataset = GetTable(ModelsType.Sentence);
+		var dataset = GetTable(ModelType.Sentence);
 
 		SentencesDB = dataset.Tables[0]
 														.AsEnumerable()
@@ -79,7 +79,7 @@ public class SqLiteHelper : SqLiteCommands
 
 	protected static void GetCollocationAttemptsDB()
 	{
-		var dataset = GetTable(ModelsType.CollocationAttempt);
+		var dataset = GetTable(ModelType.CollocationAttempt);
 		
 		CollocationAttemptsDB = dataset.Tables[0]
 														.AsEnumerable()
@@ -94,7 +94,7 @@ public class SqLiteHelper : SqLiteCommands
 
 	protected static void GetVerbsDB()
 	{
-		var dataset = GetTable(ModelsType.Verb);
+		var dataset = GetTable(ModelType.Verb);
 
 		VerbsDB = dataset.Tables[0]
 														.AsEnumerable()
@@ -115,7 +115,7 @@ public class SqLiteHelper : SqLiteCommands
 	{
 		string query = string.Format(InsertSQL +
 																"'{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}')",
-																  ModelsType.Collocation.ToDescString(),
+																  ModelType.Collocation.ToDescString(),
 																	col.Prefixes, col.Component1, col.LinkWords, col.Component2, 
 																	col.Suffixes, col.PtBr, col.SentencesId);
 		SendQuery(query);
@@ -128,7 +128,7 @@ public class SqLiteHelper : SqLiteCommands
 	{
 		string query = string.Format(InsertSQL + 
 																	"'{1}', '{2}')", 
-																	ModelsType.User.ToDescString(),
+																	ModelType.User.ToDescString(),
 																	user.Logins, user.Password);
 		SendQuery(query);
 
@@ -140,7 +140,7 @@ public class SqLiteHelper : SqLiteCommands
 	{
 		string query = string.Format(InsertSQL +
 																"'{1}', '{2}')",
-																	ModelsType.Sentence.ToDescString(),
+																	ModelType.Sentence.ToDescString(),
 																	sen.Text, sen.PtBr);
 		SendQuery(query);
 
@@ -152,7 +152,7 @@ public class SqLiteHelper : SqLiteCommands
 	{
 		string query = string.Format(InsertSQL +
 																"'{1}', '{2}', '{3}', '{4}')",
-																	ModelsType.CollocationAttempt.ToDescString(),
+																	ModelType.CollocationAttempt.ToDescString(),
 																	col.IdUser, col.IdCollocation, col.IsCorrect, col.When);
 		SendQuery(query);
 
@@ -164,7 +164,7 @@ public class SqLiteHelper : SqLiteCommands
 	{
 		string query = string.Format(InsertSQL +
 																	"'{1}', '{2}', '{3}', '{4}', '{5}')",
-																	ModelsType.Verb.ToDescString(),
+																	ModelType.Verb.ToDescString(),
 																	verb.Infinitive, verb.Past, verb.PastParticiple, verb.Person, verb.Gerund);
 		SendQuery(query);
 
@@ -226,7 +226,7 @@ public class SqLiteHelper : SqLiteCommands
 
 		//update DB
 		string query = string.Format(UpdateSQL,
-																	ModelsType.Collocation.ToDescString(),
+																	ModelType.Collocation.ToDescString(),
 																	columnsToUpdate,
 																	col.Id);
 		SendQuery(query);
@@ -255,7 +255,7 @@ public class SqLiteHelper : SqLiteCommands
 
 		//update DB
 		string query = string.Format(UpdateSQL,
-																	ModelsType.User.ToDescString(),
+																	ModelType.User.ToDescString(),
 																	columnsToUpdate,
 																	user.Id);
 		SendQuery(query);
@@ -284,7 +284,7 @@ public class SqLiteHelper : SqLiteCommands
 
 		//update DB
 		string query = string.Format(UpdateSQL,
-																	ModelsType.Sentence.ToDescString(),
+																	ModelType.Sentence.ToDescString(),
 																	columnsToUpdate,
 																	sen.Id);
 		SendQuery(query);
@@ -319,7 +319,7 @@ public class SqLiteHelper : SqLiteCommands
 
 		//update DB
 		string query = string.Format(UpdateSQL,
-																	ModelsType.CollocationAttempt.ToDescString(),
+																	ModelType.CollocationAttempt.ToDescString(),
 																	columnsToUpdate,
 																	col.Id);
 		SendQuery(query);
@@ -335,7 +335,7 @@ public class SqLiteHelper : SqLiteCommands
 	protected static void RemoveCollocation(Collocation col)
 	{
 		string query = string.Format(RemoveSQL,
-																	ModelsType.Collocation.ToDescString(),
+																	ModelType.Collocation.ToDescString(),
 																	col.Id);
 		SendQuery(query);
 
@@ -346,7 +346,7 @@ public class SqLiteHelper : SqLiteCommands
 	protected static void RemoveUser(User user)
 	{
 		string query = string.Format(RemoveSQL,
-																	ModelsType.User.ToDescString(),
+																	ModelType.User.ToDescString(),
 																	user.Id);
 		SendQuery(query);
 
@@ -357,7 +357,7 @@ public class SqLiteHelper : SqLiteCommands
 	protected static void RemoveSentence(Sentence sen)
 	{
 		string query = string.Format(RemoveSQL,
-																	ModelsType.Sentence.ToDescString(),
+																	ModelType.Sentence.ToDescString(),
 																	sen.Id);
 		SendQuery(query);
 
@@ -368,7 +368,7 @@ public class SqLiteHelper : SqLiteCommands
 	protected static void RemoveCollocationAttempt(CollocationAttempt col)
 	{
 		string query = string.Format(RemoveSQL,
-																	ModelsType.CollocationAttempt.ToDescString(),
+																	ModelType.CollocationAttempt.ToDescString(),
 																	col.Id);
 		SendQuery(query);
 
@@ -400,9 +400,9 @@ public class SqLiteHelper : SqLiteCommands
 
 	private static void InsertStaticValues()
 	{
-		WasDataBaseEmpty = (GetTable(ModelsType.Verb).Tables[0].Rows.Count == 0) ||
-											 (GetTable(ModelsType.Collocation).Tables[0].Rows.Count == 0) ||
-											 (GetTable(ModelsType.Sentence).Tables[0].Rows.Count == 0);
+		WasDataBaseEmpty = (GetTable(ModelType.Verb).Tables[0].Rows.Count == 0) ||
+											 (GetTable(ModelType.Collocation).Tables[0].Rows.Count == 0) ||
+											 (GetTable(ModelType.Sentence).Tables[0].Rows.Count == 0);
 
 		if (WasDataBaseEmpty)
 		{

@@ -1,5 +1,6 @@
 ﻿using AussieCake.Controllers;
 using AussieCake.Models;
+using AussieCake.Util;
 using AussieCake.Views;
 using System.Windows;
 
@@ -21,7 +22,7 @@ namespace AussieCake
 		{
 			frame_content.NavigationService.Navigate(new Sentences());
       btnSentences.IsEnabled = false;
-      lblTopic.Content = ModelsType.Sentence.ToDescString() + 's';
+      lblTopic.Content = ModelType.Sentence.ToDescString() + 's';
 		}
 	}
 }
