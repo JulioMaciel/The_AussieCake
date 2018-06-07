@@ -1,4 +1,7 @@
-﻿using AussieCake.Models;
+﻿using AussieCake.Controllers;
+using AussieCake.Models;
+using AussieCake.ViewModels.Base;
+using System.Collections.Generic;
 
 namespace AussieCake.ViewModels
 {
@@ -9,6 +12,8 @@ namespace AussieCake.ViewModels
     public string Text { get; set; }
     public string PtBr { get; set; }
 		public bool IsActive { get; set; }
+
+		public List<IQuestion> Questions { get; set; }
 
 		public SentenceVM(string text, bool isActive)
 		{
@@ -27,6 +32,17 @@ namespace AussieCake.ViewModels
       Text = sentence.Text;
       PtBr = sentence.PtBr;
 			IsActive = sentence.IsActive;
-    }
+
+			Questions = new List<IQuestion>();
+		}
+
+		public void GetQuestions()
+		{
+			foreach (var col in CollocationController.Collocations)
+			{
+				if (col.SentencesId.Contains(Id))
+					Questions.Add(col);
+			}
+		}
   }
 }

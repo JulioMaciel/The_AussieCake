@@ -178,6 +178,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Cake.sqlite" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -199,13 +200,76 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Context\Scripts\Insert_Collocations.sql" />
     <Content Include="Context\Scripts\Insert_Sentences.sql" />
     <Content Include="Context\Scripts\Insert_Verbs.sql" />
+    <Content Include="Resources\Books\html\%281%29.htm" />
+    <Content Include="Resources\Books\html\%281%29.html" />
+    <Content Include="Resources\Books\html\%2810%29.htm" />
+    <Content Include="Resources\Books\html\%2811%29.htm" />
+    <Content Include="Resources\Books\html\%2812%29.htm" />
+    <Content Include="Resources\Books\html\%2813%29.htm" />
+    <Content Include="Resources\Books\html\%2814%29.htm" />
+    <Content Include="Resources\Books\html\%2815%29.htm" />
+    <Content Include="Resources\Books\html\%2816%29.htm" />
+    <Content Include="Resources\Books\html\%2817%29.htm" />
+    <Content Include="Resources\Books\html\%2818%29.htm" />
+    <Content Include="Resources\Books\html\%2819%29.htm" />
+    <Content Include="Resources\Books\html\%282%29.htm" />
+    <Content Include="Resources\Books\html\%2820%29.htm" />
+    <Content Include="Resources\Books\html\%2822%29.htm" />
+    <Content Include="Resources\Books\html\%283%29.htm" />
+    <Content Include="Resources\Books\html\%283%29.html" />
+    <Content Include="Resources\Books\html\%284%29.htm" />
+    <Content Include="Resources\Books\html\%285%29.htm" />
+    <Content Include="Resources\Books\html\%286%29.htm" />
+    <Content Include="Resources\Books\html\%287%29.htm" />
+    <Content Include="Resources\Books\html\%288%29.htm" />
+    <Content Include="Resources\Books\html\%289%29.htm" />
+    <Resource Include="Resources\Books\txt\01 - The Fellowship Of The Ring.txt" />
+    <Resource Include="Resources\Books\txt\02 - The Two Towers.txt" />
+    <Resource Include="Resources\Books\txt\03 - The Return Of The King.txt" />
+    <Resource Include="Resources\Books\txt\04 - Appendices And Index.txt" />
+    <Resource Include="Resources\Books\txt\Clancy Tom - Patriot Games.txt" />
+    <Resource Include="Resources\Books\txt\Clancy Tom - Red Storm Rising.txt" />
+    <Resource Include="Resources\Books\txt\Clarke Arthur C - 3001 The Final Odissey.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\02 - The Two Towers.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\03 - The Return Of The King.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\04 - Appendices And Index.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Clancy Tom - Patriot Games.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Clancy Tom - Red Storm Rising.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Clarke Arthur C - 3001 The Final Odissey.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 1 - Sorcerer%27s Stone.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 2 - Chamber of Secrets.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 3 - The Prisoner Of Azkaban.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 4 - The Goblet Of Fire.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 5 - Order of the Phoenix.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 6 - The Half Blood Prince.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 7 - Deathly Hollows.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Star Wars - [Thrawn Trilogy 01] - Heir to the Empire %28by Timothy Zahn%29.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Star Wars - [Thrawn Trilogy 02] - Dark Force Rising %28by Timothy Zahn%29.txt" />
+    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Star Wars - [Thrawn Trilogy 03] - The Last Command %28by Timothy Zahn%29.txt" />
+    <Resource Include="Resources\Books\txt\Harry Potter 1 - Sorcerer%27s Stone.txt" />
+    <Resource Include="Resources\Books\txt\Harry Potter 2 - Chamber of Secrets.txt" />
+    <Resource Include="Resources\Books\txt\Harry Potter 3 - The Prisoner Of Azkaban.txt" />
+    <Resource Include="Resources\Books\txt\Harry Potter 4 - The Goblet Of Fire.txt" />
+    <Resource Include="Resources\Books\txt\Harry Potter 5 - Order of the Phoenix.txt" />
+    <Resource Include="Resources\Books\txt\Harry Potter 6 - The Half Blood Prince.txt" />
+    <Resource Include="Resources\Books\txt\Harry Potter 7 - Deathly Hollows.txt" />
+    <Resource Include="Resources\Books\txt\Star Wars - [Thrawn Trilogy 01] - Heir to the Empire %28by Timothy Zahn%29.txt" />
+    <Resource Include="Resources\Books\txt\Star Wars - [Thrawn Trilogy 02] - Dark Force Rising %28by Timothy Zahn%29.txt" />
+    <Resource Include="Resources\Books\txt\Star Wars - [Thrawn Trilogy 03] - The Last Command %28by Timothy Zahn%29.txt" />
+    <Resource Include="Images\Icons\br.ico" />
+    <Resource Include="Images\Icons\br_gray.ico" />
+    <Resource Include="Images\Icons\interrogation.ico" />
+    <Resource Include="Images\Icons\interrogation_gray.ico" />
+    <Resource Include="Images\Icons\list.ico" />
+    <Resource Include="Images\Icons\remove_v2.ico" />
+    <Resource Include="Images\Icons\save.ico" />
+    <Resource Include="Images\Icons\switch_off.ico" />
+    <Resource Include="Images\Icons\switch_on.ico" />
     <Resource Include="Logs\Log.txt" />
     <Resource Include="Images\Icons\add.ico" />
     <Resource Include="Images\Icons\add_blue.ico" />

@@ -150,6 +150,12 @@ namespace AussieCake.Controllers
 			return true;
 		}
 
+		public static void PopulateQuestions()
+		{
+			foreach (var sen in Sentences)
+				sen.GetQuestions();
+		}
+
 		#endregion
 
 		#region Private Methods

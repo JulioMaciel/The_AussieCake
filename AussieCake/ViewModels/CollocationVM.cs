@@ -54,9 +54,9 @@ namespace AussieCake.ViewModels
 		public CollocationVM(Collocation col)
 		{
 			Id = col.Id;
-			Prefixes = string.IsNullOrEmpty(col.Prefixes) ? null : col.Prefixes.Split(';').ToList();
-			LinkWords = string.IsNullOrEmpty(col.LinkWords) ? null : col.LinkWords.Split(';').ToList();
-			Suffixes = string.IsNullOrEmpty(col.Suffixes) ? null : col.Suffixes.Split(';').ToList();
+			Prefixes = string.IsNullOrEmpty(col.Prefixes) ? new List<string>() : col.Prefixes.Split(';').ToList();
+			LinkWords = string.IsNullOrEmpty(col.LinkWords) ? new List<string>() : col.LinkWords.Split(';').ToList();
+			Suffixes = string.IsNullOrEmpty(col.Suffixes) ? new List<string>() : col.Suffixes.Split(';').ToList();
 			PtBr = string.IsNullOrEmpty(col.PtBr) ? null : col.PtBr;
       Importance = (Importance)col.Importance;
 			IsActive = col.IsActive;

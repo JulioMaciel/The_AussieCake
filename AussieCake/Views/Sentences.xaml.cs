@@ -28,6 +28,8 @@ namespace AussieCake.Views
 			if (!isGridUpdate)
 				Logger.StartProgress(1);
 
+			SentenceController.PopulateQuestions();
+
 			foreach (var sen in SentenceController.Sentences)
         SentenceWPF.AddSentenceRow(stk_sentences, sen, isGridUpdate);
 

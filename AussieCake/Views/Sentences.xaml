@@ -24,16 +24,12 @@
 				</Grid.RowDefinitions>
 
 				<Label Grid.Row="0" Grid.Column="0" Content="Sentence:" FontSize="14" FontWeight="Bold" />
-				<!--<TextBox Name="txt_sentence" Grid.Row="0" Grid.Column="1" Height="28" Margin="0,0,0,4" 
-								 VerticalContentAlignment="Center" />-->
-				<!--GotFocus="txt_sentence_GotFocus" LostFocus="txt_sentence_LostFocus"-->
 					<TextBox Name="txt_sentence" Grid.Row="0" Grid.Column="1" Height="28" Margin="0,0,0,4" 
 								 VerticalContentAlignment="Center" VerticalAlignment="Center">
 						<controls:WatermarkService.Watermark>
 							<TextBlock>Leave it empty to auto-search sentences based your own content</TextBlock>
 						</controls:WatermarkService.Watermark>
 					</TextBox>
-				<!--</AdornerDecorator>-->
 
 				<Label Grid.Row="1" Grid.Column="0" Content="PtBr:" FontSize="14" FontWeight="Bold" />
 				<TextBox Name="txt_ptBr" Grid.Row="1" Grid.Column="1" Background="#edfaeb" Height="28" 
