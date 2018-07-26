@@ -34,6 +34,8 @@ namespace AussieCake.Controllers
 			var model = new Collocation(collocation);
 			RemoveCollocation(model);
 			Collocations.Remove(collocation);
+
+            AttemptController.RemoveByCollocation(collocation.Id);
 		}
 
 		public static CollocationVM GetCollocation(int id)

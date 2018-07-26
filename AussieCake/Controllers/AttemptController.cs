@@ -1,6 +1,7 @@
 ﻿using AussieCake.Models;
 using AussieCake.ViewModels;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace AussieCake.Controllers
@@ -20,8 +21,8 @@ namespace AussieCake.Controllers
 
 		public static void LoadAttemptsViewModel()
 		{
-			if (CollocationAttempts == null)
-				CollocationAttempts = new List<CollocationAttemptVM>();
+			//if (CollocationAttempts == null)
+			CollocationAttempts = new List<CollocationAttemptVM>();
 
 			foreach (var col in CollocationAttemptsDB)
 			{
@@ -30,5 +31,18 @@ namespace AussieCake.Controllers
 					CollocationAttempts.Add(vm);
 			}
 		}
+
+        public static void RemoveByCollocation(int collocationId)
+        {
+            var selected = CollocationAttempts.Where(x => x.IdCollocation == collocationId);
+
+            foreach(var attempt in selected)
+            {
+                RemoveCollocationAttempt(new CollocationAttempt(attempt));
+                CollocationAttempts.Remove(attempt);
+            }
+
+            LoadAttemptsViewModel();
+        }
 	}
 }
