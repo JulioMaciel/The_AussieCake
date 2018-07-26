@@ -6,23 +6,23 @@ using System.Windows;
 
 namespace AussieCake
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : Window
-	{
-		public MainWindow()
-		{
-			InitializeComponent();
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
 
-      DBController.LoadData();
-		}
+            DBController.LoadData();
+        }
 
-		private void btnSentences_click(object sender, RoutedEventArgs e)
-		{
-			frame_content.NavigationService.Navigate(new Sentences());
-      btnSentences.IsEnabled = false;
-      lblTopic.Content = ModelType.Sentence.ToDescString() + 's';
-		}
-	}
+        private void btnSentences_click(object sender, RoutedEventArgs e)
+        {
+            frame_content.NavigationService.Navigate(new Sentences());
+            btnSentences.IsEnabled = false;
+            lblTopic.Content = ModelType.Sentence.ToDescString() + 's';
+        }
+    }
 }

@@ -10,45 +10,68 @@
       d:DesignHeight="300" d:DesignWidth="300"
       Title="Sentences">
 
-	<StackPanel>
-    <StackPanel Name="stk_insert" Background="#C2D1E6">
-			<Grid Margin="0,10,0,10">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="1*" />
-					<ColumnDefinition Width="7*" />
-					<ColumnDefinition Width="1*" />
-				</Grid.ColumnDefinitions>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="auto" />
-					<RowDefinition Height="*" />
-				</Grid.RowDefinitions>
+    <StackPanel>
+        <StackPanel Name="stk_insert" Background="#9297b5">
+            <Grid Margin="0,10,6,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-				<Label Grid.Row="0" Grid.Column="0" Content="Sentence:" FontSize="14" FontWeight="Bold" />
-					<TextBox Name="txt_sentence" Grid.Row="0" Grid.Column="1" Height="28" Margin="0,0,0,4" 
-								 VerticalContentAlignment="Center" VerticalAlignment="Center">
-						<controls:WatermarkService.Watermark>
+                <Label Grid.Row="0" Grid.Column="0" Content="Input:" 
+                       ToolTip="Left click to clear. Right click to paste clipboard."
+                       MouseLeftButtonDown="lblInput_MouseLeftButtonDown" MouseRightButtonDown="lblInput_MouseRightButtonDown" />
+                <TextBox Name="txt_input" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="4" Height="28" Margin="0,0,0,4" 
+								 VerticalContentAlignment="Center" VerticalAlignment="Center" TextChanged="txt_input_TextChanged">
+                    <!--<controls:WatermarkService.Watermark>
 							<TextBlock>Leave it empty to auto-search sentences based your own content</TextBlock>
-						</controls:WatermarkService.Watermark>
-					</TextBox>
+						</controls:WatermarkService.Watermark>-->
+                </TextBox>
 
-				<Label Grid.Row="1" Grid.Column="0" Content="PtBr:" FontSize="14" FontWeight="Bold" />
-				<TextBox Name="txt_ptBr" Grid.Row="1" Grid.Column="1" Background="#edfaeb" Height="28" 
-								 VerticalContentAlignment="Center" />
+                <Button Grid.Row="1" Grid.Column="1" Content="Insert Sentence"
+							 Click="Insert_Click" IsEnabled="False" Name="btnInsert" Height="28" Margin="0,0,4,4" />
+                <Button Grid.Row="1" Grid.Column="2" Content="Get from Text" Click="GetFromText_Click" Name="btnGetText" IsEnabled="False" Margin="0,0,4,4" />
+                <Button Grid.Row="1" Grid.Column="3" Content="Get from URL" Click="GetFromWeb_Click" Name="btnGetWeb"  IsEnabled="False" Margin="0,0,4,4" />
+                <Button Grid.Row="1" Grid.Column="4" Content="Get from Books" Click="GetFromBooks_Click" Name="btnGetBooks" Margin="0,0,0,4" />
 
-				<Button Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" Margin="4" HorizontalAlignment="Center" 
-								VerticalAlignment="Center" Background="White" Click="Insert_Click" Name="btnInsert">
-					<Image Source="../Images/Icons/add.ico" Width="42" Height="42"/>
-				</Button>
+                <Label Grid.Row="2" Grid.Column="0" Content="Filters:" />
 
-			</Grid>
-		</StackPanel>
-    
-		<StackPanel Name="stk_filter">
-		</StackPanel>
-    
-		<ScrollViewer Height="420">
-      <StackPanel Name="stk_sentences" />
-		</ScrollViewer>
-    
-	</StackPanel>
+                <ComboBox Grid.Row="2" Grid.Column="1" Name="cb_Active" SelectionChanged="cb_Active_SelectionChanged" SelectedIndex="0" Margin="0,0,4,0">
+                    <ComboBoxItem>Active/Inactive</ComboBoxItem>
+                    <ComboBoxItem>Only Active</ComboBoxItem>
+                    <ComboBoxItem>Only Inactive</ComboBoxItem>
+                </ComboBox>
+                <ComboBox Grid.Row="2" Grid.Column="2" Name="cb_PtBr" SelectionChanged="cb_PtBr_SelectionChanged" SelectedIndex="0" Margin="0,0,4,0">
+                    <ComboBoxItem>Has/Hasn't PtBr</ComboBoxItem>
+                    <ComboBoxItem>Has PtBr</ComboBoxItem>
+                    <ComboBoxItem>Hasn't PtBr</ComboBoxItem>
+                </ComboBox>
+                <ComboBox Grid.Row="2" Grid.Column="3" Name="cb_Questions" SelectionChanged="cb_Questions_SelectionChanged" SelectedIndex="0" Margin="0,0,4,0">
+                    <ComboBoxItem>Has/Hasn't Questions</ComboBoxItem>
+                    <ComboBoxItem>Has Questions</ComboBoxItem>
+                    <ComboBoxItem>Hasn't Questions</ComboBoxItem>
+                </ComboBox>
+
+                <Button Grid.Row="2" Grid.Column="4" Content="Filter input" Height="28" 
+                        IsEnabled="False" Name="btnFilter" Click="btnFilter_Click" />
+
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Name="stk_filter">
+        </StackPanel>
+
+        <ScrollViewer Height="400">
+            <StackPanel Name="stk_sentences" />
+        </ScrollViewer>
+
+    </StackPanel>
 </Page>
