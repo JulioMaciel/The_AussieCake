@@ -1,10 +1,10 @@
-﻿using AussieCake.Models;
+﻿
 using AussieCake.Util;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
 
-namespace AussieCake.Helper
+namespace AussieCake.Context
 {
 	/// <summary>
 	/// Class to simplify connections to a SQLite database
@@ -31,37 +31,48 @@ namespace AussieCake.Helper
 		/// <summary>
 		/// Creates a database
 		/// </summary>
-		/// <param name="Query">SQL statement</param>
-		protected static void CreateDb(string Query)
+		/// <param name="query">SQL statement</param>
+		protected static void CreateDb(string query)
 		{
-			SendQuery(Query);
+			SendQuery(query);
 		}
 
 		/// <summary>
 		/// Sends a SQL query that doesn't return any value
 		/// It can also be used to create a table, but it's recomended to use CreateDb instead
 		/// </summary>
-		/// <param name="Query">SQL statement</param>
-		protected static void SendQuery(string Query)
+		/// <param name="query">SQL statement</param>
+		protected static bool SendQuery(string query)
 		{
-			using (SQLiteConnection Connection = new SQLiteConnection(ConnectionString))
-			{
-				using (SQLiteCommand SqlCmd = new SQLiteCommand())
-				{
-					SqlCmd.Connection = Connection;
-					SqlCmd.CommandText = Query;
-					Connection.Open();
-					SqlCmd.ExecuteNonQuery();
-				}
-			}
+            query = query.Replace("''", "NULL");
+
+            try
+            {
+                using (SQLiteConnection Connection = new SQLiteConnection(ConnectionString))
+                {
+                    using (SQLiteCommand SqlCmd = new SQLiteCommand())
+                    {
+                        SqlCmd.Connection = Connection;
+                        SqlCmd.CommandText = query;
+                        Connection.Open();
+                        SqlCmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (SQLiteException e)
+            {
+                return Errors.ThrowErrorMsg(ErrorType.SQLite, e.Message);
+            }
+
+            return true;
 		}
 
 		/// <summary>
 		/// Gets the first result from the query
 		/// </summary>
-		/// <param name="Query">SQL statement</param>
+		/// <param name="query">SQL statement</param>
 		/// <returns>Return the value inside a System.Object and must be converted. If no result, returns null</returns>
-		protected static SQLiteDataReader GetFromQuery(string Query)
+		protected static SQLiteDataReader GetFromQuery(string query)
 		{
 			SQLiteDataReader result = null;
 			using (SQLiteConnection Connection = new SQLiteConnection(ConnectionString))
@@ -69,7 +80,7 @@ namespace AussieCake.Helper
 				using (SQLiteCommand SqlCmd = new SQLiteCommand())
 				{
 					SqlCmd.Connection = Connection;
-					SqlCmd.CommandText = Query;
+					SqlCmd.CommandText = query;
 					Connection.Open();
 					using (SQLiteDataReader Reader = SqlCmd.ExecuteReader())
 					{
@@ -90,9 +101,9 @@ namespace AussieCake.Helper
 		/// <param name="query">SQL statement</param>
 		/// <param name="tableName">Name of the table</param>
 		/// <returns>All the returned values into a dataset</returns>
-		protected static DataSet GetTable(ModelType type)
+		protected static DataSet GetTable(string db_name)
 		{
-			string query = "SELECT * FROM " + type.ToDescString();
+			string query = "SELECT * FROM " + db_name;
 			DataSet data = new DataSet();
 
 			using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
@@ -106,5 +117,30 @@ namespace AussieCake.Helper
 
 			return data;
 		}
-	}
+
+        protected static DataSet GetTable(Model type)
+        {
+            return GetTable(type.ToDesc());
+        }
+
+        /// <summary>
+        /// Get Last updated to insert in logic list
+        /// </summary>
+        protected static DataSet GetLast(Model type)
+        {
+            string query = "SELECT * FROM " + type.ToDesc() + " WHERE ID = (SELECT MAX(ID) FROM " + type.ToDesc() + ")";
+            DataSet data = new DataSet();
+
+            using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+            {
+                using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(query, connection))
+                {
+                    adapter.Fill(data);
+                }
+            }
+
+
+            return data;
+        }
+    }
 }

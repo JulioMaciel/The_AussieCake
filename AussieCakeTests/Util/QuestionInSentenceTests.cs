@@ -1,11 +1,8 @@
-﻿using AussieCake.Controllers;
-using AussieCake.Models;
-using AussieCake.ViewModels;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AussieCake.Util.Tests
 {
-	[TestClass()]
+    [TestClass()]
 	public class QuestionInSentenceTests
 	{
 		[TestMethod()]

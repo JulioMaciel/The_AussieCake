@@ -1,428 +1,372 @@
-﻿using AussieCake.Helper;
-using AussieCake.Models;
+﻿using AussieCake.Attempt;
+using AussieCake.Question;
+using AussieCake.Sentence;
 using AussieCake.Util;
+using AussieCake.Verb;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 
-/// <summary>
-/// The Entity Framework Database Context.
-/// </summary>
-public class SqLiteHelper : SqLiteCommands
+namespace AussieCake.Context
 {
-    private static string InsertSQL = "insert into {0} values(NULL, ";
-    private static string UpdateSQL = "update {0} set {1} where Id = {2}";
-    private static string RemoveSQL = "delete from {0} where Id = {1}";
 
-    protected static List<Collocation> CollocationsDB { get; set; }
-    protected static List<User> UsersDB { get; set; }
-    protected static List<CollocationAttempt> CollocationAttemptsDB { get; set; }
-    protected static List<Sentence> SentencesDB { get; set; }
-    protected static List<Verb> VerbsDB { get; set; }
-
-    public static bool WasDataBaseEmpty = false;
-
-    public static void InitializeDB()
+    public class SqLiteHelper : SqLiteCommands
     {
-        CreateIfEmptyDB();
-        GetRawsFromDB();
-    }
+        private static readonly string InsertSQL = "insert into {0} values(NULL, ";
+        private static readonly string UpdateSQL = "update {0} set {1} where Id = {2}";
+        private static readonly string RemoveSQL = "delete from {0} where Id = {1}";
 
-    #region GetDB
+        private static readonly string Null = "NULL";
 
-    protected static void GetCollocationsDB()
-    {
-        var dataset = GetTable(ModelType.Collocation);
+        protected static List<ColVM> Collocations { get; private set; }
+        protected static List<SenVM> Sentences { get; private set; }
+        protected static List<IAttempt> CollocationAttempts { get; private set; }
+        protected static List<VerbModel> Verbs { get; private set; }
 
-        CollocationsDB = dataset.Tables[0]
-                                                      .AsEnumerable()
-                                                     .Select(dataRow => new Collocation(
-                                                         Convert.ToInt16(dataRow.Field<Int64>("Id")),
-                                                         dataRow.Field<string>("Prefixes"),
-                                                         dataRow.Field<string>("Component1"),
-                                                         dataRow.Field<string>("LinkWords"),
-                                                         dataRow.Field<string>("Component2"),
-                                                         dataRow.Field<string>("Suffixes"),
-                             dataRow.Field<string>("PtBr"),
-                             Convert.ToInt16(dataRow.Field<Int64>("Importance")),
-                             dataRow.Field<string>("SentencesId"),
-                                                         Convert.ToBoolean(dataRow.Field<Int64>("IsActive"))))
-                                                     .ToList();
-    }
-
-    protected static void GetUsersDB()
-    {
-        var dataset = GetTable(ModelType.User);
-
-        UsersDB = dataset.Tables[0]
-                                                        .AsEnumerable()
-                                                     .Select(dataRow => new User(
-                                                         Convert.ToInt16(dataRow.Field<Int64>("Id")),
-                                                         dataRow.Field<string>("Logins"),
-                                                         dataRow.Field<string>("Password")))
-                                                     .ToList();
-    }
-
-    protected static void GetSentencesDB()
-    {
-        var dataset = GetTable(ModelType.Sentence);
-
-        SentencesDB = dataset.Tables[0]
-                                                        .AsEnumerable()
-                                                     .Select(dataRow => new Sentence(
-                                                         Convert.ToInt16(dataRow.Field<Int64>("Id")),
-                                                         dataRow.Field<string>("Text"),
-                                                         dataRow.Field<string>("PtBr"),
-                                                         Convert.ToBoolean(dataRow.Field<Int64>("IsActive"))))
-                                                     .ToList();
-    }
-
-    protected static void GetCollocationAttemptsDB()
-    {
-        var dataset = GetTable(ModelType.CollocationAttempt);
-
-        CollocationAttemptsDB = dataset.Tables[0]
-                                                        .AsEnumerable()
-                                                     .Select(dataRow => new CollocationAttempt(
-                                                         Convert.ToInt16(dataRow.Field<Int64>("Id")),
-                                                         Convert.ToInt16(dataRow.Field<Int64>("IdUser")),
-                                                         Convert.ToInt16(dataRow.Field<Int64>("IdCollocation")),
-                                                         Convert.ToBoolean(dataRow.Field<Int64>("IsCorrect")),
-                                                         Convert.ToDateTime(dataRow.Field<string>("When"))))
-                                                     .ToList();
-    }
-
-    protected static void GetVerbsDB()
-    {
-        var dataset = GetTable(ModelType.Verb);
-
-        VerbsDB = dataset.Tables[0]
-                                                        .AsEnumerable()
-                                                     .Select(dataRow => new Verb(
-                                                         dataRow.Field<string>("Infinitive"),
-                                                         dataRow.Field<string>("Past"),
-                                                         dataRow.Field<string>("PP"),
-                                                         dataRow.Field<string>("Gerund"),
-                                                         dataRow.Field<string>("Person")))
-                                                     .ToList();
-    }
-
-    #endregion
-
-    #region Inserts
-
-    protected static void InsertCollocation(Collocation col)
-    {
-        string query = string.Format(InsertSQL +
-                                                                "'{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}')",
-                                                                  ModelType.Collocation.ToDescString(),
-                                                                    col.Prefixes, col.Component1, col.LinkWords, col.Component2,
-                                                                    col.Suffixes, col.PtBr, col.SentencesId, col.IsActive);
-        SendQuery(query);
-
-        //insert in memory
-        GetCollocationsDB();
-    }
-
-    protected static void InsertUser(User user)
-    {
-        string query = string.Format(InsertSQL +
-                                                                    "'{1}', '{2}')",
-                                                                    ModelType.User.ToDescString(),
-                                                                    user.Logins, user.Password);
-        SendQuery(query);
-
-        //insert in memory
-        GetUsersDB();
-    }
-
-    protected static void InsertSentence(Sentence sen)
-    {
-        string query = string.Format(InsertSQL +
-                                                                "'{1}', '{2}', '{3}')",
-                                                                    ModelType.Sentence.ToDescString(),
-                                                                    sen.Text, sen.PtBr, sen.IsActive);
-        SendQuery(query);
-
-        //insert in memory
-        GetSentencesDB();
-    }
-
-    protected static void InsertCollocationAttempt(CollocationAttempt col)
-    {
-        string query = string.Format(InsertSQL +
-                                                                "'{1}', '{2}', '{3}', '{4}')",
-                                                                    ModelType.CollocationAttempt.ToDescString(),
-                                                                    col.IdUser, col.IdCollocation, col.IsCorrect, col.When);
-        SendQuery(query);
-
-        //insert in memory
-        GetCollocationAttemptsDB(); // talvez pegar o id da question e chamar metodo para atualizar
-    }
-
-    protected static void InsertVerb(Verb verb)
-    {
-        string query = string.Format(InsertSQL +
-                                                                    "'{1}', '{2}', '{3}', '{4}', '{5}')",
-                                                                    ModelType.Verb.ToDescString(),
-                                                                    verb.Infinitive, verb.Past, verb.PastParticiple, verb.Person, verb.Gerund);
-        SendQuery(query);
-
-        //insert in memory
-        GetVerbsDB();
-    }
-
-    #endregion
-
-    #region Updates
-
-    protected static void UpdateCollocation(Collocation col)
-    {
-        var oldCol = CollocationsDB.FirstOrDefault(c => c.Id == col.Id);
-        int field = 0;
-        string columnsToUpdate = string.Empty;
-
-        if (oldCol.Prefixes != col.Prefixes)
+        public static void InitializeDB()
         {
-            columnsToUpdate += "Prefixes = " + "'" + col.Prefixes + "'";
-            field++;
-        }
-        if (oldCol.Component1 != col.Component1)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "Component1 = " + "'" + col.Component1 + "'";
-            field++;
-        }
-        if (oldCol.LinkWords != col.LinkWords)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "LinkWords = " + "'" + col.LinkWords + "'";
-            field++;
-        }
-        if (oldCol.Component2 != col.Component2)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "Component2 = " + "'" + col.Component2 + "'";
-            field++;
-        }
-        if (oldCol.Suffixes != col.Suffixes)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "Suffixes = " + "'" + col.Suffixes + "'";
-            field++;
-        }
-        if (oldCol.PtBr != col.PtBr)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "PtBr = " + "'" + col.PtBr + "'";
-            field++;
-        }
-        if (oldCol.SentencesId != col.SentencesId)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "SentencesId = " + "'" + col.SentencesId + "'";
-            field++;
-        }
-        if (oldCol.IsActive != col.IsActive)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "IsActive = " + "'" + col.IsActive + "'";
-            field++;
+            if (!CreateIfEmptyDB())
+                return;
+
+            GetRawsFromDB();
         }
 
-        //update DB
-        string query = string.Format(UpdateSQL,
-                                                                    ModelType.Collocation.ToDescString(),
-                                                                    columnsToUpdate,
-                                                                    col.Id);
-        SendQuery(query);
+        #region GetDB
 
-        //update in memory
-        oldCol = col;
-    }
-
-    protected static void UpdateUser(User user)
-    {
-        var oldUser = UsersDB.FirstOrDefault(c => c.Id == user.Id);
-        int field = 0;
-        string columnsToUpdate = string.Empty;
-
-        if (oldUser.Logins != user.Logins)
+        protected static void GetCollocationsDB()
         {
-            columnsToUpdate += "Logins = " + "'" + user.Logins + "'";
-            field++;
-        }
-        if (oldUser.Password != user.Password)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "Password = " + "'" + user.Password + "'";
-            field++;
+            var dataset = GetTable(Model.Col);
+
+            Collocations = new List<ColVM>();
+
+            var tables = dataset.Tables[0];
+            var enumerable = tables.AsEnumerable();
+            var selected = enumerable.Select(GetDatarowCollocations());
+
+            foreach (var model in selected)
+                Collocations.Add(model.ToVM());
         }
 
-        //update DB
-        string query = string.Format(UpdateSQL,
-                                                                    ModelType.User.ToDescString(),
-                                                                    columnsToUpdate,
-                                                                    user.Id);
-        SendQuery(query);
-
-        //update in memory
-        oldUser = user;
-    }
-
-    protected static void UpdateSentence(Sentence sen)
-    {
-        var oldSen = SentencesDB.FirstOrDefault(c => c.Id == sen.Id);
-        int field = 0;
-        string columnsToUpdate = string.Empty;
-
-        if (oldSen.Text != sen.Text)
+        protected static void GetSentencesDB()
         {
-            columnsToUpdate += "Text = " + "'" + sen.Text + "'";
-            field++;
-        }
-        if (oldSen.PtBr != sen.PtBr)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "PtBr = " + "'" + sen.PtBr + "'";
-            field++;
-        }
-        if (oldSen.IsActive != sen.IsActive)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "IsActive = " + "'" + sen.IsActive + "'";
-            field++;
+            var dataset = GetTable(Model.Sen);
+
+            Sentences = dataset.Tables[0].AsEnumerable().Select(GetDatarowSentences()).ToList();
         }
 
-        //update DB
-        string query = string.Format(UpdateSQL,
-                                                                    ModelType.Sentence.ToDescString(),
-                                                                    columnsToUpdate,
-                                                                    sen.Id);
-        SendQuery(query);
-
-        //update in memory
-        oldSen = sen;
-    }
-
-    protected static void UpdateCollocationAttempt(CollocationAttempt col)
-    {
-        var oldcol = CollocationAttemptsDB.FirstOrDefault(c => c.Id == col.Id);
-        int field = 0;
-        string columnsToUpdate = string.Empty;
-
-        if (oldcol.IdCollocation != col.IdCollocation)
+        protected static void GetAttemptsDB()
         {
-            columnsToUpdate += "IdCollocation = " + "'" + col.IdCollocation + "'";
-            field++;
-        }
-        if (oldcol.IsCorrect != col.IsCorrect)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "IsCorrect = " + "'" + col.IsCorrect + "'";
-            field++;
-        }
-        if (oldcol.When != col.When)
-        {
-            columnsToUpdate += field > 0 ? ", " : string.Empty;
-            columnsToUpdate += "When = " + "'" + col.When + "'";
-            field++;
+            var dataset = GetTable(GetDBAttemptName(Model.Col));
+            CollocationAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.Col)).ToList();
         }
 
-        //update DB
-        string query = string.Format(UpdateSQL,
-                                                                    ModelType.CollocationAttempt.ToDescString(),
-                                                                    columnsToUpdate,
-                                                                    col.Id);
-        SendQuery(query);
-
-        //update in memory
-        oldcol = col;
-    }
-
-    #endregion
-
-    #region Removes
-
-    protected static void RemoveCollocation(Collocation col)
-    {
-        string query = string.Format(RemoveSQL, ModelType.Collocation.ToDescString(), col.Id);
-        SendQuery(query);
-
-        // in memory
-        CollocationsDB.Remove(col);
-    }
-
-    protected static void RemoveUser(User user)
-    {
-        string query = string.Format(RemoveSQL, ModelType.User.ToDescString(), user.Id);
-        SendQuery(query);
-
-        // in memory
-        UsersDB.Remove(user);
-    }
-
-    protected static void RemoveSentence(Sentence sen)
-    {
-        string query = string.Format(RemoveSQL, ModelType.Sentence.ToDescString(), sen.Id);
-        SendQuery(query);
-
-        // in memory
-        SentencesDB.Remove(sen);
-    }
-
-    protected static void RemoveCollocationAttempt(CollocationAttempt col)
-    {
-        string query = string.Format(RemoveSQL, ModelType.CollocationAttempt.ToDescString(), col.Id);
-        SendQuery(query);
-
-        // in memory
-        CollocationAttemptsDB.Remove(col);
-    }
-
-    #endregion
-
-    private static void GetRawsFromDB()
-    {
-        GetCollocationsDB();
-        GetSentencesDB();
-        GetUsersDB();
-        GetCollocationAttemptsDB();
-        GetVerbsDB();
-    }
-
-    private static void CreateIfEmptyDB()
-    {
-        SendQuery("CREATE TABLE IF NOT EXISTS 'Collocation' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Prefixes' TEXT, 'Component1' TEXT NOT NULL, 'LinkWords' TEXT, 'Component2' TEXT NOT NULL, 'Suffixes' TEXT, 'PtBr' TEXT, 'Importance' INTEGER NOT NULL, 'SentencesId' TEXT, 'IsActive' INTEGER NOT NULL )");
-        SendQuery("CREATE TABLE IF NOT EXISTS 'CollocationAttempt' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'IdUser' INTEGER NOT NULL, 'IdCollocation' INTEGER NOT NULL, 'IsCorrect' INTEGER NOT NULL, 'When' TEXT NOT NULL )");
-        SendQuery("CREATE TABLE IF NOT EXISTS 'Sentence' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_Sentence' PRIMARY KEY AUTOINCREMENT, 'Text' TEXT NOT NULL, 'PtBr' TEXT NULL, 'IsActive' INTEGER NOT NULL)");
-        SendQuery("CREATE TABLE IF NOT EXISTS 'User' ( 'Id' INTEGER NOT NULL CONSTRAINT 'PK_User' PRIMARY KEY AUTOINCREMENT, 'Logins' TEXT NOT NULL, 'Password' TEXT )");
-        SendQuery("CREATE TABLE IF NOT EXISTS 'Verb' ( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 'Infinitive' TEXT NOT NULL, 'Past' TEXT NOT NULL, 'PP' TEXT NOT NULL, 'Gerund' TEXT NOT NULL, 'Person' TEXT NOT NULL )");
-
-        InsertStaticValues();
-    }
-
-    private static void InsertStaticValues()
-    {
-        WasDataBaseEmpty = (GetTable(ModelType.Verb).Tables[0].Rows.Count == 0) ||
-                                             (GetTable(ModelType.Collocation).Tables[0].Rows.Count == 0) ||
-                                             (GetTable(ModelType.Sentence).Tables[0].Rows.Count == 0);
-
-        if (WasDataBaseEmpty)
+        protected static void GetVerbsDB()
         {
-            var verb_lines = File.ReadAllLines(CakePaths.ScriptVerbs);
-            var verb_joined = String.Join(Environment.NewLine, verb_lines);
-            SendQuery(verb_joined);
+            var dataset = GetTable(Model.Verb);
 
-            var col_lines = File.ReadAllLines(CakePaths.ScriptCollocations);
-            var col_joined = String.Join(Environment.NewLine, col_lines);
-            SendQuery(col_joined);
+            Verbs = dataset.Tables[0].AsEnumerable().Select(GetDatarowVerbs()).ToList();
+        }
 
-            var sen_lines = File.ReadAllLines(CakePaths.ScriptSentences);
-            var sen_joined = String.Join(Environment.NewLine, sen_lines);
-            SendQuery(sen_joined);
+        #endregion
+
+        #region Inserts
+
+        protected static bool InsertCollocation(ColModel col)
+        {
+            string query = string.Format(InsertSQL + "'{1}', '{2}', {3}, '{4}', '{5}', {6}, '{7}', {8}, {9}, {10}, {11}, {12})",
+                                        Model.Col.ToDesc(),
+                                        col.Prefixes, col.Component1, col.IsComp1Verb, col.LinkWords,
+                                        col.Component2, col.IsComp2Verb, col.Suffixes, 
+                                        Null, Null, col.Importance, Null, col.IsActive);
+            if (!SendQuery(query))
+                return false;
+
+            var inserted = GetLast(Model.Col);
+            Collocations.Add(inserted.Tables[0].AsEnumerable().
+                                Select(GetDatarowCollocations()).First().ToVM());
+
+            return true;
+        }
+
+        protected static bool InsertSentence(SenVM sen)
+        {
+            string query = string.Format(InsertSQL + "'{1}', '{2}', '{3}')",
+                                         Model.Sen.ToDesc(),
+                                         sen.Text, sen.PtBr, Convert.ToInt16(sen.IsActive));
+            if (!SendQuery(query))
+                return false;
+
+            var inserted = GetLast(Model.Sen);
+            Sentences.Add(inserted.Tables[0].AsEnumerable().
+                                Select(GetDatarowSentences()).First());
+
+            return true;
+        }
+
+        protected static bool InsertQuestionAttempt(IAttempt att)
+        {
+            string query = string.Format(InsertSQL + "'{1}', '{2}', '{3}')",
+                                         GetDBAttemptName(att.Type),
+                                         att.IdQuestion, att.Score, att.When);
+            if (!SendQuery(query))
+                return false;
+
+            var inserted = GetLast(att.Type);
+            CollocationAttempts.Add(inserted.Tables[0].AsEnumerable().
+                                    Select(GetDatarowAttempts(att.Type)).First());
+
+            return true;
+        }
+
+        protected static bool InsertVerb(VerbModel verb)
+        {
+            string query = string.Format(InsertSQL + "'{1}', '{2}', '{3}', '{4}', '{5}')",
+                                                     Model.Verb.ToDesc(),
+                                                     verb.Infinitive, verb.Past, verb.PastParticiple, verb.Person, verb.Gerund);
+            if (!SendQuery(query))
+                return false;
+
+            var inserted = GetLast(Model.Verb);
+            Verbs.Add(inserted.Tables[0].AsEnumerable().
+                                Select(GetDatarowVerbs()).First());
+
+            return true;
+        }
+
+        #endregion
+
+        #region Updates
+
+        protected static bool UpdateCollocation(ColModel col)
+        {
+            var oldCol = Collocations.First(c => c.Id == col.Id).ToModel();
+            int field = 0;
+            string columnsToUpdate = string.Empty;
+
+            CheckFieldUpdate("Prefixes", col.Prefixes, oldCol.Prefixes, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("Component1", col.Component1, oldCol.Component1, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("IsComp1Verb", col.IsComp1Verb, oldCol.IsComp1Verb, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("LinkWords", col.LinkWords, oldCol.LinkWords, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("Component2", col.Component2, oldCol.Component2, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("IsComp2Verb", col.IsComp2Verb, oldCol.IsComp2Verb, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("Suffixes", col.Suffixes, oldCol.Suffixes, ref field, ref columnsToUpdate);
+
+            CheckQuestionChanges(col, oldCol, ref field, ref columnsToUpdate);
+
+            if (columnsToUpdate.IsEmpty())
+                return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, columnsToUpdate);
+
+            string query = string.Format(UpdateSQL, Model.Col.ToDesc(), columnsToUpdate, col.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            return true;
+        }
+
+        private static void CheckFieldUpdate(string fieldName, object newValue, object oldValue, ref int field, ref string columnsToUpdate)
+        {
+            if (newValue != oldValue)
+            {
+                var ToInt = newValue is bool || newValue is Int16;
+                columnsToUpdate += field > 0 ? ", " : string.Empty;
+                columnsToUpdate += fieldName + " = " + "'" + (ToInt ? (int)newValue : newValue) + "'";
+                field++;
+            }
+        }
+
+        private static void CheckQuestionChanges(QuestionModel quest, QuestionModel oldQuest, ref int field, ref string columnsToUpdate)
+        {
+            CheckFieldUpdate("Definition", quest.Definition, oldQuest.Definition, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("PtBr", quest.PtBr, oldQuest.PtBr, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("Importance", quest.Importance, oldQuest.Importance, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("SentencesId", quest.SentencesId, oldQuest.SentencesId, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("IsActive", quest.IsActive, oldQuest.IsActive, ref field, ref columnsToUpdate);
+        }
+
+        protected static bool UpdateSentence(SenVM sen)
+        {
+            var oldSen = Sentences.First(c => c.Id == sen.Id);
+            int field = 0;
+            string columnsToUpdate = string.Empty;
+
+            CheckFieldUpdate("Text", sen.Text, oldSen.Text, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("PtBr", sen.PtBr, oldSen.PtBr, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("IsActive", sen.IsActive, oldSen.IsActive, ref field, ref columnsToUpdate);
+
+            if (columnsToUpdate.IsEmpty())
+                return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, columnsToUpdate);
+
+            string query = string.Format(UpdateSQL, Model.Sen.ToDesc(), columnsToUpdate, sen.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            return true;
+        }
+
+        #endregion
+
+        #region Private Members
+
+        private static Func<DataRow, ColModel> GetDatarowCollocations()
+        {
+            return dataRow => new ColModel(
+                                Convert.ToInt16(dataRow.Field<Int64>("Id")),
+                                dataRow.Field<string>("Prefixes"),
+                                dataRow.Field<string>("Component1"),
+                                Convert.ToInt16(dataRow.Field<Int64>("IsComp1Verb")),
+                                dataRow.Field<string>("LinkWords"),
+                                dataRow.Field<string>("Component2"),
+                                Convert.ToInt16(dataRow.Field<Int64>("IsComp2Verb")),
+                                dataRow.Field<string>("Suffixes"),
+                                dataRow.Field<string>("PtBr"),
+                                dataRow.Field<string>("Definition"),
+                                Convert.ToInt16(dataRow.Field<Int64>("Importance")),
+                                dataRow.Field<string>("SentencesId"),
+                                Convert.ToInt16(dataRow.Field<Int64>("IsActive")));
+        }
+
+        private static Func<DataRow, SenVM> GetDatarowSentences()
+        {
+            return dataRow => new SenVM(
+                                Convert.ToInt16(dataRow.Field<Int64>("Id")),
+                                dataRow.Field<string>("Text"),
+                                dataRow.Field<string>("PtBr"),
+                                Convert.ToBoolean(dataRow.Field<Int64>("IsActive"))
+                              );
+        }
+
+        private static Func<DataRow, IAttempt> GetDatarowAttempts(Model type)
+        {
+            return dataRow => new AttemptVM(
+                        Convert.ToInt16(dataRow.Field<Int64>("Id")),
+                        Convert.ToInt16(dataRow.Field<Int64>("IdCollocation")),
+                        Convert.ToInt16(dataRow.Field<Int64>("Score")),
+                        Convert.ToDateTime(dataRow.Field<string>("When")),
+                        type
+                    );
+        }
+
+        private static Func<DataRow, VerbModel> GetDatarowVerbs()
+        {
+            return dataRow => new VerbModel(
+                        dataRow.Field<string>("Infinitive"),
+                        dataRow.Field<string>("Past"),
+                        dataRow.Field<string>("PP"),
+                        dataRow.Field<string>("Gerund"),
+                        dataRow.Field<string>("Person")
+                    );
+        }
+
+        #endregion
+
+        #region Removes
+
+        protected static bool RemoveCollocation(ColVM col)
+        {
+            string query = string.Format(RemoveSQL, Model.Col.ToDesc(), col.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            Collocations.Remove(col);
+
+            return true;
+        }
+
+        protected static bool RemoveSentence(SenVM sen)
+        {
+            string query = string.Format(RemoveSQL, Model.Sen.ToDesc(), sen.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            Sentences.Remove(sen);
+
+            return true;
+        }
+
+        protected static bool RemoveQuestionAttempt(IAttempt att)
+        {
+            string query = string.Format(RemoveSQL, GetDBAttemptName(att.Type), att.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            CollocationAttempts.Remove(att);
+
+            return true;
+        }
+
+        #endregion
+
+        private static void GetRawsFromDB()
+        {
+            GetCollocationsDB();
+            GetSentencesDB();
+            GetAttemptsDB();
+            GetVerbsDB();
+        }
+
+        private static bool CreateIfEmptyDB()
+        {
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Collocation' " +
+                "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "'Prefixes' TEXT, " +
+                "'Component1' TEXT NOT NULL, " +
+                "'IsComp1Verb' INTEGER NOT NULL, " +
+                "'LinkWords' TEXT, " +
+                "'Component2' TEXT NOT NULL, " +
+                "'IsComp2Verb' INTEGER NOT NULL, " +
+                "'Suffixes' TEXT, " +
+                "'Definition' TEXT, " +
+                "'PtBr' TEXT, " +
+                "'Importance' INTEGER NOT NULL, " +
+                "'SentencesId' TEXT, " +
+                "'IsActive' INTEGER NOT NULL )"))
+                return false;
+
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'CollocationAttempt' " +
+                "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "'IdCollocation' INTEGER NOT NULL, " +
+                "'Score' INTEGER NOT NULL, " +
+                "'When' TEXT NOT NULL )"))
+                return false;
+
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Sentence' " +
+                "( 'Id' INTEGER NOT NULL CONSTRAINT " +
+                "'PK_Sentence' PRIMARY KEY AUTOINCREMENT, " +
+                "'Text' TEXT NOT NULL, " +
+                "'PtBr' TEXT NULL, " +
+                "'IsActive' INTEGER NOT NULL)"))
+                return false;
+
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Verb' " +
+                "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "'Infinitive' TEXT NOT NULL, " +
+                "'Past' TEXT NOT NULL, " +
+                "'PP' TEXT NOT NULL, " +
+                "'Gerund' TEXT NOT NULL, " +
+                "'Person' TEXT NOT NULL )"))
+                return false;
+
+            InsertStaticValuesIfEmpty(Model.Verb, CakePaths.ScriptVerbs);
+            InsertStaticValuesIfEmpty(Model.Col, CakePaths.ScriptCollocations);
+
+            return true;
+        }
+
+        private static void InsertStaticValuesIfEmpty(Model type, string scriptFile)
+        {
+            if (GetTable(type).Tables[0].Rows.Count == 0)
+                SendQuery(ScriptFileCommands.GetStringFromScriptFile(scriptFile));
+        }
+
+        private static string GetDBAttemptName(Model type)
+        {
+            return type.ToDesc() + "Attempt";
         }
     }
 }

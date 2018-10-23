@@ -90,6 +90,7 @@
     <Reference Include="System.Data.SQLite.Linq, Version=1.0.108.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.108.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -109,28 +110,48 @@
     </ApplicationDefinition>
     <Compile Include="Context\ScriptFileCommands.cs" />
     <Compile Include="Context\SqLiteCommands.cs" />
-    <Compile Include="Controllers\AttemptController.cs" />
-    <Compile Include="Controllers\DBController.cs" />
-    <Compile Include="Controllers\CollocationController.cs" />
-    <Compile Include="Controllers\SentenceController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\VerbController.cs" />
-    <Compile Include="Models\Base\ModelType.cs" />
-    <Compile Include="Models\Verb.cs" />
+    <Compile Include="Attempt\AttemptsController.cs" />
+    <Compile Include="Attempt\IAttempt.cs" />
+    <Compile Include="Question\Collocation\CollocationFilter.cs" />
+    <Compile Include="Question\Collocation\CollocationModel.cs" />
+    <Compile Include="Question\Collocation\CollocationsController.cs" />
+    <Compile Include="Question\Collocation\WPF\CollocationWpfHeader.cs" />
+    <Compile Include="Question\Collocation\WPF\CollocationWpfItem.cs" />
+    <Compile Include="Question\QuestionModel.cs" />
+    <Compile Include="Question\QuestionsController.cs" />
+    <Compile Include="Question\QuestionVM.cs" />
+    <Compile Include="Question\QuestionFilter.cs" />
+    <Compile Include="Question\WPF\QuestionWpfHeader.cs" />
+    <Compile Include="Question\WPF\QuestionWpfItem.cs" />
+    <Compile Include="Sentence\SentencesController.cs" />
+    <Compile Include="Util\FileHtmlControls.cs" />
+    <Compile Include="Util\IFilter.cs" />
+    <Compile Include="Util\WPF\MyButtons.cs" />
+    <Compile Include="Util\WPF\MyCheckBoxes.cs" />
+    <Compile Include="Util\WPF\MyComboBoxes.cs" />
+    <Compile Include="Util\WPF\MyGrids.cs" />
+    <Compile Include="Util\WPF\MyLabels.cs" />
+    <Compile Include="Util\WPF\MyStacks.cs" />
+    <Compile Include="Util\WPF\MyTxts.cs" />
+    <Compile Include="Util\Errors.cs" />
+    <Compile Include="Question\WPF\QuestionWpfUtil.cs" />
+    <Compile Include="Verb\VerbsController.cs" />
+    <Compile Include="Util\Model.cs" />
+    <Compile Include="Verb\VerbModel.cs" />
     <Compile Include="Util\CakePaths.cs" />
-    <Compile Include="Util\EnumExtensions.cs" />
+    <Compile Include="Util\UtilExtensions.cs" />
     <Compile Include="Util\Importance.cs" />
-    <Compile Include="Util\StringExtensions.cs" />
-    <Compile Include="Util\WPF\Logger.cs" />
-    <Compile Include="Util\WPF\SentenceWPF.cs" />
-    <Compile Include="Util\WPF\WatermarkService.cs" />
-    <Compile Include="ViewModels\Base\IQuestion.cs" />
-    <Compile Include="ViewModels\CollocationAttemptVM.cs" />
-    <Compile Include="ViewModels\CollocationVM.cs" />
-    <Compile Include="ViewModels\SentenceVM.cs" />
-    <Compile Include="ViewModels\UserVM.cs" />
-    <Compile Include="ViewModels\VerbVM.cs" />
-    <Compile Include="Views\Sentences.xaml.cs">
+    <Compile Include="Question\Collocation\WPF\CollocationWpfController.cs" />
+    <Compile Include="Sentence\SentenceWPF.cs" />
+    <Compile Include="Util\WPF\UtilWPF.cs" />
+    <Compile Include="Question\IQuestion.cs" />
+    <Compile Include="Attempt\AttemptVM.cs" />
+    <Compile Include="Question\Collocation\CollocationVM.cs" />
+    <Compile Include="Sentence\SentenceVM.cs" />
+    <Compile Include="Question\Collocation\Collocations.xaml.cs">
+      <DependentUpon>Collocations.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Sentence\Sentences.xaml.cs">
       <DependentUpon>Sentences.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
@@ -146,18 +167,16 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\Sentences.xaml">
+    <Page Include="Question\Collocation\Collocations.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Sentence\Sentences.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Base\BaseModel.cs" />
-    <Compile Include="Models\Collocation.cs" />
-    <Compile Include="Models\Sentence.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\Base\UserAttempt.cs" />
-    <Compile Include="Models\CollocationAttempt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -200,67 +219,14 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Question\Collocation\Challenge\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Context\Scripts\Insert_Collocations.sql" />
     <Content Include="Context\Scripts\Insert_Sentences.sql" />
     <Content Include="Context\Scripts\Insert_Verbs.sql" />
-    <Content Include="Resources\Books\html\%281%29.htm" />
-    <Content Include="Resources\Books\html\%281%29.html" />
-    <Content Include="Resources\Books\html\%2810%29.htm" />
-    <Content Include="Resources\Books\html\%2811%29.htm" />
-    <Content Include="Resources\Books\html\%2812%29.htm" />
-    <Content Include="Resources\Books\html\%2813%29.htm" />
-    <Content Include="Resources\Books\html\%2814%29.htm" />
-    <Content Include="Resources\Books\html\%2815%29.htm" />
-    <Content Include="Resources\Books\html\%2816%29.htm" />
-    <Content Include="Resources\Books\html\%2817%29.htm" />
-    <Content Include="Resources\Books\html\%2818%29.htm" />
-    <Content Include="Resources\Books\html\%2819%29.htm" />
-    <Content Include="Resources\Books\html\%282%29.htm" />
-    <Content Include="Resources\Books\html\%2820%29.htm" />
-    <Content Include="Resources\Books\html\%2822%29.htm" />
-    <Content Include="Resources\Books\html\%283%29.htm" />
-    <Content Include="Resources\Books\html\%283%29.html" />
-    <Content Include="Resources\Books\html\%284%29.htm" />
-    <Content Include="Resources\Books\html\%285%29.htm" />
-    <Content Include="Resources\Books\html\%286%29.htm" />
-    <Content Include="Resources\Books\html\%287%29.htm" />
-    <Content Include="Resources\Books\html\%288%29.htm" />
-    <Content Include="Resources\Books\html\%289%29.htm" />
-    <Resource Include="Resources\Books\txt\01 - The Fellowship Of The Ring.txt" />
-    <Resource Include="Resources\Books\txt\02 - The Two Towers.txt" />
-    <Resource Include="Resources\Books\txt\03 - The Return Of The King.txt" />
-    <Resource Include="Resources\Books\txt\04 - Appendices And Index.txt" />
-    <Resource Include="Resources\Books\txt\Clancy Tom - Patriot Games.txt" />
-    <Resource Include="Resources\Books\txt\Clancy Tom - Red Storm Rising.txt" />
-    <Resource Include="Resources\Books\txt\Clarke Arthur C - 3001 The Final Odissey.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\02 - The Two Towers.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\03 - The Return Of The King.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\04 - Appendices And Index.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Clancy Tom - Patriot Games.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Clancy Tom - Red Storm Rising.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Clarke Arthur C - 3001 The Final Odissey.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 1 - Sorcerer%27s Stone.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 2 - Chamber of Secrets.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 3 - The Prisoner Of Azkaban.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 4 - The Goblet Of Fire.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 5 - Order of the Phoenix.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 6 - The Half Blood Prince.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Harry Potter 7 - Deathly Hollows.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Star Wars - [Thrawn Trilogy 01] - Heir to the Empire %28by Timothy Zahn%29.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Star Wars - [Thrawn Trilogy 02] - Dark Force Rising %28by Timothy Zahn%29.txt" />
-    <Resource Include="Resources\Books\txt\debug_move_to_root_folder\Star Wars - [Thrawn Trilogy 03] - The Last Command %28by Timothy Zahn%29.txt" />
-    <Resource Include="Resources\Books\txt\Harry Potter 1 - Sorcerer%27s Stone.txt" />
-    <Resource Include="Resources\Books\txt\Harry Potter 2 - Chamber of Secrets.txt" />
-    <Resource Include="Resources\Books\txt\Harry Potter 3 - The Prisoner Of Azkaban.txt" />
-    <Resource Include="Resources\Books\txt\Harry Potter 4 - The Goblet Of Fire.txt" />
-    <Resource Include="Resources\Books\txt\Harry Potter 5 - Order of the Phoenix.txt" />
-    <Resource Include="Resources\Books\txt\Harry Potter 6 - The Half Blood Prince.txt" />
-    <Resource Include="Resources\Books\txt\Harry Potter 7 - Deathly Hollows.txt" />
-    <Resource Include="Resources\Books\txt\Star Wars - [Thrawn Trilogy 01] - Heir to the Empire %28by Timothy Zahn%29.txt" />
-    <Resource Include="Resources\Books\txt\Star Wars - [Thrawn Trilogy 02] - Dark Force Rising %28by Timothy Zahn%29.txt" />
-    <Resource Include="Resources\Books\txt\Star Wars - [Thrawn Trilogy 03] - The Last Command %28by Timothy Zahn%29.txt" />
     <Resource Include="Images\Icons\br.ico" />
     <Resource Include="Images\Icons\br_gray.ico" />
     <Resource Include="Images\Icons\interrogation.ico" />
@@ -270,7 +236,6 @@
     <Resource Include="Images\Icons\save.ico" />
     <Resource Include="Images\Icons\switch_off.ico" />
     <Resource Include="Images\Icons\switch_on.ico" />
-    <Resource Include="Logs\Log.txt" />
     <Resource Include="Images\Icons\add.ico" />
     <Resource Include="Images\Icons\add_blue.ico" />
     <Resource Include="Images\Icons\remove.ico" />

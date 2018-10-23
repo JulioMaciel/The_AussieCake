@@ -1,34 +1,16 @@
-﻿using AussieCake.Models;
+﻿
 using AussieCake.Util;
+using AussieCake.Verb;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace AussieCake.Context
 {
-	public class ScriptFileCommands
-	{
-		public static void WriteSentencesOnFile(List<string> savedSentences)
-		{
-			if (!savedSentences.Any())
-				return;
+    public class ScriptFileCommands
+    {
 
-			var actualFile = File.ReadAllLines(CakePaths.ScriptSentences);
-
-			using (var tw = new StreamWriter(CakePaths.ScriptSentences, true))
-			{
-				foreach (var sen in savedSentences)
-				{
-					if (!actualFile.Any(s => s.Contains(sen)))
-						tw.WriteLine("insert into Sentence values(NULL, '" + sen + "', NULL, 0);");
-					else
-						Console.WriteLine("Sentence already stored: " + sen);
-				}
-			}
-		}
-
-		public static void WriteVerbOnFile(Verb verb)
+		public static void WriteVerbOnFile(VerbModel verb)
 		{
 			var actualFile = File.ReadAllLines(CakePaths.ScriptVerbs);
 
@@ -42,6 +24,15 @@ namespace AussieCake.Context
 			}
 		}
 
-		// Collocations script é fixo, pq são do pdf do PTE
-	}
+        // Collocations script é fixo e não tem insert, pq são do pdf do PTE
+        // ou seja, sempre que quiser add algo nos scripts que não seja Verb, 
+        // faz manualmente, direto no arquivo
+
+        public static string GetStringFromScriptFile(string scriptPath)
+        {
+            var col_lines = File.ReadAllLines(scriptPath);
+            var col_joined = String.Join(Environment.NewLine, col_lines);
+            return col_joined;
+        }
+    }
 }

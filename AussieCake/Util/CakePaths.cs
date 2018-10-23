@@ -9,14 +9,11 @@ namespace AussieCake.Util
 
 		public static string Database = Project + "\\Cake.sqlite";
 
-		public static string ScriptSentences = Project + Script + "\\Insert_Sentences.sql";
 		public static string ScriptCollocations = Project + Script + "\\Insert_Collocations.sql";
 		public static string ScriptVerbs = Project + Script + "\\Insert_Verbs.sql";
 
 		public static string ResourceHtmlBooks = Project + "\\Resources\\Books\\html";
 		public static string ResourceTxtBooks = Project + "\\Resources\\Books\\txt";
-
-		public static string Log = Project + "\\Logs\\Log.txt";
 
 		public static string GetIconPath(string icon)
 		{

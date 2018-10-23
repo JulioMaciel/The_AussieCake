@@ -1,7 +1,6 @@
-﻿using AussieCake.Controllers;
-using AussieCake.Models;
-using AussieCake.Util;
-using AussieCake.Views;
+﻿using AussieCake.Context;
+using AussieCake.Question;
+using AussieCake.Sentence;
 using System.Windows;
 
 namespace AussieCake
@@ -15,14 +14,28 @@ namespace AussieCake
         {
             InitializeComponent();
 
-            DBController.LoadData();
+            SqLiteHelper.InitializeDB();
         }
 
         private void btnSentences_click(object sender, RoutedEventArgs e)
         {
-            frame_content.NavigationService.Navigate(new Sentences());
+            EnableButtons();
+            frame_content.Content = new Sentences();
             btnSentences.IsEnabled = false;
-            lblTopic.Content = ModelType.Sentence.ToDescString() + 's';
+        }
+
+        private void btnCollocations_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new Collocations();
+            btnCollocations.IsEnabled = false;
+        }
+
+        private void EnableButtons()
+        {
+            //Content.Children.Clear();
+            btnSentences.IsEnabled = true;
+            btnCollocations.IsEnabled = true;
         }
     }
 }
