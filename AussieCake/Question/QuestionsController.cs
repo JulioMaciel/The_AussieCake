@@ -1,25 +1,29 @@
 ﻿using AussieCake.Sentence;
 using AussieCake.Util;
+using AussieCake.Util.WPF;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AussieCake.Question
 {
     public class QuestControl : ColControl
     {
-        public static IEnumerable<IQuestion> Get(Model type)
+        public static IEnumerable<IQuest> Get(Model type)
         {
+            LoadDB(type);
+
             switch (type)
             {
                 case Model.Col:
-                    return Collocations.Cast<IQuestion>();
+                    return Collocations.Cast<IQuest>();
                 default:
                     Errors.ThrowErrorMsg(ErrorType.InvalidModelType, type);
-                    return new List<IQuestion>();
+                    return new List<IQuest>();
             }
         }
 
-        public static bool Insert(IQuestion quest)
+        public static bool Insert(IQuest quest)
         {
             if (quest is ColVM col)
                 return ColControl.Insert(col);
@@ -27,7 +31,7 @@ namespace AussieCake.Question
             return false;
         }
 
-        public static bool Update(IQuestion quest)
+        public static bool Update(IQuest quest)
         {
             if (quest is ColVM col)
                 return ColControl.Update(col);
@@ -35,10 +39,13 @@ namespace AussieCake.Question
             return false;
         }
 
-        public static bool Update(IQuestion quest, string newSen)
+        public static bool Update(IQuest quest, string newSen)
         {
-            if (SenControl.Insert(new SenVM(newSen, true)))
+            if (SenControl.Insert(new SenVM(newSen), true))
             {
+                var added_sen = SenControl.Get().Last();
+                QuestSenControl.Insert(new QuestSenVM(quest.Id, added_sen.Id, true, quest.Type));
+
                 quest.AddLastSentence();
 
                 return Update(quest);
@@ -47,7 +54,7 @@ namespace AussieCake.Question
             return false;
         }
 
-        public static void Remove(IQuestion quest)
+        public static void Remove(IQuest quest)
         {
             if (quest is ColVM col)
                 ColControl.Remove(col);
@@ -55,20 +62,67 @@ namespace AussieCake.Question
             quest.RemoveAllAttempts();
         }
 
-        public static void LoadCrossData()
+        public static void LoadCrossData(Model type)
         {
-            foreach (var quest in Get(Model.Col))
+            if (Get(type).First().Tries != null)
+                return;
+
+            foreach (var quest in Get(type))
                 quest.LoadCrossData();
 
-            LoadRealChances();
+            LoadRealChances(type);
         }
 
-        private static void LoadRealChances()
+        public static void LoadDB(Model type)
         {
-            var summed_chances = Get(Model.Col).Sum(x => x.Chance);
+            if (type == Model.Col && Collocations == null)
+                GetCollocationsDB();
+        }
 
-            foreach (var quest in Get(Model.Col))
+        public static void LoadEveryQuestionDB()
+        {
+            LoadDB(Model.Col);
+        }
+
+        private static void LoadRealChances(Model type)
+        {
+            var summed_chances = Get(type).Sum(x => x.Chance);
+
+            foreach (var quest in Get(type))
                 quest.Chance_real = (quest.Chance * 100) / summed_chances;
+        }
+
+        public static IQuest GetRandomQuestionWithSentence(Model type, List<IQuest> actual_chosen)
+        {
+            if (Get(type).First().Sentences == null)
+                LoadCrossData(type);
+
+            double actual_index = 0;
+
+            var quests = Get(type).Where(x => x.IsActive &&
+                                              x.Sentences.Where(s => s.IsActive).Any() &&
+                                              !actual_chosen.Contains(x));
+
+            Parallel.ForEach(quests, quest =>
+            {
+                actual_index += quest.Chance;
+                quest.Index_show = actual_index;
+            });
+
+            var totalChances =  quests.Select(x => x.Chance).Sum();
+            int pickBasedOnChance = UtilWPF.RandomNumber(0, (int)totalChances);
+
+            IQuest selected = quests.First();
+            Parallel.ForEach(quests, quest =>
+            {
+                if (pickBasedOnChance < quest.Chance)
+                    selected = quest;
+
+                pickBasedOnChance -= System.Convert.ToInt16(quest.Chance);
+            });
+
+            Errors.ThrowErrorMsg(ErrorType.Inexistent, pickBasedOnChance);
+            return selected;
         }
 
 

@@ -13,20 +13,18 @@ namespace AussieCake.Question
         public bool IsComp2Verb { get; private set; }
         public List<string> Suffixes { get; private set; }
 
-        public List<StringPositions> Positions { get; private set; }
-
         public ColVM(int id, List<string> prefixes, string component1, bool isC1_v, List<string> linkWords,
                         string component2, bool isC2_v, List<string> suffixes, string definition, string ptBr,
-                        Importance importance, List<int> sentencesId, bool isActive)
-            : base(id, definition, ptBr, importance, sentencesId, isActive, Model.Col)
+                        Importance importance, bool isActive)
+            : base(id, definition, ptBr, importance, isActive, Model.Col)
         {
-            SetProperties(prefixes, component1, isC1_v, linkWords, component2, isC2_v, suffixes); 
+            SetProperties(prefixes, component1, isC1_v, linkWords, component2, isC2_v, suffixes);
         }
 
         public ColVM(List<string> prefixes, string component1, bool isC1_v, List<string> linkWords,
                 string component2, bool isC2_v, List<string> suffixes, string definition, string ptBr,
                 Importance importance, bool isActive)
-            : base (definition, ptBr, importance, isActive, Model.Col)
+            : base(definition, ptBr, importance, isActive, Model.Col)
         {
             SetProperties(prefixes, component1, isC1_v, linkWords, component2, isC2_v, suffixes);
         }
@@ -40,8 +38,6 @@ namespace AussieCake.Question
             Component2 = component2;
             IsComp2Verb = isC2_v;
             Suffixes = suffixes;
-
-            Positions = new List<StringPositions>();
         }
 
         public ColModel ToModel()
@@ -56,25 +52,18 @@ namespace AussieCake.Question
 
             if (IsReal)
                 return new ColModel(Id, pref_raw, Component1, isC1v_raw, link_raw, Component2, isC2v_raw,
-                    suf_raw, PtBr, Definition, (int)Importance, SentencesId.ToText(), isActive_raw);
+                    suf_raw, PtBr, Definition, (int)Importance, isActive_raw);
             else
                 return new ColModel(pref_raw, Component1, isC1v_raw, link_raw, Component2, isC2v_raw,
                                 suf_raw, PtBr, Definition, (int)Importance, isActive_raw);
-        }       
+        }
 
         public override void LoadCrossData()
         {
+            if (Component1 == "give" && Component2 == "information")
+                System.Diagnostics.Debug.WriteLine("debug:LoadCrossData(give_information)");
+
             base.LoadCrossData();
         }
-    }
-
-    public class StringPositions
-    {
-        public int IdSentence { get; set; }
-        public int Comp1Pos { get; set; }
-        public int Comp2Pos { get; set; }
-
-        public StringPositions()
-        { }
     }
 }

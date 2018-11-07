@@ -14,6 +14,33 @@ namespace AussieCake.Util
             return attributes.Length > 0 ? attributes[0].Description : string.Empty;
         }
 
+        public static string RemoveLast(this string text, int quantity)
+        {
+            if (quantity >= text.Length + 1)
+                Errors.ThrowErrorMsg(ErrorType.TooBig, quantity);
+
+            return text.Remove(text.Length - quantity);
+        }
+
+        public static string GetSinceTo(this string text, string startsAt, string endsAt)
+        {
+            var idx1 = text.IndexOf(startsAt);
+            var idx2 = text.IndexOf(endsAt);
+            return text.Substring(idx1, idx2 - idx1);
+        }
+
+        //public static bool IsPlural(this string text)
+        //{
+        //    return PluralNounHelper.GetPlural(text) == text;
+        //}
+
+        public static string GetBetween(this string text, string startsAt, string endsAt)
+        {
+            var from = text.IndexOf(startsAt) + startsAt.Length;
+            var to = text.IndexOf(endsAt);
+            return text.Substring(from, to - from);
+        }
+
         public static string ToText(this List<string> list)
         {
             if (list == null)
@@ -52,7 +79,7 @@ namespace AussieCake.Util
             return source?.IndexOf(toCheck, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        public static int? GetPosition(this string source, string toCheck)
+        public static int? IndexFrom(this string source, string toCheck)
         {
             return source?.IndexOf(toCheck, StringComparison.CurrentCultureIgnoreCase);
         }
@@ -122,7 +149,11 @@ namespace AussieCake.Util
 
         public static List<int> ToListInt(this string raw)
         {
-            return raw.IsEmpty() ? new List<int>() : raw.Split(',').Select(Int32.Parse).ToList();
+            return raw.IsEmpty() ? new List<int>() : raw.Split(';')
+                                                        .Select(s => Int32.TryParse(s, out int n) ? n : (int?)null)
+                                                        .Where(n => n.HasValue)
+                                                        .Select(n => n.Value)
+                                                        .ToList();
         }
     }
 }

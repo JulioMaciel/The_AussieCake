@@ -44,7 +44,7 @@ namespace AussieCake.Context
 		/// <param name="query">SQL statement</param>
 		protected static bool SendQuery(string query)
 		{
-            query = query.Replace("''", "NULL");
+            query = query.Replace("'',", "NULL,");
 
             try
             {
@@ -126,9 +126,9 @@ namespace AussieCake.Context
         /// <summary>
         /// Get Last updated to insert in logic list
         /// </summary>
-        protected static DataSet GetLast(Model type)
+        protected static DataSet GetLast(string db_name)
         {
-            string query = "SELECT * FROM " + type.ToDesc() + " WHERE ID = (SELECT MAX(ID) FROM " + type.ToDesc() + ")";
+            string query = "SELECT * FROM " + db_name + " WHERE ID = (SELECT MAX(ID) FROM " + db_name + ")";
             DataSet data = new DataSet();
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))

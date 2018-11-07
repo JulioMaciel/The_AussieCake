@@ -8,6 +8,21 @@ namespace AussieCake.Util.WPF
 {
     public static class UtilWPF
     {
+        public static Brush Colour_header { get; } = GetBrushFromHTMLColor("#6f93c3"); // azul forte
+        public static Brush Colour_row_on { get; } = GetBrushFromHTMLColor("#cad7e8"); // azul claro
+        public static Brush Colour_row_off { get; } = GetBrushFromHTMLColor("#a5bcd9"); // azul médio
+        public static Brush Colour_new_row_off { get; } = GetBrushFromHTMLColor("#95CAE4"); // azul claro médio
+        public static Brush Colour_Incorrect { get; } = GetBrushFromHTMLColor("#e6b3b3");
+        public static Brush Colour_Correct { get; } = GetBrushFromHTMLColor("#2fb673");
+
+        public static Brush GetColourLine(bool is_on, bool isGridUpdate)
+        {
+            if (is_on)
+                return Colour_row_on;
+            else
+                return isGridUpdate ? Colour_new_row_off : Colour_row_off;
+        }
+
         public static Image GetIconButton(string iconFile)
         {
             var btn_icon = new Image();
@@ -17,8 +32,8 @@ namespace AussieCake.Util.WPF
 
         public static SolidColorBrush GetAvgColor(double percentage)
         {
-            if (percentage == null)
-                return Brushes.Black;
+            //if (percentage == null)
+            //    return Brushes.Black;
 
             var red = Color.FromRgb(255, 0, 0);
             var yellow = Color.FromRgb(255, 255, 0);
@@ -26,11 +41,12 @@ namespace AussieCake.Util.WPF
 
             // testing better gray colors
             var darkRed = Color.FromRgb(139, 0, 0);
-            var goldenrod = Color.FromRgb(218, 165, 32);
-            var seaGreen = Color.FromRgb(46, 139, 87);
+            var goldenrod = Color.FromRgb(179, 143, 0);
+            var seaGreen = Color.FromRgb(26, 101, 64);
 
             if (percentage < 50)
                 return Interpolate(darkRed, goldenrod, percentage / 50.0);
+
             return Interpolate(goldenrod, seaGreen, (percentage - 50) / 50.0);
         }
 
@@ -57,14 +73,22 @@ namespace AussieCake.Util.WPF
 
         public static void SetGridPosition(FrameworkElement child, int row, int column, Grid parent)
         {
+            if (parent.Children.Contains(child))
+                return;
+
             Grid.SetRow(child, row);
             Grid.SetColumn(child, column);
             parent.Children.Add(child);
         }
 
-        //public static int MaxPag
-        //{
-        //    get { return 30; }
-        //}
+        private static readonly Random random = new Random();
+        private static readonly object syncLock = new object();
+        public static int RandomNumber(int min, int max)
+        {
+            lock (syncLock)
+            { // synchronize
+                return random.Next(min, max);
+            }
+        }
     }
 }

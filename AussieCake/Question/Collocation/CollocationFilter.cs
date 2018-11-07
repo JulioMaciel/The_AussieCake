@@ -1,5 +1,6 @@
 ﻿using AussieCake.Util;
 using AussieCake.Util.WPF;
+using System;
 using System.Linq;
 using System.Windows.Controls;
 
@@ -60,7 +61,12 @@ namespace AussieCake.Question
             var filtered_cols = Filtered_quests.Cast<ColVM>();
 
             if (!wpf_header.Txt_pref.IsEmpty())
-                filtered_cols = filtered_cols.Where(q => q.Prefixes.ToText().Contains(wpf_header.Txt_pref.Text));
+            {
+                if (wpf_header.Txt_pref.Text.IsDigitsOnly() && filtered_cols.Any(x => x.Id == Convert.ToInt16(wpf_header.Txt_pref.Text)))
+                    filtered_cols = filtered_cols.Where(q => q.Id == Convert.ToInt16(wpf_header.Txt_pref.Text));
+                else
+                    filtered_cols = filtered_cols.Where(q => q.Prefixes.ToText().Contains(wpf_header.Txt_pref.Text));
+            }
 
             if (!wpf_header.Txt_comp1.IsEmpty())
                 filtered_cols = filtered_cols.Where(q => q.Component1.Contains(wpf_header.Txt_comp1.Text));

@@ -78,9 +78,14 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity.Design" />
     <Reference Include="System.Data.SQLite, Version=1.0.108.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.108.0\lib\net46\System.Data.SQLite.dll</HintPath>
     </Reference>
@@ -108,10 +113,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Challenge\WPF\ChallengeWpfItem.cs" />
     <Compile Include="Context\ScriptFileCommands.cs" />
     <Compile Include="Context\SqLiteCommands.cs" />
     <Compile Include="Attempt\AttemptsController.cs" />
-    <Compile Include="Attempt\IAttempt.cs" />
+    <Compile Include="Challenge\WPF\ChallengeWPFController.cs" />
+    <Compile Include="Challenge\CollocationChallenge.xaml.cs">
+      <DependentUpon>CollocationChallenge.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Question\Collocation\CollocationFilter.cs" />
     <Compile Include="Question\Collocation\CollocationModel.cs" />
     <Compile Include="Question\Collocation\CollocationsController.cs" />
@@ -123,9 +132,14 @@
     <Compile Include="Question\QuestionFilter.cs" />
     <Compile Include="Question\WPF\QuestionWpfHeader.cs" />
     <Compile Include="Question\WPF\QuestionWpfItem.cs" />
+    <Compile Include="Sentence\AutoGetSentences.cs" />
+    <Compile Include="Sentence\QuestionSentence\QuestionSentenceController.cs" />
+    <Compile Include="Sentence\QuestionSentence\QuestionSentenceVM.cs" />
+    <Compile Include="Sentence\QuestionSentence\QuestionSentenceModel.cs" />
     <Compile Include="Sentence\SentencesController.cs" />
     <Compile Include="Util\FileHtmlControls.cs" />
     <Compile Include="Util\IFilter.cs" />
+    <Compile Include="Util\PluralNounHelper.cs" />
     <Compile Include="Util\WPF\MyButtons.cs" />
     <Compile Include="Util\WPF\MyCheckBoxes.cs" />
     <Compile Include="Util\WPF\MyComboBoxes.cs" />
@@ -167,6 +181,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Challenge\CollocationChallenge.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Question\Collocation\Collocations.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -220,7 +238,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Question\Collocation\Challenge\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -243,6 +260,35 @@
     <Resource Include="Images\Icons\add-20.ico" />
     <Resource Include="Images\Icons\delete.ico" />
     <Resource Include="Images\Icons\edit.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Word">
+      <Guid>{00020905-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>7</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

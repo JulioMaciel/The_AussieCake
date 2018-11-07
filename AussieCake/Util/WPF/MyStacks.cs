@@ -12,13 +12,13 @@ namespace AussieCake.Util.WPF
 {
     public static class MyStacks
     {
-        public static StackPanel GetItemLine(IQuestion quest, StackPanel parent, bool isGridUpdate/*, int quantItems*/)
+        public static StackPanel GetItemLine(IQuest quest, StackPanel parent, bool isGridUpdate/*, int quantItems*/)
         {
             var stack = new StackPanel();
             stack.Margin = new Thickness(2, 4, 2, 2);
-            stack.Background = isGridUpdate ? UtilWPF.GetBrushFromHTMLColor("#cce4ff") : Brushes.LightSteelBlue;
-            stack.MouseEnter += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetBrushFromHTMLColor("#81a1ca"));
-            stack.MouseLeave += new MouseEventHandler((source, e) => stack.Background = Brushes.LightSteelBlue);
+            stack.Background = UtilWPF.GetColourLine(false, isGridUpdate);
+            stack.MouseEnter += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetColourLine(true, isGridUpdate));
+            stack.MouseLeave += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetColourLine(false, isGridUpdate));
 
             if (isGridUpdate)
                 parent.Children.Insert(0, stack);
@@ -31,7 +31,7 @@ namespace AussieCake.Util.WPF
         public static StackPanel GetHeaderInsertFilter(int row, int column, Grid parent)
         {
             var stk = new StackPanel();
-            stk.Background = UtilWPF.GetBrushFromHTMLColor("#6f93c3");
+            stk.Background = UtilWPF.Colour_header;
             UtilWPF.SetGridPosition(stk, row, column, parent);
 
             return stk;
@@ -40,7 +40,7 @@ namespace AussieCake.Util.WPF
         public static StackPanel GetListItems(int row, int column, Grid parent)
         {
             var stk = new StackPanel();
-            stk.Background = UtilWPF.GetBrushFromHTMLColor("#ebf0fa");
+            stk.Background = UtilWPF.Colour_row_off;
             var viewer = new ScrollViewer();
             viewer.Content = stk;
             UtilWPF.SetGridPosition(viewer, row, column, parent);
@@ -48,7 +48,7 @@ namespace AussieCake.Util.WPF
             return stk;
         }
 
-        public static StackPanel GetSentences(StackPanel reference, IQuestion quest, StackPanel parent)
+        public static StackPanel Sentences(StackPanel reference, IQuest quest, StackPanel parent)
         {
             var stack = Get(reference, parent);
             stack.Visibility = Visibility.Collapsed;
@@ -65,26 +65,46 @@ namespace AussieCake.Util.WPF
             return reference;
         }
 
-        public static StackPanel Get(StackPanel reference, int row, int column, Grid parent)
+        public static StackPanel Get(StackPanel parent)
         {
-            var stack = new StackPanel();
-            stack.Orientation = Orientation.Horizontal;
-            UtilWPF.SetGridPosition(stack, row, column, parent);
-
-            return stack;
+            return Get(new StackPanel(), parent);
         }
 
-        public static void LoadSentences(StackPanel reference, IQuestion quest, StackPanel stackSentences)
+        public static StackPanel Get(StackPanel reference, int row, int column, Grid parent)
         {
-            foreach (var senId in quest.SentencesId)
+            reference.Orientation = Orientation.Horizontal;
+            UtilWPF.SetGridPosition(reference, row, column, parent);
+
+            return reference;
+        }
+
+        public static void LoadSentences(StackPanel reference, IQuest quest, StackPanel stackSentences)
+        {
+            foreach (var qs in quest.Sentences)
             {
+                var stk_sen_line = Get(stackSentences);
+                stk_sen_line.Orientation = Orientation.Horizontal;
+
+                var btn_active = MyBtns.GetIsActive(stk_sen_line, qs.IsActive);
+                btn_active.Margin = new Thickness(0, 0, 2, 0);
+                btn_active.VerticalAlignment = VerticalAlignment.Center;
+
                 var check = new CheckBoxSen
                 {
-                    Content = SenControl.Get().First(s => s.Id == senId).Text,
-                    SenId = senId,
+                    Content = qs.Sen.Text,
+                    QS = qs,
                     IsChecked = true,
                 };
-                stackSentences.Children.Add(check);
+                check.MouseRightButtonDown += (source, e) => 
+                {
+                    Clipboard.SetText(qs.Sen.Text);
+                    check.Foreground = Brushes.DarkGreen;
+                };
+                check.ToolTip = "Right click to copy the sentence";
+                check.MouseEnter += new MouseEventHandler((source, e) => check.Foreground = Brushes.DarkRed);
+                check.MouseLeave += new MouseEventHandler((source, e) => check.Foreground = Brushes.Black);
+                check.VerticalContentAlignment = VerticalAlignment.Center;
+                stk_sen_line.Children.Add(check);
             }
         }
     }

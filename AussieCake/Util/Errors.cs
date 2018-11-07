@@ -1,6 +1,4 @@
-﻿
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.ComponentModel;
 using System.Windows;
 
 namespace AussieCake.Util
@@ -10,27 +8,18 @@ namespace AussieCake.Util
         public static bool ThrowErrorMsg(ErrorType errorType, object error)
         {
             MessageBox.Show("Error " + errorType.ToDesc() + ". \nObject " + error.ToString(), errorType.ToDesc(), MessageBoxButton.OK, MessageBoxImage.Error);
+
             return false;
         }
 
-        public static bool IsNullSmallOrBigger(string original)
-        {
-            return IsNullSmallOrBigger(original, int.MinValue, int.MaxValue);
-        }
-
-        public static bool IsNullSmallOrBigger(string original, int minimum)
-        {
-            return IsNullSmallOrBigger(original, minimum, int.MaxValue);
-        }
-
-        public static bool IsNullSmallOrBigger(string original, int minimum, int maximum)
+        public static bool IsNullSmallerOrBigger(string original, int minimum, int maximum, bool showErrorsbox)
         {
             if (original.IsEmpty())
-                return !ThrowErrorMsg(ErrorType.NullOrEmpty, original);
+                return showErrorsbox ? !ThrowErrorMsg(ErrorType.NullOrEmpty, original) : true;
             else if (original.Length < minimum)
-                return !ThrowErrorMsg(ErrorType.TooSmall, original);
+                return showErrorsbox ? !ThrowErrorMsg(ErrorType.TooSmall, original) : true;
             else if (original.Length > maximum)
-                return !ThrowErrorMsg(ErrorType.TooBig, original);
+                return showErrorsbox ? !ThrowErrorMsg(ErrorType.TooBig, original) : true;
 
             return false;
         }
@@ -84,5 +73,14 @@ namespace AussieCake.Util
 
         [Description("InitialLowerCase")]
         InitialLowerCase,
+
+        [Description("Inexistent word or site off")]
+        InexistentWordOrSiteOff,
+
+        [Description("InvalidLoadStatus")]
+        InvalidLoadStatus,
+
+        [Description("SynonymsNotFound")]
+        SynonymsNotFound,
     }
 }

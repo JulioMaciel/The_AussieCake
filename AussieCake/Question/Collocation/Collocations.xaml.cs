@@ -1,5 +1,7 @@
-﻿using AussieCake.Util;
+﻿using AussieCake.Sentence;
+using AussieCake.Util;
 using AussieCake.Util.WPF;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,7 +17,7 @@ namespace AussieCake.Question
         {
             InitializeComponent();
 
-            QuestControl.LoadCrossData();
+            QuestControl.LoadCrossData(Model.Col);
 
             BuildHeader();
         }
@@ -72,10 +74,10 @@ namespace AussieCake.Question
             MyTxts.Get(wpf.Txt_def, 1, 6, grid_filter);
             MyTxts.Get(wpf.Txt_ptbr, 1, 7, grid_filter);
 
-            MyChBxs.GetIsVerb(wpf.Chb_isComp1_v, 1, 2, grid_insert, false);
-            MyChBxs.GetIsVerb(wpf.Chb_isComp2_v, 1, 5, grid_insert, false);
+            MyChBxs.IsVerb(wpf.Chb_isComp1_v, 1, 2, grid_insert, false);
+            MyChBxs.IsVerb(wpf.Chb_isComp2_v, 1, 5, grid_insert, false);
             MyCbBxs.GetImportance(wpf.Cob_imp, 1, 7, grid_insert, Importance.Any, true);
-            MyBtns.GetIsActive(wpf.Btn_isActive, 1, 8, grid_filter, true);
+            MyBtns.Is_active(wpf.Btn_isActive, 1, 8, grid_filter, true);
             MyBtns.GetFilter(wpf.Btn_filter, 1, 9, grid_filter, wpf, filter);
 
             MyBtns.GetInsert(wpf.Btn_insert, 1, 8, grid_insert, stk_items, wpf);

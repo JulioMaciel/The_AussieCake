@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AussieCake.Question
 {
-    public interface IQuestion
+    public interface IQuest
     {
         int Id { get; }
 
@@ -11,7 +11,7 @@ namespace AussieCake.Question
         string PtBr { get; }
         string Definition { get; }
         Importance Importance { get; }
-        List<int> SentencesId { get; }
+        List<QuestSen> Sentences { get; }
 
         Model Type { get; }
 
@@ -26,9 +26,12 @@ namespace AussieCake.Question
         double Chance_real { get; set; }
         string Chance_toolTip { get; }
 
+        double Index_show { get; set; }
+
         void RemoveAllAttempts();
         void AddLastSentence();
 
         void LoadCrossData();
+        void Disable();
     }
 }

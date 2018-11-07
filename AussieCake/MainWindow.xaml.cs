@@ -1,4 +1,5 @@
-﻿using AussieCake.Context;
+﻿using AussieCake.Challenge;
+using AussieCake.Context;
 using AussieCake.Question;
 using AussieCake.Sentence;
 using System.Windows;
@@ -31,11 +32,18 @@ namespace AussieCake
             btnCollocations.IsEnabled = false;
         }
 
+        private void btnColChallenge_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new ColChallenge();
+            btnColChallenge.IsEnabled = false;
+        }
+
         private void EnableButtons()
         {
-            //Content.Children.Clear();
             btnSentences.IsEnabled = true;
             btnCollocations.IsEnabled = true;
+            btnColChallenge.IsEnabled = true;
         }
     }
 }

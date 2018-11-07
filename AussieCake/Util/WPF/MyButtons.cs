@@ -1,5 +1,9 @@
-﻿using AussieCake.Question;
+﻿using AussieCake.Attempt;
+using AussieCake.Challenge;
+using AussieCake.Question;
+using AussieCake.Sentence;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,7 +13,26 @@ namespace AussieCake.Util.WPF
 {
     public static class MyBtns
     {
-        public static ButtonActive GetIsActive(ButtonActive reference, int row, int column, Grid parent, bool isActive)
+        public static ButtonActive Is_active(ButtonActive reference, int row, int column, Grid parent, bool isActive)
+        {
+            UtilWPF.SetGridPosition(reference, row, column, parent);
+
+            CreateBtnActive(reference, isActive);
+
+            return reference;
+        }
+
+        public static ButtonActive GetIsActive(StackPanel parent, bool isActive)
+        {
+            var btn = new ButtonActive();
+            parent.Children.Add(btn);
+
+            CreateBtnActive(btn, isActive);
+
+            return btn;
+        }
+
+        private static void CreateBtnActive(ButtonActive reference, bool isActive)
         {
             reference.Content = isActive ? UtilWPF.GetIconButton("switch_on") : UtilWPF.GetIconButton("switch_off");
             reference.VerticalAlignment = VerticalAlignment.Center;
@@ -19,8 +42,6 @@ namespace AussieCake.Util.WPF
             reference.Width = 32;
             reference.Height = 32;
 
-            UtilWPF.SetGridPosition(reference, row, column, parent);
-
             reference.IsActived = isActive;
 
             reference.Click += (source, e) =>
@@ -28,11 +49,9 @@ namespace AussieCake.Util.WPF
                 reference.IsActived = !reference.IsActived;
                 reference.Content = reference.IsActived ? UtilWPF.GetIconButton("switch_on") : UtilWPF.GetIconButton("switch_off"); ;
             };
-
-            return reference;
         }
 
-        public static Button GetPtBr(Button reference, int row, int column, Grid parent, string ptBr, TextBox txt_ptBr)
+        public static Button PtBr(Button reference, int row, int column, Grid parent, string ptBr, TextBox txt_ptBr)
         {
             var content = ptBr.IsEmpty() ? UtilWPF.GetIconButton("br_gray") : UtilWPF.GetIconButton("br");
 
@@ -42,7 +61,7 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button GetDefinition(Button reference, int row, int column, Grid parent, string def, TextBox txt_def)
+        public static Button Definition(Button reference, int row, int column, Grid parent, string def, TextBox txt_def)
         {
             var btn = Get(reference, row, column, parent, UtilWPF.GetIconButton("definition"));
             CreateBtnLineBehavior(def, txt_def, btn);
@@ -63,7 +82,7 @@ namespace AussieCake.Util.WPF
             };
         }
 
-        public static Button GetEdit(Button reference, int row, int column, Grid parent, IQuestion quest, QuestWpfItem wpf_item, StackPanel item_line)
+        public static Button Edit_quest(Button reference, int row, int column, Grid parent, IQuest quest, QuestWpfItem wpf_item, StackPanel item_line)
         {
             var btn = Get(reference, row, column, parent, UtilWPF.GetIconButton("save_black"));
             btn.Click += async (source, e) =>
@@ -148,7 +167,7 @@ namespace AussieCake.Util.WPF
             return reference;
         }
 
-        public static Button GetRemoveQuestion(Button reference, int row, int column, Grid parent, IQuestion quest, StackPanel main_line)
+        public static Button Remove_quest(Button reference, int row, int column, Grid parent, IQuest quest, StackPanel main_line)
         {
             var btn_remove = GetRemove(reference, row, column, parent, main_line);
             btn_remove.Click += (source, e) =>
@@ -160,10 +179,10 @@ namespace AussieCake.Util.WPF
             return btn_remove;
         }
 
-        public static Button GetSentences(Button reference, int row, int column, Grid parent, IQuestion quest, StackPanel stk_sen)
+        public static Button Show_sentences(Button reference, int row, int column, Grid parent, IQuest quest, StackPanel stk_sen)
         {
-            var btn = Get(reference, row, column, parent, quest.SentencesId.Count + " Sens");
-            btn.Foreground = quest.SentencesId.Count == 0 ? Brushes.DarkRed : Brushes.Black;
+            var btn = Get(reference, row, column, parent, quest.Sentences.Count + " Sens");
+            btn.Foreground = quest.Sentences.Count == 0 ? Brushes.DarkRed : Brushes.Black;
             btn.Background = Brushes.Transparent;
             btn.BorderBrush = Brushes.Transparent;
 
@@ -177,6 +196,97 @@ namespace AussieCake.Util.WPF
 
             return btn;
         }
+
+        public static Button Chal_remove_att(ChalLine line)
+        {
+            var btn = Get(line.Chal.Remove_att, 0, 0, line.Chal.Row_4, "Remove attempt");
+            line.Chal.Remove_att.Width = 125;
+            line.Chal.Remove_att.Click += (source, e) =>
+            {
+                AttemptsControl.RemoveLast(line.Quest.Type);
+                line.Chal.Remove_att.IsEnabled = false;
+                line.Chal.Disable_sen.IsEnabled = true;
+                line.Chal.Disable_quest.IsEnabled = true;
+
+                line.Quest.LoadCrossData();
+
+                var updated = QuestControl.Get(line.Quest.Type).First(x => x.Id == line.Quest.Id);
+
+                line.Chal.Avg_w.Content = updated.Avg_week + "% (w)";
+                line.Chal.Avg_m.Content = updated.Avg_month + "% (m)";
+                line.Chal.Avg_all.Content = updated.Avg_all + "% (all)";
+                line.Chal.Tries.Content = updated.Tries.Count + " tries";
+                line.Chal.Chance.Content = updated.Chance + " (" + Math.Round(updated.Chance_real, 2) + ")";
+            };
+
+            return btn;
+        }
+
+        public static Button Chal_disable_sen(ChalLine line)
+        {
+            var btn = Get(line.Chal.Disable_sen, 0, 2, line.Chal.Row_4, "Disable sentence");
+            line.Chal.Disable_sen.Width = 125;
+            line.Chal.Disable_sen.IsEnabled = false;
+            line.Chal.Disable_sen.Click += (source, e) =>
+            {
+                QuestSenControl.Remove(line.QS.QS_id, line.Quest.Type);
+                line.Chal.Disable_sen.IsEnabled = false;
+            };
+
+            return btn;
+        }
+
+        public static Button Chal_disable_quest(ChalLine line)
+        {
+            var btn = Get(line.Chal.Disable_quest, 0, 4, line.Chal.Row_4, "Disable quest");
+            line.Chal.Disable_quest.Width = 125;
+            line.Chal.Disable_quest.IsEnabled = false;
+            line.Chal.Disable_quest.Click += (source, e) =>
+            {
+                line.Quest.Disable();
+                QuestControl.Update(line.Quest);
+                line.Chal.Disable_quest.IsEnabled = false;
+            };
+
+            return btn;
+        }
+
+        public static Button Chal_next(Button reference, StackPanel parent, Button btn_verify, Grid userControlGrid, List<ChalLine> lines, Model type)
+        {
+            parent.Children.Add(reference);
+            reference.Content = "Next";
+            reference.IsEnabled = false;
+            reference = Set_btn_challenge(reference);
+            reference.Click += (source, e) =>
+            {
+                ChalWPFControl.PopulateRows(userControlGrid, type, lines);
+                btn_verify.IsEnabled = true;
+                reference.IsEnabled = false;
+            };
+
+            return reference;
+        }
+
+        private static Button Set_btn_challenge(Button btn)
+        {
+            btn.Width = 100;
+            btn.Height = 28;
+            btn.Margin = new Thickness(0, 0, 4, 0);
+
+            return btn;
+        }
+
+        public static Button Chal_verify(Button reference, StackPanel parent, Button btn_next)
+        {
+            parent.Children.Insert(0, reference);
+            reference.Content = "Verify";
+            reference = Set_btn_challenge(reference);
+            reference.Click += (source, e) => btn_next.IsEnabled = true;
+
+            return reference;
+        }
+
+
     }
 
     public class ButtonActive : Button

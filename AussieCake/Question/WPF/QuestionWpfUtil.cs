@@ -1,6 +1,9 @@
 ﻿using AussieCake.Question;
+using AussieCake.Sentence;
 using AussieCake.Util;
+using AussieCake.Util.WPF;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 using static AussieCake.Util.WPF.MyChBxs;
@@ -51,39 +54,53 @@ namespace AussieCake
 
         public static void EditColClick(ColVM col, ColWpfItem wpf_item, StackPanel item_line)
         {
-            string modifiedSenIds = GetSenIdsFromCheckBoxes(wpf_item);
+            var modifiedSenIds = GetSenFromCbBoxes(wpf_item);
 
             var edited = new ColVM(col.Id,
                 wpf_item.Pref.Text.ToListString(),
-                wpf_item.Comp1.Text, 
+                wpf_item.Comp1.Text,
                 wpf_item.IsComp1_v.IsChecked.Value,
                 wpf_item.Link.Text.ToListString(),
-                wpf_item.Comp2.Text, 
+                wpf_item.Comp2.Text,
                 wpf_item.IsComp2_v.IsChecked.Value,
                 wpf_item.Suff.Text.ToListString(),
                 wpf_item.Def.Text,
                 wpf_item.Ptbr.Text,
                 (Importance)(wpf_item.Imp).SelectedValue,
-                modifiedSenIds.ToListInt(),
                 wpf_item.IsActive.IsActived);
 
-            EditQuestion(col, edited, item_line, wpf_item.Add_sen);
+            EditQuestion(col, edited, item_line, wpf_item.Add_sen, modifiedSenIds);
         }
 
-        private static string GetSenIdsFromCheckBoxes(ColWpfItem wpf_item)
+        private static List<QuestSen> GetSenFromCbBoxes(ColWpfItem wpf_item)
         {
-            string modifiedSenIds = string.Empty;
+            var modifiedSenIds = new List<QuestSen>();
 
-            foreach (var ch in wpf_item.Stk_sen.Children.OfType<CheckBoxSen>())
-                if (ch.IsChecked.Value)
-                    modifiedSenIds += ch.SenId + ";";
+            List<CheckBoxSen> cbs = new List<CheckBoxSen>();
+            foreach (var stk in wpf_item.Stk_sen.Children.OfType<StackPanel>())
+                cbs.Add(stk.Children.OfType<CheckBoxSen>().First());
 
-            if (!modifiedSenIds.IsEmpty())
-                modifiedSenIds = modifiedSenIds.Remove(modifiedSenIds.Count(), 1);
+            List<ButtonActive> bts = new List<ButtonActive>();
+            foreach (var stk in wpf_item.Stk_sen.Children.OfType<StackPanel>())
+                bts.Add(stk.Children.OfType<ButtonActive>().First());
+
+            for (int i = 0; i < cbs.Count(); i++)
+            {
+                var cb = cbs.ElementAt(i);
+
+                if (!cb.IsChecked.Value)
+                    continue;
+
+                var bt = bts.ElementAt(i);
+                //var sen = SenControl.Get().First(x => x.Id == cb.SenId);
+
+                modifiedSenIds.Add(new QuestSen(cb.QS.Sen, bt.IsActived, cb.QS.QS_id));
+            }
+
             return modifiedSenIds;
         }
 
-        private static void EditQuestion(IQuestion quest, IQuestion edited, StackPanel item_line, TextBox txt_addSen)
+        private static void EditQuestion(IQuest quest, IQuest edited, StackPanel item_line, TextBox txt_addSen, List<QuestSen> qss)
         {
             if (!txt_addSen.Text.IsEmpty())
             {
@@ -93,19 +110,39 @@ namespace AussieCake
             else if (!QuestControl.Update(edited))
                 return;
 
+            var intersect = quest.Sentences.Intersect(qss);
+            foreach (var qs in intersect)
+            {
+                var vm = QuestSenControl.Get(edited.Type).First(x => x.Id == qs.QS_id);
+                QuestSenControl.Remove(vm);
+            }
+
+            foreach (var qs in qss)
+            {
+                var db = QuestSenControl.Get(edited.Type).First(x => x.Id == qs.QS_id);
+                var old = db.IsActive;
+                var modified = qs.IsActive;
+
+                if (old != modified)
+                {
+                    db.IsActive = modified;
+                    QuestSenControl.Update(db);
+                }
+            }
+
             edited = QuestControl.Get(quest.Type).Where(q => q.Id == quest.Id).First();
             edited.LoadCrossData();
 
             UpdateWpfItem(item_line, edited);
         }
 
-        private static void AddWpfItem(StackPanel stk_items, IQuestion vm)
+        private static void AddWpfItem(StackPanel stk_items, IQuest vm)
         {
             if (vm.Type == Model.Col)
                 ColWpfController.AddIntoItems(stk_items, vm as ColVM, true);
         }
 
-        private static void UpdateWpfItem(StackPanel item_line, IQuestion vm)
+        private static void UpdateWpfItem(StackPanel item_line, IQuest vm)
         {
             item_line.Children.Clear();
 

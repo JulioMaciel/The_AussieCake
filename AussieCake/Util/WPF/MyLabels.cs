@@ -1,4 +1,5 @@
-﻿using AussieCake.Question;
+﻿using AussieCake.Challenge;
+using AussieCake.Question;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -11,52 +12,46 @@ namespace AussieCake.Util.WPF
 {
     public static class MyLbls
     {
-        private static Label GetAvgScore(Label reference, int row, int column, Grid parent, IQuestion quest, int duration)
+        public static Label AvgScore(Label reference, int row, int column, Grid parent, IQuest quest, int duration, bool useColours = true)
         {
             var isWeek = duration <= 7;
             var isMonth = duration <= 30;
 
             var avg = isWeek ? quest.Avg_week : (isMonth ? quest.Avg_month : quest.Avg_all);
-            var content = avg + "% " + (isWeek ? "(w)" : isMonth ? "(m)" : "");
-            var foreground = UtilWPF.GetAvgColor(avg);
+            var content = avg + "% " + (isWeek ? "(w)" : isMonth ? "(m)" : ""); 
 
             var lbl = Get(reference, row, column, parent, content);
-            lbl.Foreground = foreground;
+
+            if (useColours)
+                lbl.Foreground = UtilWPF.GetAvgColor(avg);
+
             lbl.ToolTip = isWeek ? "week" : isMonth ? "month" : "all";
 
             return lbl;
         }
 
-        public static Label GetAvgWeekScore(Label reference, int row, int column, Grid parent, IQuestion quest)
-        {
-            return GetAvgScore(reference, row, column, parent, quest, 7);
-        }
-
-        public static Label GetAvgMonthScore(Label reference, int row, int column, Grid parent, IQuestion quest)
-        {
-            return GetAvgScore(reference, row, column, parent, quest, 30);
-        }
-
-        public static Label GetAvgAllScore(Label reference, int row, int column, Grid parent, IQuestion quest)
-        {
-            return GetAvgScore(reference, row, column, parent, quest, int.MaxValue);
-        }
-
-        public static Label GetTries(Label reference, int row, int column, Grid parent, IQuestion quest)
+        public static Label Tries(Label reference, int row, int column, Grid parent, IQuest quest)
         {
             var content = quest.Tries.Count > 0 ? quest.Tries.Count + " tries" : "New";
 
             return Get(reference, row, column, parent, content);
         }
 
-        public static Label GetLastTry(Label reference, int row, int column, Grid parent, IQuestion quest)
+        public static Label LastTry(Label reference, int row, int column, Grid parent, IQuest quest)
         {
-            var content = quest.Tries.Any() ? DateTime.Now.Subtract(quest.LastTry.When).Days + "d ago" : "Never";
+            var content = string.Empty;
+            if (quest.Tries.Any())
+            {
+                var last = DateTime.Now.Subtract(quest.LastTry.When).Days;
+                content = last != 0 ? last + "d ago" : "Today";
+            }
+            else
+                content = "Never";
 
             return Get(reference, row, column, parent, content);
         }
 
-        public static Label GetChance(Label reference, int row, int column, Grid parent, IQuestion quest)
+        public static Label Chance(Label reference, int row, int column, Grid parent, IQuest quest)
         {
             var lbl = Get(reference, row, column, parent, quest.Chance + " (" + Math.Round(quest.Chance_real, 2) + "%)");
             lbl.ToolTip = quest.Chance_toolTip;
@@ -82,7 +77,7 @@ namespace AussieCake.Util.WPF
                 lbl.ToolTip += "; Right to erase; Double [txt] to paste.";
             }
 
-            lbl.MouseDoubleClick += (source, e) => filter.SetSort(sort, stk_items);
+            lbl.MouseLeftButtonDown += (source, e) => filter.SetSort(sort, stk_items);
 
             if (sort == SortLbl.Col_comp1 || sort == SortLbl.Col_comp2)
                 Grid.SetColumnSpan(lbl, 2);
@@ -92,12 +87,52 @@ namespace AussieCake.Util.WPF
 
         public static Label Get(Label reference, int row, int column, Grid parent, string content)
         {
+            var lbl = Get(reference, content);
+            UtilWPF.SetGridPosition(reference, row, column, parent);
+
+            return reference;
+        }
+
+        public static Label Get(Label reference, StackPanel parent, string content)
+        {
+            var lbl = Get(reference, content);
+
+            if (!parent.Children.Contains(lbl))
+                parent.Children.Add(lbl);
+
+            return lbl;
+        }
+
+        public static Label Get(Label reference, string content)
+        {
             reference.Content = content;
             reference.VerticalContentAlignment = VerticalAlignment.Center;
             reference.HorizontalContentAlignment = HorizontalAlignment.Center;
             reference.Margin = new Thickness(1, 0, 1, 0);
 
-            UtilWPF.SetGridPosition(reference, row, column, parent);
+            return reference;
+        }
+
+        public static Label Get(int row, int column, Grid parent, string content)
+        {
+            return Get(new Label(), row, column, parent, content);
+        }
+
+        public static Label Chal_answer(Label reference, StackPanel parent, string content)
+        {
+            var lbl = Get(reference, parent, content);
+            return lbl;
+        }
+
+        public static Label Chal_id(bool isQuest, ChalLine line)
+        {
+            var reference = isQuest ? line.Chal.Id_col : line.Chal.Id_sen;
+            var id = isQuest ? line.Quest.Id : line.QS.Sen.Id;
+            var content = id + (isQuest ? " (quest)" : " (sen)");
+            var column = isQuest ? 3 : 1;
+            Get(reference, 0, column, line.Chal.Row_4, content);
+            reference.ToolTip = "Right click to copy the Id";
+            reference.MouseRightButtonDown += (source, e) => Clipboard.SetText(id.ToString());
 
             return reference;
         }
@@ -135,7 +170,7 @@ public enum SortLbl
     [Description("PtBr")]
     PtBr,
 
-    [Description("Prefixes")]
+    [Description("Prefixes [Id]")]
     Col_pref,
 
     [Description("Component 1")]

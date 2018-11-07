@@ -8,28 +8,42 @@ namespace AussieCake.Attempt
 {
     public class AttemptsControl : SqLiteHelper
     {
-        public static IEnumerable<IAttempt> Get(Model type)
+        public static IEnumerable<AttemptVM> Get(Model type)
         {
+            LoadDB(type);
+
             switch (type)
             {
                 case Model.Col:
                     return CollocationAttempts;
                 default:
                     Errors.ThrowErrorMsg(ErrorType.InvalidModelType, type);
-                    return new List<IAttempt>();
+                    return new List<AttemptVM>();
             }
         }
 
-        public static void Insert(IAttempt att)
+        public static void Insert(AttemptVM att)
         {
             InsertQuestionAttempt(att);
             UpdateQuestionFromLastAttempt();
         }
 
-        public static void Remove(IAttempt att)
+        public static void Remove(AttemptVM att)
         {
             RemoveQuestionAttempt(att);
             UpdateQuestionFromLastAttempt();
+        }
+
+        public static void RemoveLast(Model type)
+        {
+            RemoveQuestionAttempt(Get(type).Last());
+            UpdateQuestionFromLastAttempt();
+        }
+
+        public static void LoadDB(Model type)
+        {
+            if (type == Model.Col && CollocationAttempts == null)
+                GetColAttemptsDB();
         }
 
         private static void UpdateQuestionFromLastAttempt()

@@ -2,7 +2,7 @@
 
 namespace AussieCake.Attempt
 {
-	public class AttemptVM : IAttempt
+	public class AttemptVM
 	{
 		public int Id { get; private set; }
 

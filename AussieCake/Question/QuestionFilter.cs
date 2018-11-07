@@ -12,10 +12,10 @@ namespace AussieCake.Question
         private SortLbl Sort { get; set; }
         protected bool IsNextSortAsc { get; set; }
 
-        protected IEnumerable<IQuestion> Original_quests { get; set; }
-        protected IEnumerable<IQuestion> Filtered_quests { get; set; }
+        protected IEnumerable<IQuest> Original_quests { get; set; }
+        protected IEnumerable<IQuest> Filtered_quests { get; set; }
 
-        protected QuestionFilter(IEnumerable<IQuestion> original)
+        protected QuestionFilter(IEnumerable<IQuest> original)
         {
             Original_quests = original;
             Filtered_quests = original;
@@ -62,9 +62,9 @@ namespace AussieCake.Question
                     break;
                 case SortLbl.Sen:
                     if (IsNextSortAsc)
-                        Filtered_quests = Filtered_quests.OrderBy(q => q.SentencesId.Count()).ToList();
+                        Filtered_quests = Filtered_quests.OrderBy(q => q.Sentences.Count).ToList();
                     else
-                        Filtered_quests = Filtered_quests.OrderByDescending(q => q.SentencesId.Count()).ToList();
+                        Filtered_quests = Filtered_quests.OrderByDescending(q => q.Sentences.Count).ToList();
                     break;
                 case SortLbl.Chance:
                     if (IsNextSortAsc)
@@ -98,10 +98,6 @@ namespace AussieCake.Question
                     break;
             }
         }
-
-        //protected virtual void OnFilter()
-        //{
-        //}
 
         protected void Filter(QuestWpfHeader wpf_header)
         {
@@ -143,7 +139,7 @@ namespace AussieCake.Question
                 if (Errors.IsNotDigitsOnly(wpf_header.Txt_sen.Text))
                     return;
 
-                Filtered_quests = Filtered_quests.Where(q => q.SentencesId.Count >= Convert.ToInt16(wpf_header.Txt_sen.Text)).ToList();
+                Filtered_quests = Filtered_quests.Where(q => q.Sentences.Count >= Convert.ToInt16(wpf_header.Txt_sen.Text)).ToList();
             }
             if (!wpf_header.Txt_chance.Text.IsEmpty())
             {
@@ -160,7 +156,7 @@ namespace AussieCake.Question
                 Filtered_quests = Filtered_quests.Where(q => q.PtBr.Contains(wpf_header.Txt_ptbr.Text)).ToList();
 
             Filtered_quests = Filtered_quests.Where(q => q.IsActive == wpf_header.Btn_isActive.IsActived).ToList();
-            
+
             (wpf_header.Stk_items.Parent as ScrollViewer).ScrollToTop();
         }
 

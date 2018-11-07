@@ -13,4 +13,11 @@ namespace AussieCake
 		[Description("Verb")]
 		Verb
 	}
+
+    //public enum LoadLevel
+    //{
+    //    Unloaded = 0,
+    //    DB = 1,
+    //    CrossData = 2
+    //}
 }

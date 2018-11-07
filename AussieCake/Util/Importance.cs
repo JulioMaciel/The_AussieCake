@@ -1,17 +1,25 @@
-﻿using AussieCake.Question;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.ComponentModel;
 
 namespace AussieCake.Util
 {
     public enum Importance
     {
+        [Description("PTE IELTS")]
         PTE_IELTS_Official = 0,
+
+        [Description("Reliable")]
         Reliable_resource = 1,
+
+        [Description("Relevant")]
         My_own_relevant = 2,
+
+        [Description("Random")]
         Random_resource = 3,
+
+        [Description("Just to be")]
         Just_to_be = 4, // apenas para constar
+
+        [Description("Any")]
         Any = 5, // filter
     }
 

@@ -1,4 +1,6 @@
 ﻿using AussieCake.Util;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,43 +23,53 @@ namespace AussieCake.Sentence
 
         private void LoadSentencesOnGrid(bool isGridUpdate)
         {
-
+            var sens = SenControl.Get();
             SenControl.PopulateQuestions();
 
-            foreach (var sen in SenControl.Get())
+            foreach (var sen in sens)
                 SentenceWPF.AddSentenceRow(stk_sentences, sen, isGridUpdate);
         }
 
         private void Insert_Click(object sender, RoutedEventArgs e)
         {
             var sen = txt_input.Text;
-            var vm = new SenVM(sen, false);
+            var vm = new SenVM(sen);
 
-            SenControl.Insert(vm);
-
-            LoadSentencesOnGrid(true);
-            txt_input.Text = string.Empty;
-            btnInsert.IsEnabled = true;
+            if (SenControl.Insert(vm, true))
+            {
+                LoadSentencesOnGrid(true);
+                txt_input.Text = string.Empty;
+                //btnInsert.IsEnabled = true;
+            }
         }
-
 
         private async void GetFromText_Click(object sender, RoutedEventArgs e)
         {
-            await SenControl.SaveSentencesFromString(txt_input.Text);
-
-            LoadSentencesOnGrid(true);
+            var sentencesFound = await AutoGetSentences.GetSentencesFromString(txt_input.Text);
+            InsertLinkLoad(sentencesFound);
         }
 
         private async void GetFromWeb_Click(object sender, RoutedEventArgs e)
         {
-            await FileHtmlControls.SaveSentencesFromSite(txt_input.Text);
-
-            LoadSentencesOnGrid(true);
+            var sentencesFound = await FileHtmlControls.GetSentencesFromSite(txt_input.Text);
+            InsertLinkLoad(sentencesFound);
         }
 
         private async void GetFromBooks_Click(object sender, RoutedEventArgs e)
         {
-            await FileHtmlControls.SaveSentencesFromTxtBooks();
+            var sentencesFound = await FileHtmlControls.SaveSentencesFromTxtBooks();
+            InsertLinkLoad(sentencesFound);
+        }
+
+        private void InsertLinkLoad(List<string> sentencesFound)
+        {
+            foreach (var found in sentencesFound)
+            {
+                var vm = new SenVM(found);
+                SenControl.Insert(vm, false);
+            }
+
+            SenControl.PopulateQuestions();
 
             LoadSentencesOnGrid(true);
         }
@@ -68,12 +80,10 @@ namespace AussieCake.Sentence
 
             if (txt_input.Text.StartsWith("http") || txt_input.Text.StartsWith("www"))
                 btnGetWeb.IsEnabled = true;
-            else if (txt_input.Text.Length >= 300)
-                btnGetText.IsEnabled = true;
-            else if (Errors.IsNullSmallOrBigger(txt_input.Text, 40, 80))
+            else if (txt_input.Text.IsDigitsOnly())
+                btnFilter.IsEnabled = true;
+            else if (!Errors.IsNullSmallerOrBigger(txt_input.Text, SenVM.MinSize, SenVM.MaxSize, false))
                 btnInsert.IsEnabled = true;
-            //else if (txt_input.Text.Length > 1)
-            //    btnFilter.IsEnabled = true;
             else
                 btnGetBooks.IsEnabled = true;
         }
@@ -119,7 +129,7 @@ namespace AussieCake.Sentence
 
         private void Filter()
         {
-            if (!cb_Active.IsLoaded || !cb_PtBr.IsLoaded || !cb_Questions.IsLoaded)
+            if (!cb_PtBr.IsLoaded || !cb_Questions.IsLoaded)
                 return;
 
             var inputFilter = txt_input.Text.Any() ? txt_input.Text : string.Empty;
@@ -127,18 +137,17 @@ namespace AussieCake.Sentence
             if (stk_sentences != null)
                 stk_sentences.Children.Clear();
 
+            if (inputFilter.IsDigitsOnly() && SenControl.Get().Any(x => x.Id == Convert.ToInt16(inputFilter)))
+            {
+                var sen = SenControl.Get().First(x => x.Id == Convert.ToInt16(inputFilter));
+                SentenceWPF.AddSentenceRow(stk_sentences, sen, false);
+                return;
+            }
+
             foreach (var sen in SenControl.Get())
             {
                 if (sen.Text != string.Empty && !sen.Text.ContainsInsensitive(inputFilter))
                     continue;
-
-                if (cb_Active != null && cb_Active.SelectedIndex != 0)
-                {
-                    if (cb_Active.SelectedIndex == 1 && !sen.IsActive)
-                        continue;
-                    else if (cb_Active.SelectedIndex == 2 && sen.IsActive)
-                        continue;
-                }
 
                 if (cb_PtBr != null && cb_PtBr.SelectedIndex != 0)
                 {

@@ -13,8 +13,8 @@ namespace AussieCake.Question
         public string Suffixes { get; private set; }
 
         public ColModel(int id, string pref, string comp1, int isComp1_v, string link, string comp2, int isComp2_v, string suf,
-            string ptBr, string definition, int importance, string sentencesId, int isActive)
-            : base(id, ptBr, definition, importance, sentencesId, isActive)
+            string ptBr, string definition, int importance, int isActive)
+            : base(id, ptBr, definition, importance, isActive)
         {
             SetProperties(pref, comp1, isComp1_v, link, comp2, isComp2_v, suf);
         }
@@ -42,7 +42,6 @@ namespace AussieCake.Question
             var pref_vm = Prefixes.ToListString();
             var link_vm = LinkWords.ToListString();
             var suf_vm = Suffixes.ToListString();
-            var sen_vm = SentencesId.ToListInt();
             var def_vm = Definition.EmptyIfNull();
             var ptBr_vm = PtBr.EmptyIfNull();
 
@@ -52,7 +51,7 @@ namespace AussieCake.Question
 
             if (IsReal)
                 return new ColVM(Id, pref_vm, Component1, isC1v_vm, link_vm, Component2, isC2v_vm,
-                    suf_vm, def_vm, ptBr_vm, (Importance)Importance, sen_vm, isActive_vm);
+                    suf_vm, def_vm, ptBr_vm, (Importance)Importance, isActive_vm);
             else
                 return new ColVM(pref_vm, Component1, isC1v_vm, link_vm, Component2, isC2v_vm,
                     suf_vm, def_vm, ptBr_vm, (Importance)Importance, isActive_vm);

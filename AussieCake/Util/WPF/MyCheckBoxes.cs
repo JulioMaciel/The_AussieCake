@@ -1,11 +1,13 @@
-﻿using System.Windows;
+﻿using AussieCake.Question;
+using AussieCake.Sentence;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace AussieCake.Util.WPF
 {
     public static class MyChBxs
     {
-        public static CheckBox GetIsVerb(CheckBox reference, int row, int column, Grid parent, bool isCompVerb)
+        public static CheckBox IsVerb(CheckBox reference, int row, int column, Grid parent, bool isCompVerb)
         {
             return Get(reference, row, column, parent, "isVerb", isCompVerb);
         }
@@ -41,7 +43,9 @@ namespace AussieCake.Util.WPF
 
         public class CheckBoxSen : CheckBox
         {
-            public int SenId { get; set; }
+            //public int SenId { get; set; }
+            //public SenVM Sen { get; set; }
+            public QuestSen QS { get; set; }
         }
     }
 }

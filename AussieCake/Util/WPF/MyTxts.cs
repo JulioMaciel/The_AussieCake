@@ -6,7 +6,7 @@ namespace AussieCake.Util.WPF
 {
     public static class MyTxts
     {
-        public static TextBox GetPtBr(TextBox reference, IQuestion quest, StackPanel parent)
+        public static TextBox PtBr(TextBox reference, IQuest quest, StackPanel parent)
         {
             var txt = Get(reference, quest.PtBr, parent);
             txt.Visibility = Visibility.Collapsed;
@@ -16,7 +16,7 @@ namespace AussieCake.Util.WPF
             return txt;
         }
 
-        public static TextBox GetDefinition(TextBox reference, IQuestion quest, StackPanel parent)
+        public static TextBox Definition(TextBox reference, IQuest quest, StackPanel parent)
         {
             var txt = Get(reference, quest.Definition, parent);
             txt.Visibility = Visibility.Collapsed;
@@ -25,7 +25,7 @@ namespace AussieCake.Util.WPF
             return txt;
         }
 
-        public static TextBox GetAddSentence(TextBox reference, StackPanel stk_sen)
+        public static TextBox Add_sentence(TextBox reference, StackPanel stk_sen)
         {
             var txt = Get(reference, string.Empty, stk_sen);
             txt.ToolTip = "Add Sentence";
