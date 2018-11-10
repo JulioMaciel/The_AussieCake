@@ -1,5 +1,8 @@
-﻿using AussieCake.Util.WPF;
+﻿using AussieCake.Sentence;
+using AussieCake.Util;
+using AussieCake.Util.WPF;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -16,6 +19,12 @@ namespace AussieCake.Challenge
         {
             InitializeComponent();
 
+            if (!SenControl.Get().Any() || SenControl.Get().Count() <= 4)
+            {
+                Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, "There's no enough sentences to generate the challenge.");
+                return;
+            }
+
             ChalWPFControl.PopulateRows(userControlGrid, Model.Col, lines);
 
             CreateFrame();
@@ -23,7 +32,6 @@ namespace AussieCake.Challenge
 
         private void CreateFrame()
         {
-
             var stk_btns = MyStacks.Get(new StackPanel(), 4, 0, userControlGrid);
             stk_btns.HorizontalAlignment = HorizontalAlignment.Right;
 

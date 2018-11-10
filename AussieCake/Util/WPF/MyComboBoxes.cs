@@ -60,11 +60,9 @@ namespace AussieCake.Util.WPF
             if (!synonyms.Any())
                 Errors.ThrowErrorMsg(ErrorType.SynonymsNotFound, word);
 
-            var sv = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
-
-            if (sv.IsPlural(word))
+            if (FileHtmlControls.Plural_service.IsPlural(word))
                 for (int i = 0; i < synonyms.Count; i++)
-                    synonyms[i] = sv.Pluralize(synonyms[i]);
+                    synonyms[i] = FileHtmlControls.Plural_service.Pluralize(synonyms[i]);
 
             synonyms.Add(word);
 

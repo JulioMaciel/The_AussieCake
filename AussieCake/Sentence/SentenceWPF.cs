@@ -2,7 +2,6 @@
 using AussieCake.Util;
 using AussieCake.Util.WPF;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,15 +17,22 @@ namespace AussieCake.Sentence
         {
             var lineName = "line_" + sen.Id;
 
-            if (main_stack.Children.OfType<StackPanel>().Any(l => l.Name == lineName))
-                return;
-
             var line = new StackPanel();
-            line.Name = lineName;
+
+            if (main_stack.Children.OfType<StackPanel>().Any(l => l.Name == lineName))
+            {
+                line = main_stack.Children.OfType<StackPanel>().First(l => l.Name == lineName);
+                line.Children.Clear();
+            }
+            else
+            {
+                line.Name = lineName;
+                line.MouseEnter += new MouseEventHandler((source, e) => line.Background = UtilWPF.GetColourLine(true, isGridUpdate));
+                line.MouseLeave += new MouseEventHandler((source, e) => line.Background = UtilWPF.GetColourLine(false, isGridUpdate));
+                main_stack.Children.Insert(0, line);
+            }
+
             line.Background = UtilWPF.GetColourLine(false, isGridUpdate);
-            line.MouseEnter += new MouseEventHandler((source, e) => line.Background = UtilWPF.GetColourLine(true, isGridUpdate));
-            line.MouseLeave += new MouseEventHandler((source, e) => line.Background = UtilWPF.GetColourLine(false, isGridUpdate));
-            main_stack.Children.Insert(0, line);
 
             var gridSentence = new Grid();
             gridSentence.Margin = new Thickness(8, 8, 8, 2);

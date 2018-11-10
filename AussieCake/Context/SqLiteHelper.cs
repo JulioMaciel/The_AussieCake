@@ -132,7 +132,7 @@ namespace AussieCake.Context
         {
             string query = string.Format(InsertSQL + "'{1}', '{2}', '{3}')",
                                          GetDBSentenceName(vm.Type),
-                                         vm.IdQuest, vm.IdSen, vm.IsActive);
+                                         vm.IdQuest, vm.IdSen, vm.IsActive.ToInt());
             if (!SendQuery(query))
                 return false;
 
@@ -418,8 +418,8 @@ namespace AussieCake.Context
                 "'Infinitive' TEXT NOT NULL, " +
                 "'Past' TEXT NOT NULL, " +
                 "'PP' TEXT NOT NULL, " +
-                "'Gerund' TEXT NOT NULL, " +
-                "'Person' TEXT NOT NULL )"))
+                "'Person' TEXT NOT NULL, " +
+                "'Gerund' TEXT NOT NULL )"))
                 return false;
 
             if (!SendQuery("CREATE TABLE IF NOT EXISTS 'CollocationSentence' " +

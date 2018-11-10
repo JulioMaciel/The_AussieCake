@@ -4,7 +4,7 @@ namespace AussieCake.Util
 {
 	public static class CakePaths
 	{
-		private static string Project = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\AussieCake";
+        private static string Project = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;// + "\\AussieCake";
 		private static string Script = "\\Context\\Scripts";
 
 		public static string Database = Project + "\\Cake.sqlite";
@@ -15,7 +15,9 @@ namespace AussieCake.Util
 		public static string ResourceHtmlBooks = Project + "\\Resources\\Books\\html";
 		public static string ResourceTxtBooks = Project + "\\Resources\\Books\\txt";
 
-		public static string GetIconPath(string icon)
+        public static string WelcomeCake = Project + "\\Images\\its_a_lie.png";
+
+        public static string GetIconPath(string icon)
 		{
 			return Project + @"\\Images\\Icons\\" + icon + ".ico";
 		}

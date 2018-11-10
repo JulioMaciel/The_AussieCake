@@ -1,6 +1,7 @@
 ﻿using AussieCake.Sentence;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Design.PluralizationServices;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,6 +12,8 @@ namespace AussieCake.Util
 {
     public static class FileHtmlControls
     {
+        public static PluralizationService Plural_service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
+
         public async static Task<List<string>> GetSentencesFromSite(string url)
         {
             string htmlCode = string.Empty;
@@ -136,7 +139,7 @@ namespace AussieCake.Util
             var found = new List<string>();
             var wordApp = new Microsoft.Office.Interop.Word.Application();
             //var objLanguage = Microsoft.Office.Interop.Word.WdLanguageID.wdEnglishUS;
-            Microsoft.Office.Interop.Word.SynonymInfo theSynonyms = wordApp.get_SynonymInfo(word);
+            var theSynonyms = wordApp.get_SynonymInfo(word);
 
             foreach (var Meaning in theSynonyms.MeaningList as Array)
             {

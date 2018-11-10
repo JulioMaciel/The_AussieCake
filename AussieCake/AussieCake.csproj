@@ -82,6 +82,8 @@
       <HintPath>..\packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -137,9 +139,11 @@
     <Compile Include="Sentence\QuestionSentence\QuestionSentenceVM.cs" />
     <Compile Include="Sentence\QuestionSentence\QuestionSentenceModel.cs" />
     <Compile Include="Sentence\SentencesController.cs" />
+    <Compile Include="UnitTests\CollocationTests.cs" />
     <Compile Include="Util\FileHtmlControls.cs" />
     <Compile Include="Util\IFilter.cs" />
     <Compile Include="Util\PluralNounHelper.cs" />
+    <Compile Include="Util\WPF\Footer.cs" />
     <Compile Include="Util\WPF\MyButtons.cs" />
     <Compile Include="Util\WPF\MyCheckBoxes.cs" />
     <Compile Include="Util\WPF\MyComboBoxes.cs" />
@@ -244,6 +248,8 @@
     <Content Include="Context\Scripts\Insert_Collocations.sql" />
     <Content Include="Context\Scripts\Insert_Sentences.sql" />
     <Content Include="Context\Scripts\Insert_Verbs.sql" />
+    <Resource Include="Images\its_a_lie.png" />
+    <Resource Include="Images\Icons\there_is_no_cake.ico" />
     <Resource Include="Images\Icons\br.ico" />
     <Resource Include="Images\Icons\br_gray.ico" />
     <Resource Include="Images\Icons\interrogation.ico" />

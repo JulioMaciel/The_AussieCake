@@ -1,6 +1,7 @@
 ﻿using AussieCake.Util;
 using AussieCake.Util.WPF;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
 
@@ -87,10 +88,15 @@ namespace AussieCake.Question
 
         public void BuildStack(StackPanel stk_items)
         {
+            var watcher = new Stopwatch();
+            watcher.Start();
+
             stk_items.Children.Clear();
 
             foreach (ColVM col in Filtered_quests.Take(30))
                 ColWpfController.AddIntoItems(stk_items, col, false);
+
+            Footer.Log(Filtered_quests.Take(30).Count() + " collocations loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
         }
 
     }

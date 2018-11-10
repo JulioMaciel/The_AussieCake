@@ -1,7 +1,5 @@
-﻿using AussieCake.Sentence;
-using AussieCake.Util;
+﻿using AussieCake.Util;
 using AussieCake.Util.WPF;
-using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +16,6 @@ namespace AussieCake.Question
             InitializeComponent();
 
             QuestControl.LoadCrossData(Model.Col);
-
             BuildHeader();
         }
 

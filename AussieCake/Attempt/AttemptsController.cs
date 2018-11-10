@@ -25,19 +25,21 @@ namespace AussieCake.Attempt
         public static void Insert(AttemptVM att)
         {
             InsertQuestionAttempt(att);
-            UpdateQuestionFromLastAttempt();
+            var idquestion = Get(att.Type).Last().IdQuestion;
+            UpdateQuestionFromLastAttempt(idquestion, att.Type);
         }
 
         public static void Remove(AttemptVM att)
         {
             RemoveQuestionAttempt(att);
-            UpdateQuestionFromLastAttempt();
+            UpdateQuestionFromLastAttempt(att.IdQuestion, att.Type);
         }
 
         public static void RemoveLast(Model type)
         {
-            RemoveQuestionAttempt(Get(type).Last());
-            UpdateQuestionFromLastAttempt();
+            var last = Get(type).Last();
+            RemoveQuestionAttempt(last);
+            UpdateQuestionFromLastAttempt(last.IdQuestion, type);
         }
 
         public static void LoadDB(Model type)
@@ -46,11 +48,9 @@ namespace AussieCake.Attempt
                 GetColAttemptsDB();
         }
 
-        private static void UpdateQuestionFromLastAttempt()
+        private static void UpdateQuestionFromLastAttempt(int idQuestion, Model type)
         {
-            var attemptAdded = CollocationAttempts.Last();
-
-            var col = QuestControl.Get(attemptAdded.Type).First(c => c.Id == attemptAdded.IdQuestion);
+            var col = QuestControl.Get(type).First(c => c.Id == idQuestion);
             col.LoadCrossData();
         }
     }

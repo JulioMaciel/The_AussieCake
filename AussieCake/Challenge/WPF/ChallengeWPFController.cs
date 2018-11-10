@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -78,11 +79,13 @@ namespace AussieCake.Challenge
                 var found = AutoGetSentences.GetCompatibleWord(choosen, isVerb, word);
 
                 if (found.Length > 0)
+                {
                     MyCbBxs.GetSynonyms(found, cb_word, parent, char.IsUpper(word[1]));
+                }
                 else
                 {
                     var lbl = new Label();
-                    lbl.Margin = new Thickness(-2, 0, -2, 0);
+                    lbl.Margin = new Thickness(-3, 0, -3, 0);
                     lbl.Content = word;
                     parent.Children.Add(lbl);
                 }
@@ -105,7 +108,7 @@ namespace AussieCake.Challenge
             var isChoosenVerb = IsChosenVerb(line.Quest, line.Choosen_word);
 
             line.Chal.Choosen_word = CreateSentence(line.QS.Sen.Text, line.Choosen_word, isChoosenVerb, stk_sentence);
-            
+
             foreach (var q_word in stk_sentence.Children.OfType<Label>())
                 GetChallengeSentenceChildren(line.Quest, q_word, line);
 
@@ -119,8 +122,8 @@ namespace AussieCake.Challenge
                 var col = quest as ColVM;
                 var part = q_word.Content.ToString();
 
-                if (col.Prefixes.Any(x => x == part) || 
-                    col.LinkWords.Any(x => x == part) || 
+                if (col.Prefixes.Any(x => x == part) ||
+                    col.LinkWords.Any(x => x == part) ||
                     col.Suffixes.Any(x => x == part) ||
                     !AutoGetSentences.GetCompatibleWord(col.Component1, col.IsComp1Verb, part).IsEmpty() ||
                     !AutoGetSentences.GetCompatibleWord(col.Component2, col.IsComp2Verb, part).IsEmpty())
@@ -194,19 +197,31 @@ namespace AussieCake.Challenge
 
         public static void PopulateRows(Grid parent, Model type, List<ChalLine> lines)
         {
+            var watcher = new Stopwatch();
+            watcher.Start();
+
+            Footer.Log("Loading...");
+
             lines.Clear();
 
-            var actual_chosen = new List<IQuest>(4);
-
+            var actual_chosen = new List<int>();
             for (int row = 0; row < 4; row++)
             {
-
                 var quest = QuestControl.GetRandomQuestionWithSentence(type, actual_chosen);
-                actual_chosen.Add(quest);
+                actual_chosen.Add(quest.Id);
 
                 var item = CreateChalLine(quest, row, parent);
                 lines.Add(item);
-            }
+            };
+
+            //Task tasks = Task.Run(() => Parallel.For(0, 3, index =>
+            //{
+            //    var item = CreateChalLine(actual_chosen[index], index, parent);
+            //    lines.Add(item);
+            //}));
+            //await Task.WhenAll(tasks);
+
+            Footer.Log("4 challenges loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
         }
     }
 

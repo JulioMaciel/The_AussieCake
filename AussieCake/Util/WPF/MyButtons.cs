@@ -207,6 +207,7 @@ namespace AussieCake.Util.WPF
                 line.Chal.Remove_att.IsEnabled = false;
                 line.Chal.Disable_sen.IsEnabled = true;
                 line.Chal.Disable_quest.IsEnabled = true;
+                line.Chal.Grid_chal.Background = UtilWPF.Colour_row_off;
 
                 line.Quest.LoadCrossData();
 

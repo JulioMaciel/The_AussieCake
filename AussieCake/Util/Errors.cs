@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using AussieCake.Util.WPF;
+using System.ComponentModel;
+using System.Media;
 using System.Windows;
 
 namespace AussieCake.Util
@@ -7,7 +9,9 @@ namespace AussieCake.Util
     {
         public static bool ThrowErrorMsg(ErrorType errorType, object error)
         {
-            MessageBox.Show("Error " + errorType.ToDesc() + ". \nObject " + error.ToString(), errorType.ToDesc(), MessageBoxButton.OK, MessageBoxImage.Error);
+            //MessageBox.Show("Error " + errorType.ToDesc() + ". \nObject " + error.ToString(), errorType.ToDesc(), MessageBoxButton.OK, MessageBoxImage.Error);
+            Footer.LogError("Error: " + errorType.ToDesc(), error);
+            SystemSounds.Hand.Play();
 
             return false;
         }

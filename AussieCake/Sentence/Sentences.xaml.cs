@@ -1,7 +1,10 @@
-﻿using AussieCake.Util;
+﻿using AussieCake.Question;
+using AussieCake.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,11 +26,16 @@ namespace AussieCake.Sentence
 
         private void LoadSentencesOnGrid(bool isGridUpdate)
         {
+            var watcher = new Stopwatch();
+            watcher.Start();
+
             var sens = SenControl.Get();
             SenControl.PopulateQuestions();
 
             foreach (var sen in sens)
                 SentenceWPF.AddSentenceRow(stk_sentences, sen, isGridUpdate);
+
+            Footer.Log(sens.Count() + " sentences loaded in " + Math.Round(watcher.Elapsed.TotalSeconds, 2) + " seconds.");
         }
 
         private void Insert_Click(object sender, RoutedEventArgs e)
@@ -72,6 +80,8 @@ namespace AussieCake.Sentence
             SenControl.PopulateQuestions();
 
             LoadSentencesOnGrid(true);
+
+            Footer.Log("Auto insert has finished. " + sentencesFound.Count + " sentences were inserted.");
         }
 
         private void txt_input_TextChanged(object sender, TextChangedEventArgs e)
@@ -107,6 +117,41 @@ namespace AussieCake.Sentence
             txt_input.Text = Clipboard.GetText();
         }
 
+        private async void btnLink_Click(object sender, RoutedEventArgs e)
+        {
+            var result = new List<string>();
+
+            var watcher = new Stopwatch();
+            watcher.Start();
+
+            var links_found = new List<(int, int)>();
+            Task tasks = Task.Run(() => Parallel.ForEach(QuestControl.Get(Model.Col), col =>
+            {
+                foreach (var sen in SenControl.Get())
+                {
+                    if (AutoGetSentences.DoesSenContainsCol((ColVM)col, sen.Text))
+                    {
+                        if (!QuestSenControl.Get(Model.Col).Any(qs => qs.IdQuest == col.Id && qs.IdSen == sen.Id))
+                            links_found.Add((col.Id, sen.Id));
+                    }
+
+                    Footer.Log("Analysing " + SenControl.Get().Count() + " sentences for collocation id " + col.Id + " of " +
+                        QuestControl.Get(Model.Col).Count() + ". " + result.Count + " sentences added in " +
+                        Math.Round(watcher.Elapsed.TotalMinutes, 2) + " minutes.");
+                }
+            }));
+            await Task.WhenAll(tasks);
+
+            foreach (var qs in links_found)
+                QuestSenControl.Insert(new QuestSenVM(qs.Item1, qs.Item2, true, Model.Col));
+
+            //SenControl.PopulateQuestions();
+            LoadSentencesOnGrid(true);
+
+            Footer.Log(links_found.Count + " sentences were linked to collocations. Time spent: " +
+                        Math.Round(watcher.Elapsed.TotalMinutes, 2) + " minutes.");
+        }
+
         private void btnFilter_Click(object sender, RoutedEventArgs e)
         {
             Filter();
@@ -129,6 +174,9 @@ namespace AussieCake.Sentence
 
         private void Filter()
         {
+            var watcher = new Stopwatch();
+            watcher.Start();
+
             if (!cb_PtBr.IsLoaded || !cb_Questions.IsLoaded)
                 return;
 
@@ -144,6 +192,7 @@ namespace AussieCake.Sentence
                 return;
             }
 
+            int count = 0;
             foreach (var sen in SenControl.Get())
             {
                 if (sen.Text != string.Empty && !sen.Text.ContainsInsensitive(inputFilter))
@@ -166,7 +215,10 @@ namespace AussieCake.Sentence
                 }
 
                 SentenceWPF.AddSentenceRow(stk_sentences, sen, false);
+                count = count++;
             }
+
+            Footer.Log(count + " sentences loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
         }
     }
 }

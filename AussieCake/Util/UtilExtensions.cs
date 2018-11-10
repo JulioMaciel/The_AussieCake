@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
 
 namespace AussieCake.Util
 {
@@ -79,9 +81,40 @@ namespace AussieCake.Util
             return source?.IndexOf(toCheck, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        public static int? IndexFrom(this string source, string toCheck)
+        public static int IndexFrom(this string source, string toCheck)
         {
-            return source?.IndexOf(toCheck, StringComparison.CurrentCultureIgnoreCase);
+            return source.IndexOf(toCheck, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public static List<int> IndexesFrom(this string source, string toCheck)
+        {
+            var indexes = new List<int>();
+
+            while (source.ContainsInsensitive(toCheck))
+            {
+                var index = source.IndexFrom(toCheck);
+                indexes.Add(index);
+                source = source.Remove(index, toCheck.Count());
+                source = source.Insert(index, new string('*', toCheck.Length));
+            }
+
+            return indexes;
+        }
+
+        public static int GetMinimumDistance(this List<int> bigger, List<int> smaller)
+        {
+            int minDistance = int.MaxValue;
+
+            foreach (var big in bigger)
+            {
+                foreach (var small in smaller.Where(x => x < big))
+                {
+                    if (big - small < minDistance)
+                        minDistance = big - small;
+                }
+            }
+
+            return minDistance;
         }
 
         public static string ReplaceInsensitive(this string str, string from, string to)
@@ -154,6 +187,19 @@ namespace AussieCake.Util
                                                         .Where(n => n.HasValue)
                                                         .Select(n => n.Value)
                                                         .ToList();
+        }
+
+        public static void CleanClickEvents(this Button b)
+        {
+            FieldInfo f1 = typeof(Control).GetField("EventClick",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            if (f1 == null)
+                return;
+            object obj = f1.GetValue(b);
+            PropertyInfo pi = b.GetType().GetProperty("Events",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            EventHandlerList list = (EventHandlerList)pi.GetValue(b, null);
+            list.RemoveHandler(obj, list[obj]);
         }
     }
 }
