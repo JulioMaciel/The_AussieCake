@@ -50,6 +50,8 @@ namespace AussieCake
 
                 AddWpfItem(stk_items, added);
             }
+
+            Footer.Log("The question has been inserted.");
         }
 
         public static void EditColClick(ColVM col, ColWpfItem wpf_item, StackPanel item_line)
@@ -134,6 +136,8 @@ namespace AussieCake
             edited.LoadCrossData();
 
             UpdateWpfItem(item_line, edited);
+
+            Footer.Log("The question has been edited.");
         }
 
         private static void AddWpfItem(StackPanel stk_items, IQuest vm)

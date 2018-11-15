@@ -12,10 +12,10 @@ namespace AussieCake.Util.WPF
 {
     public static class MyStacks
     {
-        public static StackPanel GetItemLine(IQuest quest, StackPanel parent, bool isGridUpdate/*, int quantItems*/)
+        public static StackPanel GetItemLine(StackPanel parent, bool isGridUpdate)
         {
             var stack = new StackPanel();
-            stack.Margin = new Thickness(2, 4, 2, 2);
+            stack.Margin = new Thickness(0, 2, 2, 2);
             stack.Background = UtilWPF.GetColourLine(false, isGridUpdate);
             stack.MouseEnter += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetColourLine(true, isGridUpdate));
             stack.MouseLeave += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetColourLine(false, isGridUpdate));
@@ -40,7 +40,7 @@ namespace AussieCake.Util.WPF
         public static StackPanel GetListItems(int row, int column, Grid parent)
         {
             var stk = new StackPanel();
-            stk.Background = UtilWPF.Colour_row_off;
+            //stk.Background = UtilWPF.Colour_row_off;
             var viewer = new ScrollViewer();
             viewer.Content = stk;
             UtilWPF.SetGridPosition(viewer, row, column, parent);
@@ -54,6 +54,39 @@ namespace AussieCake.Util.WPF
             stack.Visibility = Visibility.Collapsed;
 
             LoadSentences(reference, quest, stack);
+
+            return stack;
+        }
+
+        public static StackPanel Sen_quests(StackPanel reference, SenVM sen, StackPanel parent)
+        {
+            var stack = Get(reference, parent);
+            stack.Visibility = Visibility.Collapsed;
+            stack.Orientation = Orientation.Horizontal;
+
+            foreach (var sq in sen.Questions)
+            {
+                var lbl = new Label();
+                if (sq.Quest is ColVM)
+                {
+                    var col = sq.Quest as ColVM;
+                    lbl.Content += col.Prefixes.Any() ? string.Join(", ", col.Prefixes.ToArray()) + "; " : string.Empty;
+                    lbl.Content += col.Component1.Any() ? col.Component1 + "; " : string.Empty;
+                    lbl.Content += col.LinkWords.Any() ? string.Join(", ", col.LinkWords.ToArray()) + "; " : string.Empty;
+                    lbl.Content += col.Component2.Any() ? col.Component2 + "; " : string.Empty;
+                    lbl.Content += col.Suffixes.Any() ? string.Join(", ", col.Suffixes.ToArray()) + "; " : string.Empty;
+                    lbl.Content += "(Col)";
+                    lbl.ToolTip = "Collocation Id " + col.Id + "; Click to copy";
+                    lbl.MouseLeftButtonDown += (source, e) =>
+                    {
+                        Clipboard.SetText(col.Id.ToString());
+                        lbl.Foreground = Brushes.DarkGreen;
+                    };
+                }
+                reference.Children.Add(lbl);
+                lbl.MouseEnter += new MouseEventHandler((source, e) => lbl.Foreground = Brushes.DarkRed);
+                lbl.MouseLeave += new MouseEventHandler((source, e) => lbl.Foreground = Brushes.Black);
+            }
 
             return stack;
         }

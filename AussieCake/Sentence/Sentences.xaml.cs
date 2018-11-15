@@ -1,5 +1,6 @@
 ﻿using AussieCake.Question;
 using AussieCake.Util;
+using AussieCake.Util.WPF;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,13 +16,37 @@ namespace AussieCake.Sentence
     /// </summary>
     public partial class Sentences : UserControl
     {
+        bool btn_filter_was;
+        bool btn_insert_was;
+        bool btn_get_books_was;
+        bool btn_get_web_was;
+        bool btn_get_text_was;
+        bool btn_link_was;
+
         public Sentences()
         {
             InitializeComponent();
 
             LoadSentencesOnGrid(false);
 
+            PopulateCbQuestionType();
+
             txt_input.Focus();
+        }
+
+        private void PopulateCbQuestionType()
+        {
+            var source = new List<ModalTypeCb>();
+            source.Add(new ModalTypeCb("Any"));
+            
+            var quests_types = Enum.GetValues(typeof(Model)).Cast<Model>()
+                                                       .Where(x => x != Model.Sen && x != Model.Verb);
+            foreach(var type in quests_types)
+                source.Add(new ModalTypeCb(type, type.ToDesc()));
+
+            cb_QuestType.ItemsSource = source;
+            cb_QuestType.DisplayMemberPath = "Text";
+            cb_QuestType.SelectedIndex = 0;
         }
 
         private void LoadSentencesOnGrid(bool isGridUpdate)
@@ -32,8 +57,10 @@ namespace AussieCake.Sentence
             var sens = SenControl.Get();
             SenControl.PopulateQuestions();
 
+            sens = sens.Take(60);
+
             foreach (var sen in sens)
-                SentenceWPF.AddSentenceRow(stk_sentences, sen, isGridUpdate);
+                SentenceWpfController.AddIntoItems(stk_sentences, sen, false);
 
             Footer.Log(sens.Count() + " sentences loaded in " + Math.Round(watcher.Elapsed.TotalSeconds, 2) + " seconds.");
         }
@@ -48,40 +75,50 @@ namespace AussieCake.Sentence
                 LoadSentencesOnGrid(true);
                 txt_input.Text = string.Empty;
                 //btnInsert.IsEnabled = true;
+
+                Footer.Log("The sentence has been inserted.");
             }
         }
 
         private async void GetFromText_Click(object sender, RoutedEventArgs e)
         {
+            SaveBtnUIStatus();
             var sentencesFound = await AutoGetSentences.GetSentencesFromString(txt_input.Text);
             InsertLinkLoad(sentencesFound);
+            RestoreBtnUIStatus();
         }
 
         private async void GetFromWeb_Click(object sender, RoutedEventArgs e)
         {
+            SaveBtnUIStatus();
             var sentencesFound = await FileHtmlControls.GetSentencesFromSite(txt_input.Text);
             InsertLinkLoad(sentencesFound);
+            RestoreBtnUIStatus();
         }
 
         private async void GetFromBooks_Click(object sender, RoutedEventArgs e)
         {
+            SaveBtnUIStatus();
             var sentencesFound = await FileHtmlControls.SaveSentencesFromTxtBooks();
             InsertLinkLoad(sentencesFound);
+            RestoreBtnUIStatus();
         }
 
         private void InsertLinkLoad(List<string> sentencesFound)
         {
+            int auto_inserted = 0;
             foreach (var found in sentencesFound)
             {
                 var vm = new SenVM(found);
-                SenControl.Insert(vm, false);
+                if (SenControl.Insert(vm, false))
+                {
+                    var added_sen = SenControl.Get().Last();
+                    SentenceWpfController.AddIntoItems(stk_sentences, added_sen, true);
+                    auto_inserted = auto_inserted + 1;
+                }
             }
 
-            SenControl.PopulateQuestions();
-
-            LoadSentencesOnGrid(true);
-
-            Footer.Log("Auto insert has finished. " + sentencesFound.Count + " sentences were inserted.");
+            Footer.Log("Auto insert has finished. " + auto_inserted + " sentences were inserted.");
         }
 
         private void txt_input_TextChanged(object sender, TextChangedEventArgs e)
@@ -90,8 +127,6 @@ namespace AussieCake.Sentence
 
             if (txt_input.Text.StartsWith("http") || txt_input.Text.StartsWith("www"))
                 btnGetWeb.IsEnabled = true;
-            else if (txt_input.Text.IsDigitsOnly())
-                btnFilter.IsEnabled = true;
             else if (!Errors.IsNullSmallerOrBigger(txt_input.Text, SenVM.MinSize, SenVM.MaxSize, false))
                 btnInsert.IsEnabled = true;
             else
@@ -104,7 +139,6 @@ namespace AussieCake.Sentence
             btnGetText.IsEnabled = false;
             btnGetBooks.IsEnabled = false;
             btnInsert.IsEnabled = false;
-            btnFilter.IsEnabled = false;
         }
 
         private void lblInput_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -119,35 +153,27 @@ namespace AussieCake.Sentence
 
         private async void btnLink_Click(object sender, RoutedEventArgs e)
         {
+            SaveBtnUIStatus();
+
             var result = new List<string>();
 
             var watcher = new Stopwatch();
             watcher.Start();
 
-            var links_found = new List<(int, int)>();
-            Task tasks = Task.Run(() => Parallel.ForEach(QuestControl.Get(Model.Col), col =>
+            List<(int, int)> links_found = new List<(int, int)>();
+
+            if (cb_QuestType.SelectedIndex != 0)
             {
-                foreach (var sen in SenControl.Get())
-                {
-                    if (AutoGetSentences.DoesSenContainsCol((ColVM)col, sen.Text))
-                    {
-                        if (!QuestSenControl.Get(Model.Col).Any(qs => qs.IdQuest == col.Id && qs.IdSen == sen.Id))
-                            links_found.Add((col.Id, sen.Id));
-                    }
+                var selected_type = ((ModalTypeCb)cb_QuestType.SelectedValue).Type;
+                links_found = await SentenceWpfController.LinkQuestType(stk_sentences, selected_type, watcher);
+            }
+            else
+            {
+                links_found.AddRange(await SentenceWpfController.LinkQuestType(stk_sentences, Model.Col, watcher));
+                // and so on;
+            }
 
-                    Footer.Log("Analysing " + SenControl.Get().Count() + " sentences for collocation id " + col.Id + " of " +
-                        QuestControl.Get(Model.Col).Count() + ". " + result.Count + " sentences added in " +
-                        Math.Round(watcher.Elapsed.TotalMinutes, 2) + " minutes.");
-                }
-            }));
-            await Task.WhenAll(tasks);
-
-            foreach (var qs in links_found)
-                QuestSenControl.Insert(new QuestSenVM(qs.Item1, qs.Item2, true, Model.Col));
-
-            //SenControl.PopulateQuestions();
-            LoadSentencesOnGrid(true);
-
+            RestoreBtnUIStatus();
             Footer.Log(links_found.Count + " sentences were linked to collocations. Time spent: " +
                         Math.Round(watcher.Elapsed.TotalMinutes, 2) + " minutes.");
         }
@@ -157,39 +183,24 @@ namespace AussieCake.Sentence
             Filter();
         }
 
-        private void cb_Active_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Filter();
-        }
-
-        private void cb_PtBr_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Filter();
-        }
-
-        private void cb_Questions_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Filter();
-        }
-
         private void Filter()
         {
             var watcher = new Stopwatch();
             watcher.Start();
-
-            if (!cb_PtBr.IsLoaded || !cb_Questions.IsLoaded)
-                return;
 
             var inputFilter = txt_input.Text.Any() ? txt_input.Text : string.Empty;
 
             if (stk_sentences != null)
                 stk_sentences.Children.Clear();
 
-            if (inputFilter.IsDigitsOnly() && SenControl.Get().Any(x => x.Id == Convert.ToInt16(inputFilter)))
+            if (!inputFilter.IsEmpty())
             {
-                var sen = SenControl.Get().First(x => x.Id == Convert.ToInt16(inputFilter));
-                SentenceWPF.AddSentenceRow(stk_sentences, sen, false);
-                return;
+                if (inputFilter.IsDigitsOnly() && SenControl.Get().Any(x => x.Id == Convert.ToInt16(inputFilter)))
+                {
+                    var sen = SenControl.Get().First(x => x.Id == Convert.ToInt16(inputFilter));
+                    SentenceWpfController.AddIntoItems(stk_sentences, sen, false);
+                    return;
+                }
             }
 
             int count = 0;
@@ -198,27 +209,65 @@ namespace AussieCake.Sentence
                 if (sen.Text != string.Empty && !sen.Text.ContainsInsensitive(inputFilter))
                     continue;
 
-                if (cb_PtBr != null && cb_PtBr.SelectedIndex != 0)
+                if (!txt_quests.IsEmpty() && txt_quests.Text.IsDigitsOnly())
                 {
-                    if (cb_PtBr.SelectedIndex == 1 && !sen.PtBr.Any())
-                        continue;
-                    else if (cb_PtBr.SelectedIndex == 2 && sen.PtBr.Any())
+                    var quant = Convert.ToInt16(txt_quests.Text);
+                    if (sen.Questions.Count < quant)
                         continue;
                 }
 
-                if (cb_Questions != null && cb_Questions.SelectedIndex != 0)
+                if (cb_QuestType.SelectedIndex != 0)
                 {
-                    if (cb_Questions.SelectedIndex == 1 && !sen.Questions.Any())
-                        continue;
-                    else if (cb_Questions.SelectedIndex == 2 && sen.Questions.Any())
+                    var selected_type = ((ModalTypeCb)cb_QuestType.SelectedValue).Type;
+                    if (!sen.Questions.Any(x => x.Quest.Type == selected_type))
                         continue;
                 }
 
-                SentenceWPF.AddSentenceRow(stk_sentences, sen, false);
-                count = count++;
+                SentenceWpfController.AddIntoItems(stk_sentences, sen, false);
+                count = count + 1;
+
+                if (count == 60)
+                    break;
             }
 
             Footer.Log(count + " sentences loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
+        }
+
+        private void SaveBtnUIStatus()
+        {
+            btn_filter_was = btnFilter.IsEnabled;
+            btn_insert_was = btnInsert.IsEnabled;
+            btn_get_books_was = btnGetBooks.IsEnabled;
+            btn_get_web_was = btnGetWeb.IsEnabled;
+            btn_get_text_was = btnGetText.IsEnabled;
+            btn_link_was = btnLink.IsEnabled;
+        }
+
+        private void RestoreBtnUIStatus()
+        {
+            btnFilter.IsEnabled = btn_filter_was;
+            btnInsert.IsEnabled = btn_insert_was;
+            btnGetBooks.IsEnabled = btn_get_books_was;
+            btnGetWeb.IsEnabled = btn_get_web_was;
+            btnGetText.IsEnabled = btn_get_text_was;
+            btnLink.IsEnabled = btn_link_was;
+        }
+
+        internal class ModalTypeCb
+        {
+            public Model Type { get; set; }
+            public string Text { get; set; }
+
+            public ModalTypeCb(Model type, string text)
+            {
+                Type = type;
+                Text = text;
+            }
+
+            public ModalTypeCb(string text)
+            {
+                Text = text;
+            }
         }
     }
 }

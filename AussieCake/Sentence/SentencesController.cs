@@ -61,7 +61,19 @@ namespace AussieCake.Sentence
         public static void Remove(SenVM sentence)
         {
             RemoveSentence(sentence);
-            Sentences.Remove(sentence);
+            //Sentences.Remove(sentence);
+
+            var qs_from_sentence = QuestSenControl.Get(Model.Col).Where(x => x.IdSen == sentence.Id).ToList();
+
+            if (qs_from_sentence.Any())
+            {
+                foreach (var qs in qs_from_sentence)
+                {
+                    QuestSenControl.Remove(qs);
+                    var changedCol = QuestControl.Get(Model.Col).Where(y => y.Id == qs.IdQuest).First();
+                    changedCol.LoadCrossData();
+                }
+            }
         }
 
         public static void LoadDB()

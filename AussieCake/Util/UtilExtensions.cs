@@ -76,8 +76,9 @@ namespace AussieCake.Util
             return me.Equals(other, StringComparison.CurrentCultureIgnoreCase);
         }
 
-        public static bool ContainsInsensitive(this string source, string toCheck)
+        public static bool ContainsInsensitive(this string source, string toCheck, bool addSpaceBefore = false)
         {
+            toCheck = addSpaceBefore ? " " + toCheck : toCheck;
             return source?.IndexOf(toCheck, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
@@ -86,13 +87,14 @@ namespace AussieCake.Util
             return source.IndexOf(toCheck, StringComparison.CurrentCultureIgnoreCase);
         }
 
-        public static List<int> IndexesFrom(this string source, string toCheck)
+        public static List<int> IndexesFrom(this string source, string toCheck, bool addOne = false)
         {
             var indexes = new List<int>();
 
             while (source.ContainsInsensitive(toCheck))
             {
                 var index = source.IndexFrom(toCheck);
+                index = addOne ? index + 1 : index;
                 indexes.Add(index);
                 source = source.Remove(index, toCheck.Count());
                 source = source.Insert(index, new string('*', toCheck.Length));
@@ -174,6 +176,17 @@ namespace AussieCake.Util
 
             return true;
         }
+
+        public static bool IsLettersOnly(this string str)
+        {
+            return Regex.IsMatch(str, @"^[a-zA-Z]+$");
+        }
+
+        public static string UpperFirst(this string str)
+        {
+            return char.ToUpper(str[0]) + str.Substring(1).ToLower();
+        }
+
 
         public static List<string> ToListString(this string raw)
         {

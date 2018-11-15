@@ -6,9 +6,9 @@ namespace AussieCake.Util.WPF
 {
     public static class MyTxts
     {
-        public static TextBox PtBr(TextBox reference, IQuest quest, StackPanel parent)
+        public static TextBox PtBr(TextBox reference, string ptBr, StackPanel parent)
         {
-            var txt = Get(reference, quest.PtBr, parent);
+            var txt = Get(reference, ptBr, parent);
             txt.Visibility = Visibility.Collapsed;
             txt.Background = UtilWPF.GetBrushFromHTMLColor("#edfaeb");
             txt.ToolTip = "PtBr";
@@ -16,9 +16,9 @@ namespace AussieCake.Util.WPF
             return txt;
         }
 
-        public static TextBox Definition(TextBox reference, IQuest quest, StackPanel parent)
+        public static TextBox Definition(TextBox reference, string definition, StackPanel parent)
         {
-            var txt = Get(reference, quest.Definition, parent);
+            var txt = Get(reference, definition, parent);
             txt.Visibility = Visibility.Collapsed;
             txt.ToolTip = "Definition";
 
@@ -46,7 +46,7 @@ namespace AussieCake.Util.WPF
         public static TextBox Get(TextBox reference, int row, int column, Grid parent, string content)
         {
             var txt = Get(reference, content);
-            txt.MouseDoubleClick += (source, e) => txt.Text = Clipboard.GetText();
+            //txt.MouseDoubleClick += (source, e) => txt.Text = Clipboard.GetText();
             UtilWPF.SetGridPosition(txt, row, column, parent);
 
             return txt;

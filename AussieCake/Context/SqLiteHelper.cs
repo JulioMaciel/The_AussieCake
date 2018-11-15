@@ -96,9 +96,9 @@ namespace AussieCake.Context
 
         protected static bool InsertSentence(SenVM sen)
         {
-            string query = string.Format(InsertSQL + "'{1}', '{2}')",
+            string query = string.Format(InsertSQL + "'{1}')",
                                          Model.Sen.ToDesc(),
-                                         sen.Text.Replace("\'", "\'\'"), sen.PtBr);
+                                         sen.Text.Replace("\'", "\'\'"));
             if (!SendQuery(query))
                 return false;
 
@@ -227,7 +227,6 @@ namespace AussieCake.Context
             string columnsToUpdate = string.Empty;
 
             CheckFieldUpdate("Text", sen.Text, oldSen.Text, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("PtBr", sen.PtBr, oldSen.PtBr, ref field, ref columnsToUpdate);
 
             if (columnsToUpdate.IsEmpty())
                 return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, columnsToUpdate);
@@ -288,8 +287,7 @@ namespace AussieCake.Context
         {
             return dataRow => new SenVM(
                                 Convert.ToInt16(dataRow.Field<Int64>("Id")),
-                                dataRow.Field<string>("Text"),
-                                dataRow.Field<string>("PtBr")
+                                dataRow.Field<string>("Text")
                               );
         }
 
@@ -409,8 +407,7 @@ namespace AussieCake.Context
             if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Sentence' " +
                 "( 'Id' INTEGER NOT NULL CONSTRAINT " +
                 "'PK_Sentence' PRIMARY KEY AUTOINCREMENT, " +
-                "'Text' TEXT NOT NULL, " +
-                "'PtBr' TEXT NULL )"))
+                "'Text' TEXT NOT NULL )"))
                 return false;
 
             if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Verb' " +

@@ -14,6 +14,7 @@ namespace AussieCake.Challenge
     public partial class ColChallenge : UserControl
     {
         List<ChalLine> lines = new List<ChalLine>(4);
+        Microsoft.Office.Interop.Word.Application WordApp;
 
         public ColChallenge()
         {
@@ -25,7 +26,9 @@ namespace AussieCake.Challenge
                 return;
             }
 
-            ChalWPFControl.PopulateRows(userControlGrid, Model.Col, lines);
+            WordApp = new Microsoft.Office.Interop.Word.Application();
+
+            ChalWPFControl.PopulateRows(userControlGrid, Model.Col, lines, WordApp);
 
             CreateFrame();
         }
@@ -41,7 +44,9 @@ namespace AussieCake.Challenge
             MyBtns.Chal_verify(btn_verify, stk_btns, btn_next);
             btn_verify.Click += (source, e) => lines.ForEach(x => ChalWPFControl.Verify(x, btn_verify, btn_next));
 
-            MyBtns.Chal_next(btn_next, stk_btns, btn_verify, userControlGrid, lines, Model.Col);
+            MyBtns.Chal_next(btn_next, stk_btns, btn_verify, userControlGrid, lines, Model.Col, WordApp);
         }
+
+        
     }
 }

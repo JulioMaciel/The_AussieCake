@@ -9,7 +9,6 @@ namespace AussieCake.Sentence
         public int Id { get; private set; }
 
         public string Text { get; set; }
-        public string PtBr { get; set; }
 
         public List<SenQuest> Questions { get; set; }
 
@@ -26,12 +25,7 @@ namespace AussieCake.Sentence
             Text = text;
         }
 
-        public SenVM(string text, string ptBr) : this(text)
-        {
-            PtBr = ptBr;
-        }
-
-        public SenVM(int id, string text, string ptBr) : this(text, ptBr)
+        public SenVM(int id, string text) : this(text)
         {
             Id = id;
 
@@ -45,7 +39,10 @@ namespace AussieCake.Sentence
                 if (qs.IdSen == Id)
                 {
                     var quest = QuestControl.Get(Model.Col).First(x => x.Id == qs.IdQuest);
-                    Questions.Add(new SenQuest(quest, qs.IsActive, qs.Id));
+                    var sq = new SenQuest(quest, qs.IsActive, qs.Id);
+
+                    if (!Questions.Any(x => x.QS_id == qs.Id))
+                        Questions.Add(sq);
                 }
             }
 

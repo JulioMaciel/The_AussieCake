@@ -98,6 +98,29 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
+        public static Button Edit_sentence(int row, int column, Grid parent, SenVM sen, StackPanel item_line)
+        {
+            var btn = Get(new Button(), row, column, parent, UtilWPF.GetIconButton("save_black"));
+            btn.Click += async (source, e) =>
+            {
+                btn.Content = UtilWPF.GetIconButton("save");
+                await System.Threading.Tasks.Task.Delay(2000);
+                btn.Content = UtilWPF.GetIconButton("save_black");
+
+                if (!SenControl.Update(sen))
+                    return;
+
+                sen = SenControl.Get().Where(q => q.Id == sen.Id).First();
+
+                item_line.Children.Clear();
+                SentenceWpfController.AddIntoThis(sen, item_line);
+
+                Footer.Log("The sentence has been edited.");
+            };
+
+            return btn;
+        }
+
         public static Button GetRemove(Button reference, int row, int column, Grid parent, StackPanel item_line)
         {
             var btn = Get(reference, row, column, parent, UtilWPF.GetIconButton("remove_v2"));
@@ -174,6 +197,22 @@ namespace AussieCake.Util.WPF
             {
                 var removed = QuestControl.Get(Model.Col).First(s => s.Id == quest.Id);
                 QuestControl.Remove(removed);
+
+                Footer.Log("The question has been removed.");
+            };
+
+            return btn_remove;
+        }
+
+        public static Button Remove_sentence(int row, int column, Grid parent, SenVM sen, StackPanel main_line)
+        {
+            var btn_remove = GetRemove(new Button(), row, column, parent, main_line);
+            btn_remove.Click += (source, e) =>
+            {
+                var removed = SenControl.Get().First(s => s.Id == sen.Id);
+                SenControl.Remove(removed);
+
+                Footer.Log("The sentence has been removed.");
             };
 
             return btn_remove;
@@ -193,6 +232,30 @@ namespace AussieCake.Util.WPF
                 else
                     stk_sen.Visibility = Visibility.Collapsed;
             };
+
+            return btn;
+        }
+
+        public static Button Sen_show_questions(int row, int column, Grid parent, SenVM sen, StackPanel stackCheckQuestions)
+        {
+            var btn = new Button
+            {
+                Content = sen.Questions.Any() ? UtilWPF.GetIconButton("box_full") : UtilWPF.GetIconButton("box_empty"),
+                Background = Brushes.Transparent,
+                BorderBrush = Brushes.Transparent,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Height = 32,
+                Width = 32
+            };
+            btn.Click += (source, e) =>
+            {
+                if (stackCheckQuestions.Visibility == Visibility.Collapsed)
+                    stackCheckQuestions.Visibility = Visibility.Visible;
+                else
+                    stackCheckQuestions.Visibility = Visibility.Collapsed;
+            };
+            UtilWPF.SetGridPosition(btn, row, column, parent);
 
             return btn;
         }
@@ -252,7 +315,7 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button Chal_next(Button reference, StackPanel parent, Button btn_verify, Grid userControlGrid, List<ChalLine> lines, Model type)
+        public static Button Chal_next(Button reference, StackPanel parent, Button btn_verify, Grid userControlGrid, List<ChalLine> lines, Model type, Microsoft.Office.Interop.Word.Application wordApp)
         {
             parent.Children.Add(reference);
             reference.Content = "Next";
@@ -260,7 +323,7 @@ namespace AussieCake.Util.WPF
             reference = Set_btn_challenge(reference);
             reference.Click += (source, e) =>
             {
-                ChalWPFControl.PopulateRows(userControlGrid, type, lines);
+                ChalWPFControl.PopulateRows(userControlGrid, type, lines, wordApp);
                 btn_verify.IsEnabled = true;
                 reference.IsEnabled = false;
             };

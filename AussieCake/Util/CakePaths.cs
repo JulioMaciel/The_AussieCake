@@ -13,7 +13,7 @@ namespace AussieCake.Util
 		public static string ScriptVerbs = Project + Script + "\\Insert_Verbs.sql";
 
 		public static string ResourceHtmlBooks = Project + "\\Resources\\Books\\html";
-		public static string ResourceTxtBooks = Project + "\\Resources\\Books\\txt";
+		public static string ResourceTxtBooks = Project + "\\Resources\\Books\\txt"; //\\Debug
 
         public static string WelcomeCake = Project + "\\Images\\its_a_lie.png";
 

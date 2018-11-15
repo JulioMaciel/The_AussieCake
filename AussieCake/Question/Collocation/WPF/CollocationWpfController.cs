@@ -10,7 +10,7 @@ namespace AussieCake.Question
     {
         public static void AddIntoItems(StackPanel stack_items, ColVM col, bool isNew)
         {
-            var item_line = MyStacks.GetItemLine(col, stack_items, isNew);
+            var item_line = MyStacks.GetItemLine(stack_items, isNew);
             AddIntoThis(col, item_line);
         }
 
@@ -53,8 +53,8 @@ namespace AussieCake.Question
             MyBtns.Edit_quest(wpf.Edit, 0, 10, row2, col, wpf, item_line);
             MyBtns.Remove_quest(wpf.Remove, 0, 11, row2, col, item_line);
 
-            MyTxts.Definition(wpf.Def, col, row3);
-            MyTxts.PtBr(wpf.Ptbr, col, row3);
+            MyTxts.Definition(wpf.Def, col.Definition, row3);
+            MyTxts.PtBr(wpf.Ptbr, col.PtBr, row3);
             MyStacks.Sentences(wpf.Stk_sen, col, row3);
 
             MyTxts.Add_sentence(wpf.Add_sen, wpf.Stk_sen);

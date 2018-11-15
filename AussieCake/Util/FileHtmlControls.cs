@@ -1,7 +1,7 @@
 ﻿using AussieCake.Sentence;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Design.PluralizationServices;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,8 +12,6 @@ namespace AussieCake.Util
 {
     public static class FileHtmlControls
     {
-        public static PluralizationService Plural_service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
-
         public async static Task<List<string>> GetSentencesFromSite(string url)
         {
             string htmlCode = string.Empty;
@@ -64,81 +62,94 @@ namespace AussieCake.Util
             return cleanedCode;
         }
 
-        //public static List<string> GetSynonyms(string word, bool isFirstUp)
-        //{
-        //    string htmlCode = string.Empty;
+        public static List<string> GetSynonymsOnWeb(string word, bool isFirstUp)
+        {
+            string htmlCode = string.Empty;
 
-        //    using (WebClient client = new WebClient())
-        //        htmlCode = client.DownloadString("https://www.thesaurus.com/browse/" + word);
+            using (WebClient client = new WebClient())
+                htmlCode = client.DownloadString("https://www.thesaurus.com/browse/" + word);
 
-        //    if (htmlCode.IsEmpty())
-        //        Errors.ThrowErrorMsg(ErrorType.InexistentWordOrSiteOff, word);
+            if (htmlCode.IsEmpty())
+                Errors.ThrowErrorMsg(ErrorType.InexistentWordOrSiteOff, word);
 
-        //    var result = new List<string>();
+            htmlCode = htmlCode.GetSinceTo("iframe ends here", "adBlockDetector start");
 
-        //    htmlCode = htmlCode.GetSinceTo("iframe ends here", "adBlockDetector start");
+            var pattern = "3kshty etbu2a31\">(\\w+)<";
+            MatchCollection matchList = Regex.Matches(htmlCode, pattern);
+            var regexResult = matchList.Cast<Match>().Select(match => match.Value).ToList();
 
-        //    var pattern = "3kshty etbu2a31\">(\\w+)<";
-        //    MatchCollection matchList = Regex.Matches(htmlCode, pattern);
-        //    result = matchList.Cast<Match>().Select(match => match.Value).ToList();
+            var result = new List<string>(6);
 
-        //    for (int i = 0; i < result.Count; i++)
-        //    {
-        //        result[i] = result[i].Remove(result[i].Length - 1); // remove (<)
-        //        result[i] = result[i].Remove(0, 17); // remove (3kshty etbu2a31">)
-        //    }
+            var limit = regexResult.Count > 6 ? 6 : result.Count;
+            for (int i = 0; i < limit; i++)
+            {
+                var syn = regexResult[i];
+                syn = syn.Remove(syn.Length - 1); // remove (<)
+                syn = syn.Remove(0, 17); // remove (3kshty etbu2a31">)
 
-        //    if (!result.Any())
-        //    {
-        //        using (WebClient client = new WebClient())
-        //            htmlCode = client.DownloadString("https://www.synonym.com/synonyms/" + word);
+                if (!syn.IsLettersOnly() && syn.Length < 20)
+                    result.Add(syn);
+            }
 
-        //        if (htmlCode.IsEmpty())
-        //            Errors.ThrowErrorMsg(ErrorType.InexistentWordOrSiteOff, word);
+            if (!result.Any() || result.Count < 6)
+            {
+                using (WebClient client = new WebClient())
+                    htmlCode = client.DownloadString("https://www.synonym.com/synonyms/" + word);
 
-        //        pattern = @"synonyms/([a-z]+)"">[a-z]+</a>\n +</li><li class=""syn";
-        //        matchList = Regex.Matches(htmlCode, pattern);
-        //        result = matchList.Cast<Match>().Select(match => match.Value).ToList();
+                if (htmlCode.IsEmpty())
+                    Errors.ThrowErrorMsg(ErrorType.InexistentWordOrSiteOff, word);
 
-        //        for (int i = 0; i < result.Count; i++)
-        //            result[i] = result[i].GetBetween(">", "<");
-        //    }
+                pattern = @"synonyms/([a-z]+)"">[a-z]+</a>\n +</li><li class=""syn";
+                matchList = Regex.Matches(htmlCode, pattern);
+                regexResult = matchList.Cast<Match>().Select(match => match.Value).ToList();
 
-        //    if (isFirstUp)
-        //        result.ForEach(x => x.First().ToString().ToUpper());
+                limit = regexResult.Count > 6 ? (6 - result.Count) : (regexResult.Count - result.Count);
+                for (int i = 0; i < limit; i++)
+                {
+                    var syn = regexResult[i];
 
-        //    return result;
-        //}
+                    syn = syn.GetBetween(">", "<");
 
-        //public static string GetPlural(string word)
-        //{
-        //    string htmlCode = string.Empty;
+                    if (!syn.IsLettersOnly() && !result.Contains(syn) && syn.Length < 20)
+                        result.Add(syn);
+                }
+            }
 
-        //    using (WebClient client = new WebClient())
-        //        htmlCode = client.DownloadString("https://dictionary.cambridge.org/dictionary/english/" + word);
+            if (isFirstUp)
+                result.ForEach(x => x.First().ToString().ToUpper());
 
-        //    if (htmlCode.IsEmpty())
-        //        Errors.ThrowErrorMsg(ErrorType.InexistentWordOrSiteOff, word);
+            return result;
+        }
 
-        //    htmlCode = htmlCode.GetSinceTo("cald4-1-1-1", "accord-basic js-accord accord-basic--shallow");
-        //    //htmlCode = CleanHtmlCode(htmlCode);
+        public static string GetPluralOnWeb(string word)
+        {
+            string htmlCode = string.Empty;
 
-        //    var pattern = @"class=\""phrase\"">[a-z]+</b></span>";
-        //    var matchList = Regex.Matches(htmlCode, pattern);
-        //    var result = matchList.Cast<Match>().Select(match => match.Value).First();//.ToList();
+            using (WebClient client = new WebClient())
+                htmlCode = client.DownloadString("https://dictionary.cambridge.org/dictionary/english/" + word);
 
-        //    result = result.GetBetween(">", "<");
+            if (htmlCode.IsEmpty())
+                Errors.ThrowErrorMsg(ErrorType.InexistentWordOrSiteOff, word);
 
-        //    return result;
-        //}
+            htmlCode = htmlCode.GetSinceTo("cald4-1-1-1", "accord-basic js-accord accord-basic--shallow");
+            //htmlCode = CleanHtmlCode(htmlCode);
 
-        public static IEnumerable<string> GetSynonyms(string word)
+            var pattern = @"class=\""phrase\"">[a-z]+</b></span>";
+            var matchList = Regex.Matches(htmlCode, pattern);
+            var result = matchList.Cast<Match>().Select(match => match.Value).First();//.ToList();
+
+            result = result.GetBetween(">", "<");
+
+            return result;
+        }
+
+        public static IEnumerable<string> GetSynonyms(string word, Microsoft.Office.Interop.Word.Application wordApp)
         {
             word = word.ToLower();
 
             var found = new List<string>();
-            var wordApp = new Microsoft.Office.Interop.Word.Application();
             //var objLanguage = Microsoft.Office.Interop.Word.WdLanguageID.wdEnglishUS;
+            //var app = new Microsoft.Office.Interop.Word.Application();
             var theSynonyms = wordApp.get_SynonymInfo(word);
 
             foreach (var Meaning in theSynonyms.MeaningList as Array)
@@ -161,8 +172,10 @@ namespace AussieCake.Util
                 }
 
                 if (found.Count > 6)
-                    return found;
+                    break;
             }
+
+            //wordApp.Quit();
 
             return found;
         }

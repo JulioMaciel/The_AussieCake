@@ -92,36 +92,36 @@ namespace AussieCake.Question
                 quest.Chance_real = (quest.Chance * 100) / summed_chances;
         }
 
-        public static IQuest GetRandomQuestionWithSentence(Model type, List<int> actual_chosen)
+        public static IQuest GetRandomAvailableQuestion(Model type, List<int> actual_chosen)
         {
-            if (Get(type).First().Sentences == null)
-                LoadCrossData(type);
-
             double actual_index = 0;
 
             var quests = Get(type).Where(x => x.IsActive &&
                                               x.Sentences.Where(s => s.IsActive).Any() &&
                                               !actual_chosen.Contains(x.Id));
 
-            Parallel.ForEach(quests, quest =>
+            foreach (var quest in quests)
             {
                 actual_index += quest.Chance;
                 quest.Index_show = actual_index;
-            });
+            }
 
             var totalChances =  quests.Select(x => x.Chance).Sum();
             int pickBasedOnChance = UtilWPF.RandomNumber(0, (int)totalChances);
 
             IQuest selected = quests.First();
-            foreach( var quest in quests)
+
+            double cumulative = 0.0;
+            for (int i = 0; i < quests.Count(); i++)
             {
-                if (pickBasedOnChance < quest.Chance)
-                    selected = quest;
+                cumulative += quests.ElementAt(i).Chance;
+                if (pickBasedOnChance < cumulative)
+                {
+                    selected = quests.ElementAt(i);
+                    break;
+                }
+            }
 
-                pickBasedOnChance -= System.Convert.ToInt16(quest.Chance);
-            };
-
-            //Errors.ThrowErrorMsg(ErrorType.Inexistent, pickBasedOnChance);
             return selected;
         }
 

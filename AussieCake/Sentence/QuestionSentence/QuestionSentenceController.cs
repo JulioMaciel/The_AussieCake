@@ -30,6 +30,8 @@ namespace AussieCake.Sentence
         public static void Remove(QuestSenVM vm)
         {
             RemoveQuestionSentence(vm);
+            var editedQuest = QuestControl.Get(vm.Type).First(x => x.Id == vm.IdQuest);
+            editedQuest.LoadCrossData();
         }
 
         public static void Remove(int qs_id, Model type)

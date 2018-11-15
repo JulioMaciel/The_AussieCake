@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Data.Entity.Design.PluralizationServices;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Data.Entity.Design.PluralizationServices;
 
 namespace AussieCake.Util.WPF
 {
@@ -46,32 +46,40 @@ namespace AussieCake.Util.WPF
             return reference;
         }
 
-        public static ComboChallenge GetSynonyms(string word, ComboChallenge reference, StackPanel parent, bool isFirstUp)
+        public static ComboChallenge BuildSynonyms(string word, ComboChallenge reference, StackPanel parent, bool isFirstUp, Microsoft.Office.Interop.Word.Application wordApp)
         {
             reference.VerticalContentAlignment = VerticalAlignment.Center;
             reference.Margin = new Thickness(1, 0, 1, 0);
             parent.Children.Add(reference);
 
-            var synonyms = FileHtmlControls.GetSynonyms(word).ToList();
-
+            var synonyms = FileHtmlControls.GetSynonyms(word, wordApp).ToList();
             if (isFirstUp)
+            {
                 synonyms.ForEach(x => x.First().ToString().ToUpper());
+                word = word.UpperFirst();
+            }
 
             if (!synonyms.Any())
                 Errors.ThrowErrorMsg(ErrorType.SynonymsNotFound, word);
 
-            if (FileHtmlControls.Plural_service.IsPlural(word))
+            var service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
+            if (service.IsPlural(word))
                 for (int i = 0; i < synonyms.Count; i++)
-                    synonyms[i] = FileHtmlControls.Plural_service.Pluralize(synonyms[i]);
+                    synonyms[i] = service.Pluralize(synonyms[i]);
+
+            //var plural = word.Humanize().Pluralize(false);
+            //if (!plural.IsEmpty())
+            //{
+            //    for (int i = 0; i < synonyms.Count; i++)
+            //        synonyms[i] = synonyms[i].Humanize().Pluralize(false);
+            //}
 
             synonyms.Add(word);
-
 
             var shuffled = synonyms.OrderBy(x => Guid.NewGuid()).ToList();
 
             reference.ItemsSource = shuffled;
             reference.SelectedIndex = 0;
-
             reference.CorrectIndex = reference.Items.IndexOf(word);
 
             return reference;

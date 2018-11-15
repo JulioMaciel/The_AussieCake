@@ -86,7 +86,7 @@ namespace AussieCake.Util.WPF
             var grid = Get(row, 0, parent, 4);
             grid.Background = UtilWPF.Colour_row_off;
             grid.SnapsToDevicePixels = true;
-            grid.Margin = new Thickness(0, 2, 0, 0);
+            grid.Margin = new Thickness(0, 2, 2, 0);
 
             return grid;
         }

@@ -60,8 +60,8 @@ namespace AussieCake.Question
 
         public override void LoadCrossData()
         {
-            if (Component1 == "give" && Component2 == "information")
-                System.Diagnostics.Debug.WriteLine("debug:LoadCrossData(give_information)");
+            //if (Component1 == "give" && Component2 == "information")
+            //    System.Diagnostics.Debug.WriteLine("debug:LoadCrossData(give_information)");
 
             base.LoadCrossData();
         }
