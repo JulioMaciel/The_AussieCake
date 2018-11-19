@@ -49,7 +49,7 @@ namespace AussieCake.Challenge
 
             MyBtns.Chal_remove_att(line);
             MyLbls.Chal_id(false, line);
-            MyBtns.Chal_disable_sen(line);
+            MyBtns.Chal_unlink_sen(line);
             MyLbls.Chal_id(true, line);
             MyBtns.Chal_disable_quest(line);
 
@@ -123,8 +123,8 @@ namespace AussieCake.Challenge
             stk_sentence.VerticalAlignment = VerticalAlignment.Center;
             stk_sentence.HorizontalAlignment = HorizontalAlignment.Center;
 
-            var random_elem = UtilWPF.RandomNumber(0, line.Quest.Sentences.Where(x => x.IsActive).Count() - 1);
-            line.QS = line.Quest.Sentences.Where(x => x.IsActive).ElementAt(random_elem);
+            var random_elem = UtilWPF.RandomNumber(0, line.Quest.Sentences.Count() - 1);
+            line.QS = line.Quest.Sentences.ElementAt(random_elem);
 
             line.Choosen_word = ChooseWord(line.Quest);
             var isChoosenVerb = IsChosenVerb(line.Quest, line.Choosen_word);

@@ -25,6 +25,8 @@ namespace AussieCake.Sentence
         public static void Insert(QuestSenVM vm)
         {
             InsertQuestionSentence(vm);
+            var editedQuest = QuestControl.Get(vm.Type).First(x => x.Id == vm.IdQuest);
+            editedQuest.LoadCrossData();
         }
 
         public static void Remove(QuestSenVM vm)
@@ -40,10 +42,10 @@ namespace AussieCake.Sentence
             Remove(qs);
         }
 
-        public static void Update(QuestSenVM vm)
-        {
-            UpdateQuestSentence(vm);
-        }
+        //public static void Update(QuestSenVM vm)
+        //{
+        //    UpdateQuestSentence(vm);
+        //}
 
         public static void LoadDB(Model type)
         {

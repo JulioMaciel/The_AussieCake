@@ -31,6 +31,7 @@ namespace AussieCake.Question
             var wpf = new ColWpfItem();
 
             MyTxts.Get(wpf.Pref, 0, 0, row1, col.Prefixes.ToText());
+            wpf.Pref.ToolTip = "Id " + col.Id;
             MyTxts.Get(wpf.Comp1, 0, 1, row1, col.Component1);
             MyChBxs.IsVerb(wpf.IsComp1_v, 0, 2, row1, col.IsComp1Verb);
             MyTxts.Get(wpf.Link, 0, 3, row1, col.LinkWords.ToText());
@@ -50,7 +51,7 @@ namespace AussieCake.Question
             MyBtns.Is_active(wpf.IsActive, 0, 7, row2, col.IsActive);
             MyBtns.PtBr(wpf.Show_ptbr, 0, 8, row2, col.PtBr, wpf.Ptbr);
             MyBtns.Definition(wpf.Show_def, 0, 9, row2, col.Definition, wpf.Def);
-            MyBtns.Edit_quest(wpf.Edit, 0, 10, row2, col, wpf, item_line);
+            MyBtns.Quest_Edit(wpf.Edit, 0, 10, row2, col, wpf, item_line);
             MyBtns.Remove_quest(wpf.Remove, 0, 11, row2, col, item_line);
 
             MyTxts.Definition(wpf.Def, col.Definition, row3);

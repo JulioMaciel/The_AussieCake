@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Design.PluralizationServices;
 using System.Linq;
 using System.Windows;
@@ -84,6 +85,49 @@ namespace AussieCake.Util.WPF
 
             return reference;
         }
+
+        public static CbModelType ModelOptions (CbModelType reference, bool useAny)
+        {
+            var source = new List<ModalTypeCb>();
+
+            if (useAny)
+                source.Add(new ModalTypeCb("Any Questions"));
+
+            var quests_types = Enum.GetValues(typeof(Model)).Cast<Model>()
+                                                       .Where(x => x != Model.Sen && x != Model.Verb);
+            foreach (var type in quests_types)
+                source.Add(new ModalTypeCb(type, type.ToDesc()));
+
+            reference.ItemsSource = source;
+            reference.DisplayMemberPath = "Text";
+            reference.SelectedIndex = 0;
+
+            reference.SelectionChanged += (sender, e) => reference.SelectedModalType = ((ModalTypeCb)reference.SelectedValue).Type;
+
+            return reference;
+        }
+
+        internal class ModalTypeCb
+        {
+            public Model Type { get; set; }
+            public string Text { get; set; }
+
+            public ModalTypeCb(Model type, string text)
+            {
+                Type = type;
+                Text = text;
+            }
+
+            public ModalTypeCb(string text)
+            {
+                Text = text;
+            }
+        }
+    }
+
+    public class CbModelType : ComboBox
+    {
+        public Model SelectedModalType { get; set; }
     }
 
     public class ComboChallenge : ComboBox

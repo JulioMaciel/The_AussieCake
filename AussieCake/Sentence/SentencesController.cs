@@ -114,7 +114,7 @@ namespace AussieCake.Sentence
                 {
                     if (AutoGetSentences.DoesSenContainsCol(col, sen.Text))
                     {
-                        QuestSenControl.Insert(new QuestSenVM(col.Id, sen.Id, false, col.Type));
+                        QuestSenControl.Insert(new QuestSenVM(col.Id, sen.Id, col.Type));
                         col.LoadCrossData();
                         //col.Sentences_off.Add(sen);
                         //QuestControl.Update(col);

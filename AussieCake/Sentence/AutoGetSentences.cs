@@ -45,6 +45,25 @@ namespace AussieCake.Sentence
             return found;
         }
 
+        public static List<string> GetSentencesFromStringNonAsync(string source)
+        {
+            var sentences = GetSentencesFromSource(source);
+            QuestControl.LoadCrossData(Model.Col);
+
+            var filteredSentences = new List<string>();
+
+            foreach (var sen in sentences)
+            {
+                if (!Errors.IsNullSmallerOrBigger(sen, SenVM.MinSize, SenVM.MaxSize, false))
+                {
+                    if (DoesStartEndProperly(sen))
+                        filteredSentences.Add(sen);
+                }
+            }
+
+            return filteredSentences;
+        }
+
         private static bool DoesStartEndProperly(string s)
         {
             return ((s.EndsWith(".") && !s.EndsWith("Dr.") && !s.EndsWith("Mr.") && !s.EndsWith("Ms."))

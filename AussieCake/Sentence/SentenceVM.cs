@@ -34,12 +34,14 @@ namespace AussieCake.Sentence
 
         public void GetQuestions()
         {
+            Questions = new List<SenQuest>();
+
             foreach (var qs in QuestSenControl.Get(Model.Col))
             {
                 if (qs.IdSen == Id)
                 {
                     var quest = QuestControl.Get(Model.Col).First(x => x.Id == qs.IdQuest);
-                    var sq = new SenQuest(quest, qs.IsActive, qs.Id);
+                    var sq = new SenQuest(quest, qs.Id);
 
                     if (!Questions.Any(x => x.QS_id == qs.Id))
                         Questions.Add(sq);
@@ -52,13 +54,11 @@ namespace AussieCake.Sentence
         public class SenQuest
         {
             public IQuest Quest { get; set; }
-            public bool IsActive { get; set; }
             public int QS_id { get; set; }
 
-            public SenQuest(IQuest quest, bool isActive, int qs_id)
+            public SenQuest(IQuest quest, int qs_id)
             {
                 Quest = quest;
-                IsActive = isActive;
                 QS_id = qs_id;
             }
         }

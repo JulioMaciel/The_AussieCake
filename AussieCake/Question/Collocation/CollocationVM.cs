@@ -1,5 +1,6 @@
 ﻿using AussieCake.Util;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AussieCake.Question
 {
@@ -64,6 +65,32 @@ namespace AussieCake.Question
             //    System.Diagnostics.Debug.WriteLine("debug:LoadCrossData(give_information)");
 
             base.LoadCrossData();
+        }
+
+        public override string ToText()
+        {
+            var result = string.Empty;
+
+            result += Prefixes.Any() ? string.Join(", ", Prefixes.ToArray()) + "; " : string.Empty;
+            result += Component1.Any() ? Component1 + "; " : string.Empty;
+            result += LinkWords.Any() ? string.Join(", ", LinkWords.ToArray()) + "; " : string.Empty;
+            result += Component2.Any() ? Component2 + "; " : string.Empty;
+            result += Suffixes.Any() ? string.Join(", ", Suffixes.ToArray()) + "; " : string.Empty;
+
+            return result;
+        }
+
+        public override string ToLudwigUrl()
+        {
+            var result = "https://ludwig.guru/s/";
+
+            result += Prefixes.Any() ? Prefixes.First() + "+" : string.Empty;
+            result += Component1 + "+";
+            result += LinkWords.Any() ? LinkWords.First() + "+" : string.Empty;
+            result += Component2;
+            result += Suffixes.Any() ? "+" + Suffixes.First() : string.Empty;
+
+            return result;
         }
     }
 }

@@ -44,7 +44,7 @@ namespace AussieCake.Question
             if (SenControl.Insert(new SenVM(newSen), true))
             {
                 var added_sen = SenControl.Get().Last();
-                QuestSenControl.Insert(new QuestSenVM(quest.Id, added_sen.Id, true, quest.Type));
+                QuestSenControl.Insert(new QuestSenVM(quest.Id, added_sen.Id, quest.Type));
 
                 quest.AddLastSentence();
 
@@ -73,6 +73,12 @@ namespace AussieCake.Question
             LoadRealChances(type);
         }
 
+        public static void LoadEveryCrossData()
+        {
+            LoadCrossData(Model.Col);
+            // and so on
+        }
+
         public static void LoadDB(Model type)
         {
             if (type == Model.Col && Collocations == null)
@@ -96,9 +102,7 @@ namespace AussieCake.Question
         {
             double actual_index = 0;
 
-            var quests = Get(type).Where(x => x.IsActive &&
-                                              x.Sentences.Where(s => s.IsActive).Any() &&
-                                              !actual_chosen.Contains(x.Id));
+            var quests = Get(type).Where(x => x.IsActive && !actual_chosen.Contains(x.Id));
 
             foreach (var quest in quests)
             {

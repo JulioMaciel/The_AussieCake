@@ -33,5 +33,8 @@ namespace AussieCake.Question
 
         void LoadCrossData();
         void Disable();
+
+        string ToText();
+        string ToLudwigUrl();
     }
 }

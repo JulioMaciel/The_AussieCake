@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static AussieCake.Util.WPF.MyChBxs;
 
 namespace AussieCake.Util.WPF
 {
@@ -82,7 +83,7 @@ namespace AussieCake.Util.WPF
             };
         }
 
-        public static Button Edit_quest(Button reference, int row, int column, Grid parent, IQuest quest, QuestWpfItem wpf_item, StackPanel item_line)
+        public static Button Quest_Edit(Button reference, int row, int column, Grid parent, IQuest quest, QuestWpfItem wpf_item, StackPanel item_line)
         {
             var btn = Get(reference, row, column, parent, UtilWPF.GetIconButton("save_black"));
             btn.Click += async (source, e) =>
@@ -98,7 +99,7 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button Edit_sentence(int row, int column, Grid parent, SenVM sen, StackPanel item_line)
+        public static Button Sen_Edit(int row, int column, Grid parent, SenVM sen, StackPanel item_line, TextBox txt_sen, StackPanel stack_quests)
         {
             var btn = Get(new Button(), row, column, parent, UtilWPF.GetIconButton("save_black"));
             btn.Click += async (source, e) =>
@@ -107,10 +108,35 @@ namespace AussieCake.Util.WPF
                 await System.Threading.Tasks.Task.Delay(2000);
                 btn.Content = UtilWPF.GetIconButton("save_black");
 
-                if (!SenControl.Update(sen))
-                    return;
+                if (sen.Text != txt_sen.Text)
+                {
+                    sen.Text = txt_sen.Text;
+
+                    if (!SenControl.Update(sen))
+                        return;
+                }
+
+                var cbs = stack_quests.GetChildren<CheckQuest>();
+
+                foreach (var cb in cbs.Where(cb => cb.IsChecked.Value))
+                {
+                    if (!QuestSenControl.Get(cb.Type).Any(x => x.IdSen == sen.Id && x.IdQuest == cb.Id))
+                        QuestSenControl.Insert(new QuestSenVM(cb.Id, sen.Id, cb.Type));
+                }
+
+                foreach (var cb in cbs.Where(cb => !cb.IsChecked.Value))
+                {
+                    if (QuestSenControl.Get(cb.Type).Any(x => x.IdSen == sen.Id && x.IdQuest == cb.Id))
+                    {
+                        var uncheckedQS = QuestSenControl.Get(cb.Type).First(x => x.IdSen == sen.Id && x.IdQuest == cb.Id);
+                        QuestSenControl.Remove(uncheckedQS);
+                        //var edited_quest = QuestControl.Get(cb.Type).Where(q => q.Id == cb.Id).First();
+                        //edited_quest.LoadCrossData();
+                    }
+                }
 
                 sen = SenControl.Get().Where(q => q.Id == sen.Id).First();
+                sen.GetQuestions();
 
                 item_line.Children.Clear();
                 SentenceWpfController.AddIntoThis(sen, item_line);
@@ -286,9 +312,9 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button Chal_disable_sen(ChalLine line)
+        public static Button Chal_unlink_sen(ChalLine line)
         {
-            var btn = Get(line.Chal.Disable_sen, 0, 2, line.Chal.Row_4, "Disable sentence");
+            var btn = Get(line.Chal.Disable_sen, 0, 2, line.Chal.Row_4, "Unlink sentence");
             line.Chal.Disable_sen.Width = 125;
             line.Chal.Disable_sen.IsEnabled = false;
             line.Chal.Disable_sen.Click += (source, e) =>

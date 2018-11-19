@@ -130,9 +130,9 @@ namespace AussieCake.Context
 
         protected static bool InsertQuestionSentence(QuestSenVM vm)
         {
-            string query = string.Format(InsertSQL + "'{1}', '{2}', '{3}')",
+            string query = string.Format(InsertSQL + "'{1}', '{2}')",
                                          GetDBSentenceName(vm.Type),
-                                         vm.IdQuest, vm.IdSen, vm.IsActive.ToInt());
+                                         vm.IdQuest, vm.IdSen);
             if (!SendQuery(query))
                 return false;
 
@@ -239,28 +239,28 @@ namespace AussieCake.Context
             return true;
         }
 
-        protected static bool UpdateQuestSentence(QuestSenVM vm)
-        {
-            var old = new QuestSenVM();
+        //protected static bool UpdateQuestSentence(QuestSenVM vm)
+        //{
+        //    var old = new QuestSenVM();
 
-            if (vm.Type == Model.Col)
-                old = CollocationSentences.First(c => c.Id == vm.Id);
+        //    if (vm.Type == Model.Col)
+        //        old = CollocationSentences.First(c => c.Id == vm.Id);
 
-            int field = 0;
-            string columnsToUpdate = string.Empty;
+        //    int field = 0;
+        //    string columnsToUpdate = string.Empty;
 
-            CheckFieldUpdate("IsActive", vm.IsActive, old.IsActive, ref field, ref columnsToUpdate);
+        //    CheckFieldUpdate("IsActive", vm.IsActive, old.IsActive, ref field, ref columnsToUpdate);
 
-            if (columnsToUpdate.IsEmpty())
-                return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, columnsToUpdate);
+        //    if (columnsToUpdate.IsEmpty())
+        //        return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, columnsToUpdate);
 
-            string query = string.Format(UpdateSQL, GetDBSentenceName(vm.Type), columnsToUpdate, vm.Id);
+        //    string query = string.Format(UpdateSQL, GetDBSentenceName(vm.Type), columnsToUpdate, vm.Id);
 
-            if (!SendQuery(query))
-                return false;
+        //    if (!SendQuery(query))
+        //        return false;
 
-            return true;
-        }
+        //    return true;
+        //}
 
         #endregion
 
@@ -286,7 +286,7 @@ namespace AussieCake.Context
         private static Func<DataRow, SenVM> GetDatarowSentences()
         {
             return dataRow => new SenVM(
-                                Convert.ToInt16(dataRow.Field<Int64>("Id")),
+                                Convert.ToInt32(dataRow.Field<Int64>("Id")),
                                 dataRow.Field<string>("Text")
                               );
         }
@@ -305,10 +305,9 @@ namespace AussieCake.Context
         private static Func<DataRow, QuestSenVM> GetDatarowQuestSentences(Model type)
         {
             return dataRow => new QuestSenVM(
-                        Convert.ToInt16(dataRow.Field<Int64>("Id")),
-                        Convert.ToInt16(dataRow.Field<Int64>("IdCollocation")),
-                        Convert.ToInt16(dataRow.Field<Int64>("IdSentence")),
-                        Convert.ToBoolean(Convert.ToInt16(dataRow.Field<Int64>("IsActive"))),
+                        Convert.ToInt32(dataRow.Field<Int64>("Id")),
+                        Convert.ToInt32(dataRow.Field<Int64>("IdCollocation")),
+                        Convert.ToInt32(dataRow.Field<Int64>("IdSentence")),
                         type
                      );
         }
@@ -423,7 +422,6 @@ namespace AussieCake.Context
                 "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                 "'IdCollocation' INTEGER NOT NULL, " +
                 "'IdSentence' INTEGER NOT NULL, " +
-                "'IsActive' INTEGER NOT NULL, " +
                 "FOREIGN KEY('IdSentence') REFERENCES 'Sentence'('Id'), " +
                 "FOREIGN KEY('IdCollocation') REFERENCES 'Collocation'('Id') ) "))
                 return false;

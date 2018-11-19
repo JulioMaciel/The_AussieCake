@@ -96,7 +96,8 @@ namespace AussieCake.Question
             foreach (ColVM col in Filtered_quests.Take(30))
                 ColWpfController.AddIntoItems(stk_items, col, false);
 
-            Footer.Log(Filtered_quests.Take(30).Count() + " collocations loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
+            Footer.Log("Showing " + Filtered_quests.Take(30).Count() + " collocations of a total of " + Filtered_quests.Count() + 
+                       ". Loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
         }
 
     }

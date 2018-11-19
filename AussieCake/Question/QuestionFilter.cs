@@ -108,42 +108,42 @@ namespace AussieCake.Question
 
             if (!wpf_header.Txt_avg_w.Text.IsEmpty())
             {
-                if (Errors.IsNotDigitsOnly(wpf_header.Txt_avg_w.Text))
+                if (!Errors.IsDigitsOnly(wpf_header.Txt_avg_w.Text))
                     return;
 
                 Filtered_quests = Filtered_quests.Where(q => q.Avg_week >= Convert.ToInt16(wpf_header.Txt_avg_w.Text)).ToList();
             }
             if (!wpf_header.Txt_avg_m.Text.IsEmpty())
             {
-                if (Errors.IsNotDigitsOnly(wpf_header.Txt_avg_m.Text))
+                if (!Errors.IsDigitsOnly(wpf_header.Txt_avg_m.Text))
                     return;
 
                 Filtered_quests = Filtered_quests.Where(q => q.Avg_month >= Convert.ToInt16(wpf_header.Txt_avg_m.Text)).ToList();
             }
             if (!wpf_header.Txt_avg_all.Text.IsEmpty())
             {
-                if (Errors.IsNotDigitsOnly(wpf_header.Txt_avg_all.Text))
+                if (!Errors.IsDigitsOnly(wpf_header.Txt_avg_all.Text))
                     return;
 
                 Filtered_quests = Filtered_quests.Where(q => q.Avg_all >= Convert.ToInt16(wpf_header.Txt_avg_all.Text)).ToList();
             }
             if (!wpf_header.Txt_tries.Text.IsEmpty())
             {
-                if (Errors.IsNotDigitsOnly(wpf_header.Txt_tries.Text))
+                if (!Errors.IsDigitsOnly(wpf_header.Txt_tries.Text))
                     return;
 
                 Filtered_quests = Filtered_quests.Where(q => q.Tries.Count >= Convert.ToInt16(wpf_header.Txt_tries.Text)).ToList();
             }
             if (!wpf_header.Txt_sen.Text.IsEmpty())
             {
-                if (Errors.IsNotDigitsOnly(wpf_header.Txt_sen.Text))
+                if (!Errors.IsDigitsOnly(wpf_header.Txt_sen.Text))
                     return;
 
-                Filtered_quests = Filtered_quests.Where(q => q.Sentences.Count >= Convert.ToInt16(wpf_header.Txt_sen.Text)).ToList();
+                Filtered_quests = Filtered_quests.Where(q => q.Sentences.Count == Convert.ToInt16(wpf_header.Txt_sen.Text)).ToList();
             }
             if (!wpf_header.Txt_chance.Text.IsEmpty())
             {
-                if (Errors.IsNotDigitsOnly(wpf_header.Txt_chance.Text))
+                if (!Errors.IsDigitsOnly(wpf_header.Txt_chance.Text))
                     return;
 
                 Filtered_quests = Filtered_quests.Where(q => q.Chance >= Convert.ToInt16(wpf_header.Txt_chance.Text)).ToList();

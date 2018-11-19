@@ -1,11 +1,9 @@
-﻿using AussieCake.Question;
-using AussieCake.Util;
+﻿using AussieCake.Util;
 using AussieCake.Util.WPF;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -16,12 +14,11 @@ namespace AussieCake.Sentence
     /// </summary>
     public partial class Sentences : UserControl
     {
-        bool btn_filter_was;
         bool btn_insert_was;
-        bool btn_get_books_was;
         bool btn_get_web_was;
         bool btn_get_text_was;
-        bool btn_link_was;
+        bool btn_import_text_was;
+
 
         public Sentences()
         {
@@ -29,24 +26,9 @@ namespace AussieCake.Sentence
 
             LoadSentencesOnGrid(false);
 
-            PopulateCbQuestionType();
+            MyCbBxs.ModelOptions(cb_QuestType, true);
 
             txt_input.Focus();
-        }
-
-        private void PopulateCbQuestionType()
-        {
-            var source = new List<ModalTypeCb>();
-            source.Add(new ModalTypeCb("Any"));
-            
-            var quests_types = Enum.GetValues(typeof(Model)).Cast<Model>()
-                                                       .Where(x => x != Model.Sen && x != Model.Verb);
-            foreach(var type in quests_types)
-                source.Add(new ModalTypeCb(type, type.ToDesc()));
-
-            cb_QuestType.ItemsSource = source;
-            cb_QuestType.DisplayMemberPath = "Text";
-            cb_QuestType.SelectedIndex = 0;
         }
 
         private void LoadSentencesOnGrid(bool isGridUpdate)
@@ -72,9 +54,10 @@ namespace AussieCake.Sentence
 
             if (SenControl.Insert(vm, true))
             {
-                LoadSentencesOnGrid(true);
+                //LoadSentencesOnGrid(true);
                 txt_input.Text = string.Empty;
-                //btnInsert.IsEnabled = true;
+                var added = SenControl.Get().Last();
+                SentenceWpfController.AddIntoItems(stk_sentences, added, true);
 
                 Footer.Log("The sentence has been inserted.");
             }
@@ -96,10 +79,18 @@ namespace AussieCake.Sentence
             RestoreBtnUIStatus();
         }
 
-        private async void GetFromBooks_Click(object sender, RoutedEventArgs e)
+        private async void ImportFromBooks_Click(object sender, RoutedEventArgs e)
         {
             SaveBtnUIStatus();
             var sentencesFound = await FileHtmlControls.SaveSentencesFromTxtBooks();
+            InsertLinkLoad(sentencesFound);
+            RestoreBtnUIStatus();
+        }
+
+        private async void btnImportFromWeb_Click(object sender, RoutedEventArgs e)
+        {
+            SaveBtnUIStatus();
+            var sentencesFound = await FileHtmlControls.ImportSentencesFromLudwig(cb_QuestType.SelectedModalType);
             InsertLinkLoad(sentencesFound);
             RestoreBtnUIStatus();
         }
@@ -137,8 +128,8 @@ namespace AussieCake.Sentence
         {
             btnGetWeb.IsEnabled = false;
             btnGetText.IsEnabled = false;
-            btnGetBooks.IsEnabled = false;
             btnInsert.IsEnabled = false;
+            btnImportWeb.IsEnabled = false;
         }
 
         private void lblInput_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -163,10 +154,7 @@ namespace AussieCake.Sentence
             List<(int, int)> links_found = new List<(int, int)>();
 
             if (cb_QuestType.SelectedIndex != 0)
-            {
-                var selected_type = ((ModalTypeCb)cb_QuestType.SelectedValue).Type;
-                links_found = await SentenceWpfController.LinkQuestType(stk_sentences, selected_type, watcher);
-            }
+                links_found = await SentenceWpfController.LinkQuestType(stk_sentences, cb_QuestType.SelectedModalType, watcher);
             else
             {
                 links_found.AddRange(await SentenceWpfController.LinkQuestType(stk_sentences, Model.Col, watcher));
@@ -218,8 +206,7 @@ namespace AussieCake.Sentence
 
                 if (cb_QuestType.SelectedIndex != 0)
                 {
-                    var selected_type = ((ModalTypeCb)cb_QuestType.SelectedValue).Type;
-                    if (!sen.Questions.Any(x => x.Quest.Type == selected_type))
+                    if (!sen.Questions.Any(x => x.Quest.Type == cb_QuestType.SelectedModalType))
                         continue;
                 }
 
@@ -235,39 +222,39 @@ namespace AussieCake.Sentence
 
         private void SaveBtnUIStatus()
         {
-            btn_filter_was = btnFilter.IsEnabled;
             btn_insert_was = btnInsert.IsEnabled;
-            btn_get_books_was = btnGetBooks.IsEnabled;
             btn_get_web_was = btnGetWeb.IsEnabled;
             btn_get_text_was = btnGetText.IsEnabled;
-            btn_link_was = btnLink.IsEnabled;
+            btn_import_text_was = btnImportWeb.IsEnabled;
+            btnFilter.IsEnabled = false;
+            btnGetBooks.IsEnabled = false;
+            btnLink.IsEnabled = false;
+
         }
 
         private void RestoreBtnUIStatus()
         {
-            btnFilter.IsEnabled = btn_filter_was;
             btnInsert.IsEnabled = btn_insert_was;
-            btnGetBooks.IsEnabled = btn_get_books_was;
             btnGetWeb.IsEnabled = btn_get_web_was;
             btnGetText.IsEnabled = btn_get_text_was;
-            btnLink.IsEnabled = btn_link_was;
+            btnImportWeb.IsEnabled = btn_import_text_was;
+            btnFilter.IsEnabled = true;
+            btnGetBooks.IsEnabled = true;
+            btnLink.IsEnabled = true;
         }
 
-        internal class ModalTypeCb
+        private void txt_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            public Model Type { get; set; }
-            public string Text { get; set; }
+            if (e.Key == System.Windows.Input.Key.Enter)
+                Filter();
+        }
 
-            public ModalTypeCb(Model type, string text)
-            {
-                Type = type;
-                Text = text;
-            }
-
-            public ModalTypeCb(string text)
-            {
-                Text = text;
-            }
+        private void cb_QuestType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cb_QuestType.SelectedIndex != 0)
+                btnImportWeb.IsEnabled = true;
+            else
+                btnImportWeb.IsEnabled = false;
         }
     }
 }

@@ -37,10 +37,10 @@ namespace AussieCake.Sentence
             item_line.Children.Add(row3);
 
             var stack_quests = new StackPanel();
-
-            var btn_edit = MyBtns.Edit_sentence(0, 2, row1, sen, item_line);
-
             var txt_sen = new TextBox();
+
+            var btn_edit = MyBtns.Sen_Edit(0, 2, row1, sen, item_line, txt_sen, stack_quests);
+
             MyTxts.Get(txt_sen, 0, 0, row1, sen.Text);
             txt_sen.TextChanged += (source, e) => CheckIfItemWasEdited(sen, txt_sen, btn_edit);
 
@@ -57,7 +57,6 @@ namespace AussieCake.Sentence
 
             if (wasTextEdited)
             {
-
                 btn_edit.IsEnabled = true;
                 btn_edit.Content = UtilWPF.GetIconButton("save");
             }
@@ -77,10 +76,15 @@ namespace AussieCake.Sentence
 
             foreach (var qs in links_found)
             {
-                QuestSenControl.Insert(new QuestSenVM(qs.Item1, qs.Item2, true, type));
-                var item_line = stk_sentences.Children.OfType<StackPanel>().First(x => x.Name == "line_" + qs.Item2);
-                var sen = SenControl.Get().First(x => x.Id == qs.Item2);
-                AddIntoThis(sen, item_line);
+                QuestSenControl.Insert(new QuestSenVM(qs.Item1, qs.Item2, type));
+
+                var item_line = new StackPanel();
+                if (stk_sentences.Children.OfType<StackPanel>().Any(x => x.Name == "line_" + qs.Item2))
+                {
+                    item_line = stk_sentences.Children.OfType<StackPanel>().First(x => x.Name == "line_" + qs.Item2);
+                    var sen = SenControl.Get().First(x => x.Id == qs.Item2);
+                    AddIntoThis(sen, item_line);
+                }
             }
 
             return links_found;
@@ -88,7 +92,6 @@ namespace AussieCake.Sentence
 
         public async static Task<List<(int, int)>> LinkQuestToSentences(Model type, Stopwatch watcher)
         {
-            var result = new List<string>();
             var links_found = new List<(int, int)>();
             var quests = QuestControl.Get(type).Where(x => x.Sentences.Count <= 5);
             int actual = 1;
@@ -107,7 +110,8 @@ namespace AussieCake.Sentence
                 }
 
                 var log = "Analysing " + type.ToDesc()  + " " + actual + " of " + quests.Count() + ". ";
-                log += result.Count + " sentences added in " + Math.Round(watcher.Elapsed.TotalSeconds, 1) + " seconds. ";
+                log += links_found.Count + " sentences are suitable to " + type.ToDesc() + "s. " +
+                "Time elapsed: " + Math.Round(watcher.Elapsed.TotalSeconds, 1) + " seconds. ";
 
                 if (actual > 5)
                 {

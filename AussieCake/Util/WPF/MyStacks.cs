@@ -1,7 +1,10 @@
 ﻿using AussieCake.Question;
 using AussieCake.Sentence;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -60,35 +63,98 @@ namespace AussieCake.Util.WPF
 
         public static StackPanel Sen_quests(StackPanel reference, SenVM sen, StackPanel parent)
         {
-            var stack = Get(reference, parent);
-            stack.Visibility = Visibility.Collapsed;
-            stack.Orientation = Orientation.Horizontal;
+            var stk = Get(reference, parent);
+            stk.Visibility = Visibility.Collapsed;
+
+            var stk_col = StackModel(Model.Col, stk);
 
             foreach (var sq in sen.Questions)
             {
-                var lbl = new Label();
-                if (sq.Quest is ColVM)
+                var check = new CheckQuest(sq.Quest, true);
+                if (sq.Quest.Type == Model.Col)
                 {
-                    var col = sq.Quest as ColVM;
-                    lbl.Content += col.Prefixes.Any() ? string.Join(", ", col.Prefixes.ToArray()) + "; " : string.Empty;
-                    lbl.Content += col.Component1.Any() ? col.Component1 + "; " : string.Empty;
-                    lbl.Content += col.LinkWords.Any() ? string.Join(", ", col.LinkWords.ToArray()) + "; " : string.Empty;
-                    lbl.Content += col.Component2.Any() ? col.Component2 + "; " : string.Empty;
-                    lbl.Content += col.Suffixes.Any() ? string.Join(", ", col.Suffixes.ToArray()) + "; " : string.Empty;
-                    lbl.Content += "(Col)";
-                    lbl.ToolTip = "Collocation Id " + col.Id + "; Click to copy";
-                    lbl.MouseLeftButtonDown += (source, e) =>
-                    {
-                        Clipboard.SetText(col.Id.ToString());
-                        lbl.Foreground = Brushes.DarkGreen;
-                    };
+                    stk_col.Children.Add(check);
+                    stk_col.Visibility = Visibility.Visible;
                 }
-                reference.Children.Add(lbl);
-                lbl.MouseEnter += new MouseEventHandler((source, e) => lbl.Foreground = Brushes.DarkRed);
-                lbl.MouseLeave += new MouseEventHandler((source, e) => lbl.Foreground = Brushes.Black);
+                // and so on
             }
 
-            return stack;
+            var stk_search = new StackPanel();
+            stk.Children.Add(stk_search);
+
+            var stk_buttons = new StackPanel();
+            stk_buttons.Orientation = Orientation.Horizontal;
+            stk_search.Children.Add(stk_buttons);
+
+            var stk_result = new StackPanel();
+            stk_search.Children.Add(stk_result);
+
+            var cb_Type = MyCbBxs.ModelOptions(new CbModelType(), false);
+            cb_Type.Margin = new Thickness(0, 0, 4, 0);
+            stk_buttons.Children.Add(cb_Type);
+
+            var btn_search = new Button();
+            btn_search.Content = "Search suitable quest links";
+            btn_search.Width = 200;
+            stk_buttons.Children.Add(btn_search);
+            btn_search.Click += async (source, e) =>
+            {
+                QuestControl.LoadEveryCrossData();
+
+                var watcher = new Stopwatch();
+                watcher.Start();
+
+                var suitable_quests = new List<IQuest>();
+
+                var quests = QuestControl.Get(cb_Type.SelectedModalType);
+                int actual = 1;
+                var task = quests.Select(quest => Task.Factory.StartNew(() =>
+                {
+                    if (cb_Type.SelectedModalType == Model.Col)
+                    {
+                        if (AutoGetSentences.DoesSenContainsCol((ColVM)quest, sen.Text))
+                        {
+                            if (!QuestSenControl.Get(cb_Type.SelectedModalType).Any(qs => qs.IdQuest == quest.Id && qs.IdSen == sen.Id))
+                                suitable_quests.Add(quest);
+                        }
+                    }
+
+                    var log = "Analysing " + cb_Type.SelectedModalType.ToDesc() + " " + actual + " of " + quests.Count() + ". ";
+
+                    Footer.Log(log);
+                    actual = actual + 1;
+                }));
+                await Task.WhenAll(task);
+
+                foreach (var quest in suitable_quests)
+                {
+                    if (!stk_result.Children.OfType<CheckQuest>().Any(x => x.Id == quest.Id))
+                    {
+
+                        var check_suitable = new CheckQuest(quest, false);
+                        check_suitable.Content += " (" + quest.Type.ToDesc().Substring(0, 3) + ")";
+                        stk_result.Children.Add(check_suitable);
+                    }
+                }
+
+                Footer.Log(suitable_quests.Count + " suitable questions were found to this sentence. " +
+                            "Time spent: " + Math.Round(watcher.Elapsed.TotalSeconds, 2) + " seconds.");
+            };
+
+            return stk;
+        }
+
+        private static StackPanel StackModel(Model type, StackPanel parent)
+        {
+            var stack_type = new StackPanel();
+            stack_type.Orientation = Orientation.Horizontal;
+            stack_type.Visibility = Visibility.Collapsed;
+            parent.Children.Add(stack_type);
+            var lbl_col = new Label();
+            lbl_col.Content = type.ToDesc() + "s:";
+            stack_type.Children.Add(lbl_col);
+
+            return stack_type;
         }
 
         public static StackPanel Get(StackPanel reference, StackPanel parent)
@@ -115,20 +181,13 @@ namespace AussieCake.Util.WPF
         {
             foreach (var qs in quest.Sentences)
             {
-                var stk_sen_line = Get(stackSentences);
-                stk_sen_line.Orientation = Orientation.Horizontal;
-
-                var btn_active = MyBtns.GetIsActive(stk_sen_line, qs.IsActive);
-                btn_active.Margin = new Thickness(0, 0, 2, 0);
-                btn_active.VerticalAlignment = VerticalAlignment.Center;
-
                 var check = new CheckBoxSen
                 {
                     Content = qs.Sen.Text,
                     QS = qs,
                     IsChecked = true,
                 };
-                check.MouseRightButtonDown += (source, e) => 
+                check.MouseRightButtonDown += (source, e) =>
                 {
                     Clipboard.SetText(qs.Sen.Text);
                     check.Foreground = Brushes.DarkGreen;
@@ -137,7 +196,7 @@ namespace AussieCake.Util.WPF
                 check.MouseEnter += new MouseEventHandler((source, e) => check.Foreground = Brushes.DarkRed);
                 check.MouseLeave += new MouseEventHandler((source, e) => check.Foreground = Brushes.Black);
                 check.VerticalContentAlignment = VerticalAlignment.Center;
-                stk_sen_line.Children.Add(check);
+                stackSentences.Children.Add(check);
             }
         }
     }

@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace AussieCake.Util
 {
@@ -30,11 +32,6 @@ namespace AussieCake.Util
             var idx2 = text.IndexOf(endsAt);
             return text.Substring(idx1, idx2 - idx1);
         }
-
-        //public static bool IsPlural(this string text)
-        //{
-        //    return PluralNounHelper.GetPlural(text) == text;
-        //}
 
         public static string GetBetween(this string text, string startsAt, string endsAt)
         {
@@ -213,6 +210,22 @@ namespace AussieCake.Util
                 BindingFlags.NonPublic | BindingFlags.Instance);
             EventHandlerList list = (EventHandlerList)pi.GetValue(b, null);
             list.RemoveHandler(obj, list[obj]);
+        }
+
+        public static IEnumerable<T> GetChildren<T>(this DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                        yield return (T)child;
+
+                    foreach (T childOfChild in GetChildren<T>(child))
+                        yield return childOfChild;
+                }
+            }
         }
     }
 }

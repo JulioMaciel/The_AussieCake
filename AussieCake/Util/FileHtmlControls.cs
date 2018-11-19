@@ -1,4 +1,5 @@
-﻿using AussieCake.Sentence;
+﻿using AussieCake.Question;
+using AussieCake.Sentence;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -50,6 +51,65 @@ namespace AussieCake.Util
                 allStringBooks += File.ReadAllText(path);
 
             return await AutoGetSentences.GetSentencesFromString(allStringBooks);
+        }
+
+        public async static Task<List<string>> ImportSentencesFromLudwig(Model type)
+        {
+            Footer.Log("The import sentences from web has just started. It may take a time to finish.");
+            var watcher = new Stopwatch();
+            watcher.Start();
+
+            var filteredSentences = new List<string>();
+            var result = new List<string>();
+
+            QuestControl.LoadCrossData(type);
+
+            int actual = 1;
+            var tasks = QuestControl.Get(type).Where(x => x.Sentences.Count <= 5).Select(col => Task.Factory.StartNew(() =>
+            {
+                string htmlCode = string.Empty;
+                var url = col.ToLudwigUrl();
+
+                try
+                {
+                    using (WebClient client = new WebClient())
+                        htmlCode = client.DownloadString(url);
+                }
+                catch (WebException e)
+                {
+                    Debug.WriteLine(url + " : " + e.Message);
+                }
+
+                string source = CleanHtmlCode(htmlCode);
+
+                filteredSentences = AutoGetSentences.GetSentencesFromStringNonAsync(source);
+
+                foreach (var sen in filteredSentences)
+                {
+                    if (type == Model.Col)
+                    {
+                        if (AutoGetSentences.DoesSenContainsCol((ColVM)col, sen) && !result.Contains(sen))
+                            result.Add(sen);
+                    }
+                }
+
+                var log = "Analysing " + filteredSentences.Count + " sentences for collocation " +
+                                 actual + " of " + QuestControl.Get(type).Count() + ". ";
+                log += result.Count + " suitable sentences found in " + Math.Round(watcher.Elapsed.TotalSeconds, 2) + " seconds. ";
+
+                if (actual > 10)
+                {
+                    var quant_missing = QuestControl.Get(type).Count() - actual;
+                    var time_to_finish = (watcher.Elapsed.TotalSeconds * quant_missing) / actual;
+                    log += "It must finish in " + Math.Round(time_to_finish, 2) + " seconds.";
+                }
+
+                Footer.Log(log);
+                actual = actual + 1;
+            }));
+            await Task.WhenAll(tasks);
+
+            return result;
         }
 
         private static string CleanHtmlCode(string htmlCode)

@@ -1,7 +1,8 @@
 ﻿using AussieCake.Question;
-using AussieCake.Sentence;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace AussieCake.Util.WPF
 {
@@ -41,10 +42,33 @@ namespace AussieCake.Util.WPF
             return reference;
         }
 
+        public class CheckQuest : CheckBox
+        {
+            public Model Type { get; set; }
+            public int Id { get; set; }
+
+            public CheckQuest(IQuest quest, bool isChecked)
+            {
+                Content = quest.ToText();
+
+                MouseEnter += new MouseEventHandler((source, e) => Foreground = Brushes.DarkRed);
+                MouseLeave += new MouseEventHandler((source, e) => Foreground = Brushes.Black);
+                ToolTip = "Question Id " + quest.Id + "; Click to copy";
+                Type = Model.Col;
+                Id = quest.Id;
+                IsChecked = isChecked;
+                VerticalContentAlignment = VerticalAlignment.Center;
+                MouseLeftButtonDown += (source, e) =>
+                {
+                    Clipboard.SetText(quest.Id.ToString());
+                    Foreground = Brushes.DarkGreen;
+                };
+            }
+
+        }
+
         public class CheckBoxSen : CheckBox
         {
-            //public int SenId { get; set; }
-            //public SenVM Sen { get; set; }
             public QuestSen QS { get; set; }
         }
     }

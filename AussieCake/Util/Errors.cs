@@ -28,7 +28,7 @@ namespace AussieCake.Util
             return false;
         }
 
-        public static bool IsNotDigitsOnly(string input)
+        public static bool IsDigitsOnly(string input)
         {
             if (!input.IsDigitsOnly())
                 return ThrowErrorMsg(ErrorType.InvalidCharacters, input);

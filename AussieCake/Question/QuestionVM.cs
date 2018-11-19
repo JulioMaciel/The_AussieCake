@@ -34,8 +34,6 @@ namespace AussieCake.Question
 
         protected bool IsReal { get; set; } = false;
 
-        //private List<int> SentencesId { get; set; }
-
         protected QuestVM(int id, string definition, string ptBr, Importance importance, bool isActive, Model type)
             : this(definition, ptBr, importance, isActive, type)
         {
@@ -64,8 +62,6 @@ namespace AussieCake.Question
 
             LastTry = Tries.Any() ? Tries.Last() : null;
 
-            //var test = GetAverageScoreByTime(7);
-
             Avg_week = Math.Round(GetAverageScoreByTime(7), 2);
             Avg_month = Math.Round(GetAverageScoreByTime(30), 2);
             Avg_all = Math.Round(GetAverageScoreByTime(2000), 2);
@@ -83,7 +79,7 @@ namespace AussieCake.Question
             var qs = QuestSenControl.Get(Type).Last();
             var sen = SenControl.Get().First(x => x.Id == qs.IdSen);
 
-            Sentences.Add(new QuestSen(sen, qs.IsActive, qs.Id));
+            Sentences.Add(new QuestSen(sen, qs.Id));
         }
 
         private double GetAverageScoreByTime(int lastDays)
@@ -111,7 +107,7 @@ namespace AussieCake.Question
                     continue;
 
                 var sen = SenControl.Get().First(x => x.Id == qs.IdSen);
-                Sentences.Add(new QuestSen(sen, qs.IsActive, qs.Id));
+                Sentences.Add(new QuestSen(sen, qs.Id));
             }
         }
 
@@ -165,6 +161,16 @@ namespace AussieCake.Question
                 "avg_all (40%) + ")) + "\n";
             Chance_toolTip += lastTry_score + " (lastTry) + " + lastWasWrong + " (lastWrong) + " + imp_score + " (imp)";
         }
+
+        public virtual string ToText()
+        {
+            return string.Empty;
+        }
+
+        public virtual string ToLudwigUrl()
+        {
+            return string.Empty;
+        }
     }
 
     public class DateTry
@@ -182,13 +188,11 @@ namespace AussieCake.Question
     public class QuestSen
     {
         public SenVM Sen { get; set; }
-        public bool IsActive { get; set; }
         public int QS_id { get; set; }
 
-        public QuestSen(SenVM sen, bool isActive, int qs_id)
+        public QuestSen(SenVM sen, int qs_id)
         {
             Sen = sen;
-            IsActive = isActive;
             QS_id = qs_id;
         }
     }

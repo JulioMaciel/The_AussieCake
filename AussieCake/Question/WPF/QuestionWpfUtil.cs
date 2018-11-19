@@ -82,10 +82,6 @@ namespace AussieCake
             foreach (var stk in wpf_item.Stk_sen.Children.OfType<StackPanel>())
                 cbs.Add(stk.Children.OfType<CheckBoxSen>().First());
 
-            List<ButtonActive> bts = new List<ButtonActive>();
-            foreach (var stk in wpf_item.Stk_sen.Children.OfType<StackPanel>())
-                bts.Add(stk.Children.OfType<ButtonActive>().First());
-
             for (int i = 0; i < cbs.Count(); i++)
             {
                 var cb = cbs.ElementAt(i);
@@ -93,10 +89,7 @@ namespace AussieCake
                 if (!cb.IsChecked.Value)
                     continue;
 
-                var bt = bts.ElementAt(i);
-                //var sen = SenControl.Get().First(x => x.Id == cb.SenId);
-
-                modifiedSenIds.Add(new QuestSen(cb.QS.Sen, bt.IsActived, cb.QS.QS_id));
+                modifiedSenIds.Add(new QuestSen(cb.QS.Sen, cb.QS.QS_id));
             }
 
             return modifiedSenIds;
@@ -119,18 +112,18 @@ namespace AussieCake
                 QuestSenControl.Remove(vm);
             }
 
-            foreach (var qs in qss)
-            {
-                var db = QuestSenControl.Get(edited.Type).First(x => x.Id == qs.QS_id);
-                var old = db.IsActive;
-                var modified = qs.IsActive;
+            //foreach (var qs in qss)
+            //{
+            //    var db = QuestSenControl.Get(edited.Type).First(x => x.Id == qs.QS_id);
+            //    var old = db.IsActive;
+            //    var modified = qs.IsActive;
 
-                if (old != modified)
-                {
-                    db.IsActive = modified;
-                    QuestSenControl.Update(db);
-                }
-            }
+            //    if (old != modified)
+            //    {
+            //        db.IsActive = modified;
+            //        QuestSenControl.Update(db);
+            //    }
+            //}
 
             edited = QuestControl.Get(quest.Type).Where(q => q.Id == quest.Id).First();
             edited.LoadCrossData();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AussieCake.Sentence;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
