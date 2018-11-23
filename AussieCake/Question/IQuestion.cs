@@ -11,7 +11,6 @@ namespace AussieCake.Question
         string PtBr { get; }
         string Definition { get; }
         Importance Importance { get; }
-        List<QuestSen> Sentences { get; }
 
         Model Type { get; }
 
@@ -29,7 +28,6 @@ namespace AussieCake.Question
         double Index_show { get; set; }
 
         void RemoveAllAttempts();
-        void AddLastSentence();
 
         void LoadCrossData();
         void Disable();

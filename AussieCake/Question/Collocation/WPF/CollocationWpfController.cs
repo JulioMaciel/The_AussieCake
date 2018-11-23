@@ -21,7 +21,7 @@ namespace AussieCake.Question
             }, item_line);
 
             var row2 = MyGrids.GetRowItem(new List<int>() {
-                2, 3, 2, 2, 2, 3, 2, 1, 1, 1, 1, 1
+                3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1
             }, item_line);
 
             var row3 = new StackPanel();
@@ -38,7 +38,7 @@ namespace AussieCake.Question
             MyTxts.Get(wpf.Comp2, 0, 4, row1, col.Component2);
             MyChBxs.IsVerb(wpf.IsComp2_v, 0, 5, row1, col.IsComp2Verb);
             MyTxts.Get(wpf.Suff, 0, 6, row1, col.Suffixes.ToText());
-            MyCbBxs.GetImportance(wpf.Imp, 0, 7, row1, col.Importance, false);
+            MyCbBxs.Importance(wpf.Imp, 0, 7, row1, col.Importance, false);
 
             MyLbls.AvgScore(wpf.Avg_w, 0, 0, row2, col, 7);
             MyLbls.AvgScore(wpf.Avg_m, 0, 1, row2, col, 30);
@@ -47,16 +47,14 @@ namespace AussieCake.Question
             MyLbls.LastTry(wpf.Last_try, 0, 4, row2, col);
             MyLbls.Chance(wpf.Chance, 0, 5, row2, col);
 
-            MyBtns.Show_sentences(wpf.Show_sen, 0, 6, row2, col, wpf.Stk_sen);
-            MyBtns.Is_active(wpf.IsActive, 0, 7, row2, col.IsActive);
-            MyBtns.PtBr(wpf.Show_ptbr, 0, 8, row2, col.PtBr, wpf.Ptbr);
-            MyBtns.Definition(wpf.Show_def, 0, 9, row2, col.Definition, wpf.Def);
-            MyBtns.Quest_Edit(wpf.Edit, 0, 10, row2, col, wpf, item_line);
-            MyBtns.Remove_quest(wpf.Remove, 0, 11, row2, col, item_line);
+            MyBtns.Is_active(wpf.IsActive, 0, 6, row2, col.IsActive);
+            MyBtns.PtBr(wpf.Show_ptbr, 0, 7, row2, col.PtBr, wpf.Ptbr);
+            MyBtns.Definition(wpf.Show_def, 0, 8, row2, col.Definition, wpf.Def);
+            MyBtns.Quest_Edit(wpf.Edit, 0, 9, row2, col, wpf, item_line);
+            MyBtns.Remove_quest(wpf.Remove, 0, 10, row2, col, item_line);
 
             MyTxts.Definition(wpf.Def, col.Definition, row3);
             MyTxts.PtBr(wpf.Ptbr, col.PtBr, row3);
-            MyStacks.Sentences(wpf.Stk_sen, col, row3);
 
             MyTxts.Add_sentence(wpf.Add_sen, wpf.Stk_sen);
         }

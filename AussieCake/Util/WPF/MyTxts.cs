@@ -1,5 +1,4 @@
-﻿using AussieCake.Question;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace AussieCake.Util.WPF
@@ -38,6 +37,18 @@ namespace AussieCake.Util.WPF
             return Get(reference, row, column, parent, string.Empty);
         }
 
+        public static TextBox Bulk_Insert(TextBox reference, Grid parent)
+        {
+            reference.Text = "// format:  prefixe,comp1(vn),link,comp2(vn),suffix";
+            reference.Text += "\n// isVerb: (v) yes, (n) no, without () let algorythm decides\n";
+            reference.TextWrapping = TextWrapping.Wrap;
+            reference.AcceptsReturn = true;
+            UtilWPF.SetGridPosition(reference, 0, 0, parent);
+            Grid.SetRowSpan(reference, 3);
+
+            return reference;
+        }
+
         public static TextBox Get(TextBox reference, StackPanel parent)
         {
             return Get(reference, string.Empty, parent);
@@ -46,7 +57,6 @@ namespace AussieCake.Util.WPF
         public static TextBox Get(TextBox reference, int row, int column, Grid parent, string content)
         {
             var txt = Get(reference, content);
-            //txt.MouseDoubleClick += (source, e) => txt.Text = Clipboard.GetText();
             UtilWPF.SetGridPosition(txt, row, column, parent);
 
             return txt;

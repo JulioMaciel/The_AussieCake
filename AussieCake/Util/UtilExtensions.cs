@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AussieCake.Verb;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -179,6 +180,22 @@ namespace AussieCake.Util
             return Regex.IsMatch(str, @"^[a-zA-Z]+$");
         }
 
+        public static bool IsLettersOnly(this string str, char exception)
+        {
+            return Regex.IsMatch(str, @"^[a-zA-Z" + exception + "]+$");
+        }
+
+        public static bool HasLettersOnly(this List<string> list)
+        {
+            foreach (var str in list)
+            {
+                if (!str.IsLettersOnly())
+                    return false;
+            }
+
+            return true;
+        }
+
         public static string UpperFirst(this string str)
         {
             return char.ToUpper(str[0]) + str.Substring(1).ToLower();
@@ -197,6 +214,36 @@ namespace AussieCake.Util
                                                         .Where(n => n.HasValue)
                                                         .Select(n => n.Value)
                                                         .ToList();
+        }
+
+        public static T PickRandom<T>(this IEnumerable<T> source)
+        {
+            return source.Shuffle().First();
+        }
+
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> source)
+        {
+            return source.OrderBy(x => Guid.NewGuid());
+        }
+
+        public static bool IsVerb(this string word)
+        {
+            if (VerbsController.Get().Any(v => v.Infinitive.EqualsNoCase(word)))
+                return true;
+
+            if (VerbsController.Get().Any(v => v.Gerund.EqualsNoCase(word)))
+                return true;
+
+            if (VerbsController.Get().Any(v => v.Past.EqualsNoCase(word)))
+                return true;
+
+            if (VerbsController.Get().Any(v => v.PastParticiple.EqualsNoCase(word)))
+                return true;
+
+            if (VerbsController.Get().Any(v => v.Person.EqualsNoCase(word)))
+                return true;
+
+            return false;
         }
 
         public static void CleanClickEvents(this Button b)

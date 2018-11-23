@@ -1,5 +1,4 @@
-﻿using AussieCake.Sentence;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -68,6 +67,20 @@ namespace AussieCake.Util.WPF
             parent.Children.Add(grid);
 
             return grid;
+        }
+
+        public static Grid Bulk_Insert(Grid reference, Grid parent)
+        {
+            SetColumns(reference, new List<int>() { 9, 1 });
+            reference.RowDefinitions.Add(new RowDefinition());
+            reference.RowDefinitions.Add(new RowDefinition());
+            reference.RowDefinitions.Add(new RowDefinition());
+            reference.Margin = new Thickness(2, 0, 2, 0);
+            UtilWPF.SetGridPosition(reference, 0, 0, parent);
+            reference.Visibility = Visibility.Collapsed;
+            reference.Background = UtilWPF.Colour_header;
+
+            return reference;
         }
 
         private static Grid Get(List<int> columnSizes, int rowQuantity)

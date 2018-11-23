@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AussieCake.Sentence
 {
-    public class SenVM
+    public class SenVM_Deprecated
     {
         public int Id { get; private set; }
 
@@ -15,17 +15,17 @@ namespace AussieCake.Sentence
         public static int MaxSize = 120;
         public static int MinSize = 40;
 
-        public SenVM(int id)
+        public SenVM_Deprecated(int id)
         {
             Id = id;
         }
 
-        public SenVM(string text)
+        public SenVM_Deprecated(string text)
         {
             Text = text;
         }
 
-        public SenVM(int id, string text) : this(text)
+        public SenVM_Deprecated(int id, string text) : this(text)
         {
             Id = id;
 
@@ -36,7 +36,7 @@ namespace AussieCake.Sentence
         {
             Questions = new List<SenQuest>();
 
-            foreach (var qs in QuestSenControl.Get(Model.Col))
+            foreach (var qs in QuestSenControl_Deprecated.Get(Model.Col))
             {
                 if (qs.IdSen == Id)
                 {

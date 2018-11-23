@@ -1,5 +1,4 @@
 ﻿using AussieCake.Question;
-using AussieCake.Sentence;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,21 +12,19 @@ namespace AussieCake.Util
 {
     public static class FileHtmlControls
     {
-        public async static Task<List<string>> GetSentencesFromSite(string url)
+        public async static Task<string> GetTextFromSite(string url)
         {
             string htmlCode = string.Empty;
 
             using (WebClient client = new WebClient())
-            {
                 htmlCode = await client.DownloadStringTaskAsync(url);
-            }
 
             string cleanedCode = CleanHtmlCode(htmlCode);
 
-            return await AutoGetSentences.GetSentencesFromString(cleanedCode);
+            return cleanedCode;
         }
 
-        public async static Task SaveSentencesFromHtmlBooks()
+        public static string GetTextFromHtmlBooks()
         {
             string htmlCode = string.Empty;
 
@@ -38,10 +35,10 @@ namespace AussieCake.Util
 
             string cleanedCode = CleanHtmlCode(htmlCode);
 
-            await AutoGetSentences.GetSentencesFromString(cleanedCode);
+            return cleanedCode;
         }
 
-        public async static Task<List<string>> SaveSentencesFromTxtBooks()
+        public static string GetTextFromTxtBooks()
         {
             string allStringBooks = string.Empty;
             string[] filePaths = Directory.GetFiles(CakePaths.ResourceTxtBooks, "*.txt",
@@ -50,66 +47,7 @@ namespace AussieCake.Util
             foreach (var path in filePaths)
                 allStringBooks += File.ReadAllText(path);
 
-            return await AutoGetSentences.GetSentencesFromString(allStringBooks);
-        }
-
-        public async static Task<List<string>> ImportSentencesFromLudwig(Model type)
-        {
-            Footer.Log("The import sentences from web has just started. It may take a time to finish.");
-            var watcher = new Stopwatch();
-            watcher.Start();
-
-            var filteredSentences = new List<string>();
-            var result = new List<string>();
-
-            QuestControl.LoadCrossData(type);
-
-            int actual = 1;
-            var tasks = QuestControl.Get(type).Where(x => x.Sentences.Count <= 5).Select(col => Task.Factory.StartNew(() =>
-            {
-                string htmlCode = string.Empty;
-                var url = col.ToLudwigUrl();
-
-                try
-                {
-                    using (WebClient client = new WebClient())
-                        htmlCode = client.DownloadString(url);
-                }
-                catch (WebException e)
-                {
-                    Debug.WriteLine(url + " : " + e.Message);
-                }
-
-                string source = CleanHtmlCode(htmlCode);
-
-                filteredSentences = AutoGetSentences.GetSentencesFromStringNonAsync(source);
-
-                foreach (var sen in filteredSentences)
-                {
-                    if (type == Model.Col)
-                    {
-                        if (AutoGetSentences.DoesSenContainsCol((ColVM)col, sen) && !result.Contains(sen))
-                            result.Add(sen);
-                    }
-                }
-
-                var log = "Analysing " + filteredSentences.Count + " sentences for collocation " +
-                                 actual + " of " + QuestControl.Get(type).Count() + ". ";
-                log += result.Count + " suitable sentences found in " + Math.Round(watcher.Elapsed.TotalSeconds, 2) + " seconds. ";
-
-                if (actual > 10)
-                {
-                    var quant_missing = QuestControl.Get(type).Count() - actual;
-                    var time_to_finish = (watcher.Elapsed.TotalSeconds * quant_missing) / actual;
-                    log += "It must finish in " + Math.Round(time_to_finish, 2) + " seconds.";
-                }
-
-                Footer.Log(log);
-                actual = actual + 1;
-            }));
-            await Task.WhenAll(tasks);
-
-            return result;
+            return allStringBooks;
         }
 
         private static string CleanHtmlCode(string htmlCode)
@@ -192,11 +130,10 @@ namespace AussieCake.Util
                 Errors.ThrowErrorMsg(ErrorType.InexistentWordOrSiteOff, word);
 
             htmlCode = htmlCode.GetSinceTo("cald4-1-1-1", "accord-basic js-accord accord-basic--shallow");
-            //htmlCode = CleanHtmlCode(htmlCode);
 
             var pattern = @"class=\""phrase\"">[a-z]+</b></span>";
             var matchList = Regex.Matches(htmlCode, pattern);
-            var result = matchList.Cast<Match>().Select(match => match.Value).First();//.ToList();
+            var result = matchList.Cast<Match>().Select(match => match.Value).First();
 
             result = result.GetBetween(">", "<");
 
@@ -208,12 +145,13 @@ namespace AussieCake.Util
             word = word.ToLower();
 
             var found = new List<string>();
-            //var objLanguage = Microsoft.Office.Interop.Word.WdLanguageID.wdEnglishUS;
-            //var app = new Microsoft.Office.Interop.Word.Application();
             var theSynonyms = wordApp.get_SynonymInfo(word);
 
             foreach (var Meaning in theSynonyms.MeaningList as Array)
             {
+                if (found.Count >= 4)
+                    return found;
+
                 var synonym = Meaning.ToString();
                 if (!IsSynonymTooSimilar(word, synonym, found))
                     found.Add(synonym);
@@ -225,17 +163,15 @@ namespace AussieCake.Util
 
                 foreach (string synonym in theSynonyms.MeaningList as Array)
                 {
+                    if (found.Count >= 4)
+                        return found;
+
                     if (IsSynonymTooSimilar(word, synonym, found))
                         continue;
 
                     found.Add(synonym);
                 }
-
-                if (found.Count > 6)
-                    break;
             }
-
-            //wordApp.Quit();
 
             return found;
         }

@@ -7,34 +7,34 @@ using System.Windows;
 
 namespace AussieCake.Sentence
 {
-    public class SenControl : SqLiteHelper
+    public class SenControl_Deprecated : SqLiteHelper
     {
         #region Public Methods
 
-        public static IEnumerable<SenVM> Get()
+        public static IEnumerable<SenVM_Deprecated> Get()
         {
             LoadDB();
 
-            return Sentences;
+            return null;// Sentences;
         }
 
-        public static bool Insert(SenVM sentence, bool showErrorsbox)
+        public static bool Insert(SenVM_Deprecated sentence, bool showErrorsbox)
         {
             if (!IsSentenceValid(sentence.Text, showErrorsbox))
                 return false;
 
-            InsertSentence(sentence);
+            //InsertSentence(sentence);
 
             return true;
         }
 
         private static bool IsSentenceValid(string sentence, bool showErrorsbox)
         {
-            if (Errors.IsNullSmallerOrBigger(sentence, SenVM.MinSize, SenVM.MaxSize, showErrorsbox))
+            if (Errors.IsNullSmallerOrBigger(sentence, SenVM_Deprecated.MinSize, SenVM_Deprecated.MaxSize, showErrorsbox))
                 return false;
 
-            if (Sentences.Any(s => s.Text == sentence))
-                return showErrorsbox ? Errors.ThrowErrorMsg(ErrorType.AlreadyInserted, sentence) : false;
+            //if (Sentences.Any(s => s.Text == sentence))
+            //    return showErrorsbox ? Errors.ThrowErrorMsg(ErrorType.AlreadyInserted, sentence) : false;
 
             if (!sentence.EndsWith(".") && !sentence.EndsWith("?") && !sentence.EndsWith("!"))
                 return showErrorsbox ? Errors.ThrowErrorMsg(ErrorType.NoPunctuation, sentence) : false;
@@ -45,31 +45,30 @@ namespace AussieCake.Sentence
             return true;
         }
 
-        public static bool Update(SenVM sentence)
+        public static bool Update(SenVM_Deprecated sentence)
         {
             if (!IsSentenceValid(sentence.Text, true))
                 return false;
 
-            UpdateSentence(sentence);
+            //UpdateSentence(sentence);
 
-            var oldSen = Sentences.FindIndex(x => x.Id == sentence.Id);
-            Sentences.Insert(oldSen, sentence);
+            //var oldSen = Sentences.FindIndex(x => x.Id == sentence.Id);
+            //Sentences.Insert(oldSen, sentence);
 
             return true;
         }
 
-        public static void Remove(SenVM sentence)
+        public static void Remove(SenVM_Deprecated sentence)
         {
-            RemoveSentence(sentence);
-            //Sentences.Remove(sentence);
+            //RemoveSentence(sentence);
 
-            var qs_from_sentence = QuestSenControl.Get(Model.Col).Where(x => x.IdSen == sentence.Id).ToList();
+            var qs_from_sentence = QuestSenControl_Deprecated.Get(Model.Col).Where(x => x.IdSen == sentence.Id).ToList();
 
             if (qs_from_sentence.Any())
             {
                 foreach (var qs in qs_from_sentence)
                 {
-                    QuestSenControl.Remove(qs);
+                    QuestSenControl_Deprecated.Remove(qs);
                     var changedCol = QuestControl.Get(Model.Col).Where(y => y.Id == qs.IdQuest).First();
                     changedCol.LoadCrossData();
                 }
@@ -78,14 +77,14 @@ namespace AussieCake.Sentence
 
         public static void LoadDB()
         {
-            if (Sentences == null)
-                GetSentencesDB();
+            //if (Sentences == null)
+            //    GetSentencesDB();
         }
 
         public static void PopulateQuestions()
         {
-            foreach (var sen in Sentences)
-                sen.GetQuestions();
+            //foreach (var sen in Sentences)
+            //    sen.GetQuestions();
         }
 
         public static void LinkQuestsToSentences()
@@ -112,14 +111,14 @@ namespace AussieCake.Sentence
             {
                 foreach (var sen in Get())
                 {
-                    if (AutoGetSentences.DoesSenContainsCol(col, sen.Text))
-                    {
-                        QuestSenControl.Insert(new QuestSenVM(col.Id, sen.Id, col.Type));
-                        col.LoadCrossData();
-                        //col.Sentences_off.Add(sen);
-                        //QuestControl.Update(col);
-                        updated_questions++;
-                    }
+                    //if (AutoGetSentences_Deprecated.DoesSenContainsCol(col, sen.Text))
+                    //{
+                    //    QuestSenControl_Deprecated.Insert(new QuestSenVM_Deprecated(col.Id, sen.Id, col.Type));
+                    //    col.LoadCrossData();
+                    //    col.Sentences_off.Add(sen);
+                    //    QuestControl.Update(col);
+                    //    updated_questions++;
+                    //}
                 }
             }
         }

@@ -1,12 +1,8 @@
 ﻿using AussieCake.Question;
-using AussieCake.Sentence;
 using AussieCake.Util;
-using AussieCake.Util.WPF;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
-using static AussieCake.Util.WPF.MyChBxs;
 
 namespace AussieCake
 {
@@ -56,8 +52,6 @@ namespace AussieCake
 
         public static void EditColClick(ColVM col, ColWpfItem wpf_item, StackPanel item_line)
         {
-            var modifiedSenIds = GetSenFromCbBoxes(wpf_item);
-
             var edited = new ColVM(col.Id,
                 wpf_item.Pref.Text.ToListString(),
                 wpf_item.Comp1.Text,
@@ -71,59 +65,13 @@ namespace AussieCake
                 (Importance)(wpf_item.Imp).SelectedValue,
                 wpf_item.IsActive.IsActived);
 
-            EditQuestion(col, edited, item_line, wpf_item.Add_sen, modifiedSenIds);
+            EditQuestion(col, edited, item_line);
         }
 
-        private static List<QuestSen> GetSenFromCbBoxes(ColWpfItem wpf_item)
+        private static void EditQuestion(IQuest quest, IQuest edited, StackPanel item_line)
         {
-            var modifiedSenIds = new List<QuestSen>();
-
-            List<CheckBoxSen> cbs = new List<CheckBoxSen>();
-            foreach (var stk in wpf_item.Stk_sen.Children.OfType<StackPanel>())
-                cbs.Add(stk.Children.OfType<CheckBoxSen>().First());
-
-            for (int i = 0; i < cbs.Count(); i++)
-            {
-                var cb = cbs.ElementAt(i);
-
-                if (!cb.IsChecked.Value)
-                    continue;
-
-                modifiedSenIds.Add(new QuestSen(cb.QS.Sen, cb.QS.QS_id));
-            }
-
-            return modifiedSenIds;
-        }
-
-        private static void EditQuestion(IQuest quest, IQuest edited, StackPanel item_line, TextBox txt_addSen, List<QuestSen> qss)
-        {
-            if (!txt_addSen.Text.IsEmpty())
-            {
-                if (!QuestControl.Update(edited, txt_addSen.Text))
-                    return;
-            }
-            else if (!QuestControl.Update(edited))
+            if (!QuestControl.Update(edited))
                 return;
-
-            var intersect = quest.Sentences.Intersect(qss);
-            foreach (var qs in intersect)
-            {
-                var vm = QuestSenControl.Get(edited.Type).First(x => x.Id == qs.QS_id);
-                QuestSenControl.Remove(vm);
-            }
-
-            //foreach (var qs in qss)
-            //{
-            //    var db = QuestSenControl.Get(edited.Type).First(x => x.Id == qs.QS_id);
-            //    var old = db.IsActive;
-            //    var modified = qs.IsActive;
-
-            //    if (old != modified)
-            //    {
-            //        db.IsActive = modified;
-            //        QuestSenControl.Update(db);
-            //    }
-            //}
 
             edited = QuestControl.Get(quest.Type).Where(q => q.Id == quest.Id).First();
             edited.LoadCrossData();
@@ -133,7 +81,7 @@ namespace AussieCake
             Footer.Log("The question has been edited.");
         }
 
-        private static void AddWpfItem(StackPanel stk_items, IQuest vm)
+        public static void AddWpfItem(StackPanel stk_items, IQuest vm)
         {
             if (vm.Type == Model.Col)
                 ColWpfController.AddIntoItems(stk_items, vm as ColVM, true);

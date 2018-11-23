@@ -1,7 +1,6 @@
 ﻿using AussieCake.Challenge;
 using AussieCake.Context;
 using AussieCake.Question;
-using AussieCake.Sentence;
 using AussieCake.Util;
 using System;
 using System.Windows;
@@ -46,13 +45,6 @@ namespace AussieCake
             frame_content.Content = stk;
         }
 
-        private void btnSentences_click(object sender, RoutedEventArgs e)
-        {
-            EnableButtons();
-            frame_content.Content = new Sentences();
-            btnSentences.IsEnabled = false;
-        }
-
         private void btnCollocations_Click(object sender, RoutedEventArgs e)
         {
             EnableButtons();
@@ -69,7 +61,6 @@ namespace AussieCake
 
         private void EnableButtons()
         {
-            btnSentences.IsEnabled = true;
             btnCollocations.IsEnabled = true;
             btnColChallenge.IsEnabled = true;
         }

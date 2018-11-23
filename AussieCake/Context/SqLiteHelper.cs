@@ -1,6 +1,5 @@
 ﻿using AussieCake.Attempt;
 using AussieCake.Question;
-using AussieCake.Sentence;
 using AussieCake.Util;
 using AussieCake.Verb;
 using System;
@@ -21,8 +20,6 @@ namespace AussieCake.Context
 
         protected static List<ColVM> Collocations { get; private set; }
         protected static List<AttemptVM> CollocationAttempts { get; private set; }
-        protected static List<QuestSenVM> CollocationSentences { get; private set; }
-        protected static List<SenVM> Sentences { get; private set; }
         protected static List<VerbModel> Verbs { get; private set; }
 
         public static void InitializeDB()
@@ -47,23 +44,10 @@ namespace AussieCake.Context
                 Collocations.Add(model.ToVM());
         }
 
-        protected static void GetSentencesDB()
-        {
-            var dataset = GetTable(Model.Sen);
-
-            Sentences = dataset.Tables[0].AsEnumerable().Select(GetDatarowSentences()).ToList();
-        }
-
         protected static void GetColAttemptsDB()
         {
             var dataset = GetTable(GetDBAttemptName(Model.Col));
             CollocationAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.Col)).ToList();
-        }
-
-        protected static void GetColSentencesDB()
-        {
-            var dataset = GetTable(GetDBSentenceName(Model.Col));
-            CollocationSentences = dataset.Tables[0].AsEnumerable().Select(GetDatarowQuestSentences(Model.Col)).ToList();
         }
 
         protected static void GetVerbsDB()
@@ -94,21 +78,6 @@ namespace AussieCake.Context
             return true;
         }
 
-        protected static bool InsertSentence(SenVM sen)
-        {
-            string query = string.Format(InsertSQL + "'{1}')",
-                                         Model.Sen.ToDesc(),
-                                         sen.Text.Replace("\'", "\'\'"));
-            if (!SendQuery(query))
-                return false;
-
-            var inserted = GetLast(Model.Sen.ToDesc());
-            Sentences.Add(inserted.Tables[0].AsEnumerable().
-                                Select(GetDatarowSentences()).First());
-
-            return true;
-        }
-
         protected static bool InsertQuestionAttempt(AttemptVM att)
         {
             string query = string.Format(InsertSQL + "'{1}', '{2}', '{3}')",
@@ -124,27 +93,6 @@ namespace AussieCake.Context
 
             CollocationAttempts.Add(inserted.Tables[0].AsEnumerable().
                                     Select(GetDatarowAttempts(att.Type)).First());
-
-            return true;
-        }
-
-        protected static bool InsertQuestionSentence(QuestSenVM vm)
-        {
-            string query = string.Format(InsertSQL + "'{1}', '{2}')",
-                                         GetDBSentenceName(vm.Type),
-                                         vm.IdQuest, vm.IdSen);
-            if (!SendQuery(query))
-                return false;
-
-            var inserted = GetLast(GetDBSentenceName(vm.Type));
-            var inserted_vm = inserted.Tables[0].AsEnumerable().
-                                    Select(GetDatarowQuestSentences(vm.Type)).First();
-
-            if (CollocationSentences == null)
-                CollocationSentences = new List<QuestSenVM>();
-
-            if (vm.Type == Model.Col)
-                CollocationSentences.Add(inserted_vm);
 
             return true;
         }
@@ -203,11 +151,6 @@ namespace AussieCake.Context
                 columnsToUpdate += field > 0 ? ", " : string.Empty;
                 columnsToUpdate += fieldName + " = " + "'" + (ToInt ? Convert.ToInt16(newValue) : newValue) + "'";
 
-                //if (ToInt)
-                //    columnsToUpdate += fieldName + " = " + Convert.ToInt16(newValue);
-                //else
-                //    columnsToUpdate += fieldName + " = " + "'" + newValue + "'";
-
                 field++;
             }
         }
@@ -219,48 +162,6 @@ namespace AussieCake.Context
             CheckFieldUpdate("Importance", quest.Importance, oldQuest.Importance, ref field, ref columnsToUpdate);
             CheckFieldUpdate("IsActive", quest.IsActive, oldQuest.IsActive, ref field, ref columnsToUpdate);
         }
-
-        protected static bool UpdateSentence(SenVM sen)
-        {
-            var oldSen = Sentences.First(c => c.Id == sen.Id);
-            int field = 0;
-            string columnsToUpdate = string.Empty;
-
-            CheckFieldUpdate("Text", sen.Text, oldSen.Text, ref field, ref columnsToUpdate);
-
-            if (columnsToUpdate.IsEmpty())
-                return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, columnsToUpdate);
-
-            string query = string.Format(UpdateSQL, Model.Sen.ToDesc(), columnsToUpdate, sen.Id);
-
-            if (!SendQuery(query))
-                return false;
-
-            return true;
-        }
-
-        //protected static bool UpdateQuestSentence(QuestSenVM vm)
-        //{
-        //    var old = new QuestSenVM();
-
-        //    if (vm.Type == Model.Col)
-        //        old = CollocationSentences.First(c => c.Id == vm.Id);
-
-        //    int field = 0;
-        //    string columnsToUpdate = string.Empty;
-
-        //    CheckFieldUpdate("IsActive", vm.IsActive, old.IsActive, ref field, ref columnsToUpdate);
-
-        //    if (columnsToUpdate.IsEmpty())
-        //        return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, columnsToUpdate);
-
-        //    string query = string.Format(UpdateSQL, GetDBSentenceName(vm.Type), columnsToUpdate, vm.Id);
-
-        //    if (!SendQuery(query))
-        //        return false;
-
-        //    return true;
-        //}
 
         #endregion
 
@@ -283,14 +184,6 @@ namespace AussieCake.Context
                                 Convert.ToInt16(dataRow.Field<Int64>("IsActive")));
         }
 
-        private static Func<DataRow, SenVM> GetDatarowSentences()
-        {
-            return dataRow => new SenVM(
-                                Convert.ToInt32(dataRow.Field<Int64>("Id")),
-                                dataRow.Field<string>("Text")
-                              );
-        }
-
         private static Func<DataRow, AttemptVM> GetDatarowAttempts(Model type)
         {
             return dataRow => new AttemptVM(
@@ -300,16 +193,6 @@ namespace AussieCake.Context
                         Convert.ToDateTime(dataRow.Field<string>("When")),
                         type
                     );
-        }
-
-        private static Func<DataRow, QuestSenVM> GetDatarowQuestSentences(Model type)
-        {
-            return dataRow => new QuestSenVM(
-                        Convert.ToInt32(dataRow.Field<Int64>("Id")),
-                        Convert.ToInt32(dataRow.Field<Int64>("IdCollocation")),
-                        Convert.ToInt32(dataRow.Field<Int64>("IdSentence")),
-                        type
-                     );
         }
 
         private static Func<DataRow, VerbModel> GetDatarowVerbs()
@@ -339,18 +222,6 @@ namespace AussieCake.Context
             return true;
         }
 
-        protected static bool RemoveSentence(SenVM sen)
-        {
-            string query = string.Format(RemoveSQL, Model.Sen.ToDesc(), sen.Id);
-
-            if (!SendQuery(query))
-                return false;
-
-            Sentences.Remove(sen);
-
-            return true;
-        }
-
         protected static bool RemoveQuestionAttempt(AttemptVM att)
         {
             string query = string.Format(RemoveSQL, GetDBAttemptName(att.Type), att.Id);
@@ -359,19 +230,6 @@ namespace AussieCake.Context
                 return false;
 
             CollocationAttempts.Remove(att);
-
-            return true;
-        }
-
-        protected static bool RemoveQuestionSentence(QuestSenVM vm)
-        {
-            string query = string.Format(RemoveSQL, GetDBSentenceName(vm.Type), vm.Id);
-
-            if (!SendQuery(query))
-                return false;
-
-            if (vm.Type == Model.Col)
-                CollocationSentences.Remove(vm);
 
             return true;
         }
@@ -403,12 +261,6 @@ namespace AussieCake.Context
                 "FOREIGN KEY(`IdCollocation`) REFERENCES `Collocation`(`Id`) )"))
                 return false;
 
-            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Sentence' " +
-                "( 'Id' INTEGER NOT NULL CONSTRAINT " +
-                "'PK_Sentence' PRIMARY KEY AUTOINCREMENT, " +
-                "'Text' TEXT NOT NULL )"))
-                return false;
-
             if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Verb' " +
                 "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                 "'Infinitive' TEXT NOT NULL, " +
@@ -416,14 +268,6 @@ namespace AussieCake.Context
                 "'PP' TEXT NOT NULL, " +
                 "'Person' TEXT NOT NULL, " +
                 "'Gerund' TEXT NOT NULL )"))
-                return false;
-
-            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'CollocationSentence' " +
-                "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-                "'IdCollocation' INTEGER NOT NULL, " +
-                "'IdSentence' INTEGER NOT NULL, " +
-                "FOREIGN KEY('IdSentence') REFERENCES 'Sentence'('Id'), " +
-                "FOREIGN KEY('IdCollocation') REFERENCES 'Collocation'('Id') ) "))
                 return false;
 
             InsertStaticValuesIfEmpty(Model.Verb, CakePaths.ScriptVerbs);
@@ -441,11 +285,6 @@ namespace AussieCake.Context
         private static string GetDBAttemptName(Model type)
         {
             return type.ToDesc() + "Attempt";
-        }
-
-        private static string GetDBSentenceName(Model type)
-        {
-            return type.ToDesc() + "Sentence";
         }
     }
 }

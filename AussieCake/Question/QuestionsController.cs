@@ -1,9 +1,8 @@
-﻿using AussieCake.Sentence;
-using AussieCake.Util;
+﻿using AussieCake.Util;
 using AussieCake.Util.WPF;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace AussieCake.Question
 {
@@ -39,21 +38,6 @@ namespace AussieCake.Question
             return false;
         }
 
-        public static bool Update(IQuest quest, string newSen)
-        {
-            if (SenControl.Insert(new SenVM(newSen), true))
-            {
-                var added_sen = SenControl.Get().Last();
-                QuestSenControl.Insert(new QuestSenVM(quest.Id, added_sen.Id, quest.Type));
-
-                quest.AddLastSentence();
-
-                return Update(quest);
-            }
-
-            return false;
-        }
-
         public static void Remove(IQuest quest)
         {
             if (quest is ColVM col)
@@ -64,19 +48,13 @@ namespace AussieCake.Question
 
         public static void LoadCrossData(Model type)
         {
-            if (Get(type).First().Tries != null)
-                return;
+            //if (Get(type).First().Tries != null)
+            //    return;
 
             foreach (var quest in Get(type))
                 quest.LoadCrossData();
 
             LoadRealChances(type);
-        }
-
-        public static void LoadEveryCrossData()
-        {
-            LoadCrossData(Model.Col);
-            // and so on
         }
 
         public static void LoadDB(Model type)
@@ -110,7 +88,7 @@ namespace AussieCake.Question
                 quest.Index_show = actual_index;
             }
 
-            var totalChances =  quests.Select(x => x.Chance).Sum();
+            var totalChances = quests.Select(x => x.Chance).Sum();
             int pickBasedOnChance = UtilWPF.RandomNumber(0, (int)totalChances);
 
             IQuest selected = quests.First();

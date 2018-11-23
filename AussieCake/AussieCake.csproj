@@ -171,6 +171,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Challenge\Sentences.cs" />
     <Compile Include="Challenge\WPF\ChallengeWpfItem.cs" />
     <Compile Include="Context\ScriptFileCommands.cs" />
     <Compile Include="Context\SqLiteCommands.cs" />
@@ -190,10 +191,10 @@
     <Compile Include="Question\QuestionFilter.cs" />
     <Compile Include="Question\WPF\QuestionWpfHeader.cs" />
     <Compile Include="Question\WPF\QuestionWpfItem.cs" />
-    <Compile Include="Sentence\AutoGetSentences.cs" />
-    <Compile Include="Sentence\QuestionSentence\QuestionSentenceController.cs" />
-    <Compile Include="Sentence\QuestionSentence\QuestionSentenceVM.cs" />
-    <Compile Include="Sentence\SentencesController.cs" />
+    <Compile Include="Deprecated\Sentence\AutoGetSentences.cs" />
+    <Compile Include="Deprecated\Sentence\QuestionSentence\QuestionSentenceController.cs" />
+    <Compile Include="Deprecated\Sentence\QuestionSentence\QuestionSentenceVM.cs" />
+    <Compile Include="Deprecated\Sentence\SentencesController.cs" />
     <Compile Include="UnitTests\CollocationTests.cs" />
     <Compile Include="Util\FileHtmlControls.cs" />
     <Compile Include="Util\IFilter.cs" />
@@ -215,16 +216,16 @@
     <Compile Include="Util\UtilExtensions.cs" />
     <Compile Include="Util\Importance.cs" />
     <Compile Include="Question\Collocation\WPF\CollocationWpfController.cs" />
-    <Compile Include="Sentence\SentenceWPFController.cs" />
+    <Compile Include="Deprecated\Sentence\SentenceWPFController.cs" />
     <Compile Include="Util\WPF\UtilWPF.cs" />
     <Compile Include="Question\IQuestion.cs" />
     <Compile Include="Attempt\AttemptVM.cs" />
     <Compile Include="Question\Collocation\CollocationVM.cs" />
-    <Compile Include="Sentence\SentenceVM.cs" />
+    <Compile Include="Deprecated\Sentence\SentenceVM.cs" />
     <Compile Include="Question\Collocation\Collocations.xaml.cs">
       <DependentUpon>Collocations.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Sentence\Sentences.xaml.cs">
+    <Compile Include="Deprecated\Sentence\Sentences.xaml.cs">
       <DependentUpon>Sentences.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
@@ -248,7 +249,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Sentence\Sentences.xaml">
+    <Page Include="Deprecated\Sentence\Sentences.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

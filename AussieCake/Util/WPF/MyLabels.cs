@@ -62,7 +62,7 @@ namespace AussieCake.Util.WPF
             return lbl;
         }
 
-        public static Label GetHeader(Label reference, int row, int column, Grid parent, SortLbl sort, Control control, IFilter filter, StackPanel stk_items)
+        public static Label Header(Label reference, int row, int column, Grid parent, SortLbl sort, Control control, IFilter filter, StackPanel stk_items)
         {
             var lbl = Get(reference, row, column, parent, sort.ToDesc());
 
@@ -124,15 +124,13 @@ namespace AussieCake.Util.WPF
             return lbl;
         }
 
-        public static Label Chal_id(bool isQuest, ChalLine line)
+        public static Label Chal_quest_id(ChalLine line, int column)
         {
-            var reference = isQuest ? line.Chal.Id_col : line.Chal.Id_sen;
-            var id = isQuest ? line.Quest.Id : line.QS.Sen.Id;
-            var content = id + (isQuest ? " (quest)" : " (sen)");
-            var column = isQuest ? 3 : 1;
+            var reference = line.Chal.Id_col;
+            var content = line.Quest.Id + " (quest)";
             Get(reference, 0, column, line.Chal.Row_4, content);
             reference.ToolTip = "Right click to copy the Id";
-            reference.MouseRightButtonDown += (source, e) => Clipboard.SetText(id.ToString());
+            reference.MouseRightButtonDown += (source, e) => Clipboard.SetText(line.Quest.Id.ToString());
 
             return reference;
         }

@@ -12,7 +12,7 @@ namespace AussieCake.Sentence
     /// <summary>
     /// Interaction logic for Sentences.xaml
     /// </summary>
-    public partial class Sentences : UserControl
+    public partial class Sentences_Deprecated : UserControl
     {
         bool btn_insert_was;
         bool btn_get_web_was;
@@ -20,7 +20,7 @@ namespace AussieCake.Sentence
         bool btn_import_text_was;
 
 
-        public Sentences()
+        public Sentences_Deprecated()
         {
             InitializeComponent();
 
@@ -36,13 +36,13 @@ namespace AussieCake.Sentence
             var watcher = new Stopwatch();
             watcher.Start();
 
-            var sens = SenControl.Get();
-            SenControl.PopulateQuestions();
+            var sens = SenControl_Deprecated.Get();
+            SenControl_Deprecated.PopulateQuestions();
 
             sens = sens.Take(60);
 
             foreach (var sen in sens)
-                SentenceWpfController.AddIntoItems(stk_sentences, sen, false);
+                SentenceWpfController_Deprecated.AddIntoItems(stk_sentences, sen, false);
 
             Footer.Log(sens.Count() + " sentences loaded in " + Math.Round(watcher.Elapsed.TotalSeconds, 2) + " seconds.");
         }
@@ -50,14 +50,14 @@ namespace AussieCake.Sentence
         private void Insert_Click(object sender, RoutedEventArgs e)
         {
             var sen = txt_input.Text;
-            var vm = new SenVM(sen);
+            var vm = new SenVM_Deprecated(sen);
 
-            if (SenControl.Insert(vm, true))
+            if (SenControl_Deprecated.Insert(vm, true))
             {
                 //LoadSentencesOnGrid(true);
                 txt_input.Text = string.Empty;
-                var added = SenControl.Get().Last();
-                SentenceWpfController.AddIntoItems(stk_sentences, added, true);
+                var added = SenControl_Deprecated.Get().Last();
+                SentenceWpfController_Deprecated.AddIntoItems(stk_sentences, added, true);
 
                 Footer.Log("The sentence has been inserted.");
             }
@@ -66,32 +66,32 @@ namespace AussieCake.Sentence
         private async void GetFromText_Click(object sender, RoutedEventArgs e)
         {
             SaveBtnUIStatus();
-            var sentencesFound = await AutoGetSentences.GetSentencesFromString(txt_input.Text);
+            var sentencesFound = await AutoGetSentences_Deprecated.GetSentencesFromString(txt_input.Text);
             InsertLinkLoad(sentencesFound);
             RestoreBtnUIStatus();
         }
 
-        private async void GetFromWeb_Click(object sender, RoutedEventArgs e)
+        private /*async*/ void GetFromWeb_Click(object sender, RoutedEventArgs e)
         {
             SaveBtnUIStatus();
-            var sentencesFound = await FileHtmlControls.GetSentencesFromSite(txt_input.Text);
-            InsertLinkLoad(sentencesFound);
+            //var sentencesFound = await FileHtmlControls.GetSentencesFromSite(txt_input.Text);
+            //InsertLinkLoad(sentencesFound);
             RestoreBtnUIStatus();
         }
 
-        private async void ImportFromBooks_Click(object sender, RoutedEventArgs e)
+        private /*async*/ void ImportFromBooks_Click(object sender, RoutedEventArgs e)
         {
             SaveBtnUIStatus();
-            var sentencesFound = await FileHtmlControls.SaveSentencesFromTxtBooks();
-            InsertLinkLoad(sentencesFound);
+            //var sentencesFound = await FileHtmlControls.SaveSentencesFromTxtBooks();
+            //InsertLinkLoad(sentencesFound);
             RestoreBtnUIStatus();
         }
 
-        private async void btnImportFromWeb_Click(object sender, RoutedEventArgs e)
+        private /*async*/ void btnImportFromWeb_Click(object sender, RoutedEventArgs e)
         {
             SaveBtnUIStatus();
-            var sentencesFound = await FileHtmlControls.ImportSentencesFromLudwig(cb_QuestType.SelectedModalType);
-            InsertLinkLoad(sentencesFound);
+            //var sentencesFound = await FileHtmlControls.ImportSentencesFromLudwig(cb_QuestType.SelectedModalType);
+            //InsertLinkLoad(sentencesFound);
             RestoreBtnUIStatus();
         }
 
@@ -100,11 +100,11 @@ namespace AussieCake.Sentence
             int auto_inserted = 0;
             foreach (var found in sentencesFound)
             {
-                var vm = new SenVM(found);
-                if (SenControl.Insert(vm, false))
+                var vm = new SenVM_Deprecated(found);
+                if (SenControl_Deprecated.Insert(vm, false))
                 {
-                    var added_sen = SenControl.Get().Last();
-                    SentenceWpfController.AddIntoItems(stk_sentences, added_sen, true);
+                    var added_sen = SenControl_Deprecated.Get().Last();
+                    SentenceWpfController_Deprecated.AddIntoItems(stk_sentences, added_sen, true);
                     auto_inserted = auto_inserted + 1;
                 }
             }
@@ -118,7 +118,7 @@ namespace AussieCake.Sentence
 
             if (txt_input.Text.StartsWith("http") || txt_input.Text.StartsWith("www"))
                 btnGetWeb.IsEnabled = true;
-            else if (!Errors.IsNullSmallerOrBigger(txt_input.Text, SenVM.MinSize, SenVM.MaxSize, false))
+            else if (!Errors.IsNullSmallerOrBigger(txt_input.Text, SenVM_Deprecated.MinSize, SenVM_Deprecated.MaxSize, false))
                 btnInsert.IsEnabled = true;
             else
                 btnGetBooks.IsEnabled = true;
@@ -154,10 +154,10 @@ namespace AussieCake.Sentence
             List<(int, int)> links_found = new List<(int, int)>();
 
             if (cb_QuestType.SelectedIndex != 0)
-                links_found = await SentenceWpfController.LinkQuestType(stk_sentences, cb_QuestType.SelectedModalType, watcher);
+                links_found = await SentenceWpfController_Deprecated.LinkQuestType(stk_sentences, cb_QuestType.SelectedModalType, watcher);
             else
             {
-                links_found.AddRange(await SentenceWpfController.LinkQuestType(stk_sentences, Model.Col, watcher));
+                links_found.AddRange(await SentenceWpfController_Deprecated.LinkQuestType(stk_sentences, Model.Col, watcher));
                 // and so on;
             }
 
@@ -183,16 +183,16 @@ namespace AussieCake.Sentence
 
             if (!inputFilter.IsEmpty())
             {
-                if (inputFilter.IsDigitsOnly() && SenControl.Get().Any(x => x.Id == Convert.ToInt16(inputFilter)))
+                if (inputFilter.IsDigitsOnly() && SenControl_Deprecated.Get().Any(x => x.Id == Convert.ToInt16(inputFilter)))
                 {
-                    var sen = SenControl.Get().First(x => x.Id == Convert.ToInt16(inputFilter));
-                    SentenceWpfController.AddIntoItems(stk_sentences, sen, false);
+                    var sen = SenControl_Deprecated.Get().First(x => x.Id == Convert.ToInt16(inputFilter));
+                    SentenceWpfController_Deprecated.AddIntoItems(stk_sentences, sen, false);
                     return;
                 }
             }
 
             int count = 0;
-            foreach (var sen in SenControl.Get())
+            foreach (var sen in SenControl_Deprecated.Get())
             {
                 if (sen.Text != string.Empty && !sen.Text.ContainsInsensitive(inputFilter))
                     continue;
@@ -200,7 +200,7 @@ namespace AussieCake.Sentence
                 if (!txt_quests.IsEmpty() && txt_quests.Text.IsDigitsOnly())
                 {
                     var quant = Convert.ToInt16(txt_quests.Text);
-                    if (sen.Questions.Count < quant)
+                    if (sen.Questions.Count != quant)
                         continue;
                 }
 
@@ -210,7 +210,7 @@ namespace AussieCake.Sentence
                         continue;
                 }
 
-                SentenceWpfController.AddIntoItems(stk_sentences, sen, false);
+                SentenceWpfController_Deprecated.AddIntoItems(stk_sentences, sen, false);
                 count = count + 1;
 
                 if (count == 60)

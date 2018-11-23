@@ -1,8 +1,6 @@
 ﻿using AussieCake.Question;
 using AussieCake.Util;
 using AussieCake.Verb;
-using Humanizer;
-using System;
 using System.Collections.Generic;
 using System.Data.Entity.Design.PluralizationServices;
 using System.Diagnostics;
@@ -10,18 +8,44 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AussieCake.Sentence
+namespace AussieCake.Challenge
 {
-    public static class AutoGetSentences
+    public static class Sentences
     {
-        public async static Task<List<string>> GetSentencesFromString(string source)
+        public async static Task<string> GetSentenceToCollocation(IQuest col)
         {
-            Footer.Log("The auto insert sentences has just started. It may take a time to finish.");
-            var watcher = new Stopwatch();
-            watcher.Start();
+            var raw_Text = await FileHtmlControls.GetTextFromSite(col.ToLudwigUrl());
 
+            var raw_sentences = await GetRawSentencesFromSource(raw_Text);
+
+            var result = new List<string>();
+            var task = raw_sentences.Select(sen => Task.Factory.StartNew(() =>
+            {
+                if (DoesSenContainsCol((ColVM)col, sen) && !result.Contains(sen))
+                    result.Add(sen);
+            }));
+            await Task.WhenAll(task);
+
+            var chosen = result.PickRandom();
+
+            return chosen;
+        }
+
+        private static bool DoesStartEndProperly(string s)
+        {
+            return ((s.EndsWith(".") && !s.EndsWith("Dr.") && !s.EndsWith("Mr.") && !s.EndsWith("Ms.") && !s.EndsWith("..."))
+                                                || s.EndsWith("!") || s.EndsWith("?"));
+        }
+
+        private static List<string> GetSentencesFromSource(string source)
+        {
+            var matchList = Regex.Matches(source, @"[A-Z]+(\w+\,*\;*[ ]{0,1}[\.\?\!]*)+");
+            return matchList.Cast<Match>().Select(match => match.Value).ToList();
+        }
+
+        private static async Task<List<string>> GetRawSentencesFromSource(string source)
+        {
             var sentences = new List<string>();
-            QuestControl.LoadCrossData(Model.Col);
 
             Task tasks = Task.Run(() => sentences = GetSentencesFromSource(source));
             await Task.WhenAll(tasks);
@@ -29,7 +53,7 @@ namespace AussieCake.Sentence
             var filteredSentences = new List<string>();
             var task = sentences.Select(sen => Task.Factory.StartNew(() =>
             {
-                if (!Errors.IsNullSmallerOrBigger(sen, SenVM.MinSize, SenVM.MaxSize, false))
+                if (!Errors.IsNullSmallerOrBigger(sen, 40, 120, false))
                 {
                     if (DoesStartEndProperly(sen))
                         filteredSentences.Add(sen);
@@ -37,88 +61,11 @@ namespace AussieCake.Sentence
             }));
             await Task.WhenAll(task);
 
-            var senFromCols = await GetColSentenceFromList(filteredSentences);
-
-            var found = new List<string>();
-            found.AddRange(senFromCols);
-
-            return found;
-        }
-
-        public static List<string> GetSentencesFromStringNonAsync(string source)
-        {
-            var sentences = GetSentencesFromSource(source);
-            QuestControl.LoadCrossData(Model.Col);
-
-            var filteredSentences = new List<string>();
-
-            foreach (var sen in sentences)
-            {
-                if (!Errors.IsNullSmallerOrBigger(sen, SenVM.MinSize, SenVM.MaxSize, false))
-                {
-                    if (DoesStartEndProperly(sen))
-                        filteredSentences.Add(sen);
-                }
-            }
-
             return filteredSentences;
-        }
-
-        private static bool DoesStartEndProperly(string s)
-        {
-            return ((s.EndsWith(".") && !s.EndsWith("Dr.") && !s.EndsWith("Mr.") && !s.EndsWith("Ms."))
-                                                || s.EndsWith("!") || s.EndsWith("?"));
-        }
-
-        private static List<string> GetSentencesFromSource(string source)
-        {
-            MatchCollection matchList = Regex.Matches(source, @"[A-Z]+(\w+\,*\;*[ ]{0,1}[\.\?\!]*)+");
-            return matchList.Cast<Match>().Select(match => match.Value).ToList();
-        }
-
-        #region Collocations
-
-        private async static Task<List<string>> GetColSentenceFromList(List<string> sentences)
-        {
-            var result = new List<string>();
-
-            var watcher = new Stopwatch();
-            watcher.Start();
-
-            int actual = 1;
-            var tasks = QuestControl.Get(Model.Col).Select(col =>
-                Task.Factory.StartNew(() =>
-                {
-                    foreach (var sen in sentences)
-                    {
-                        if (DoesSenContainsCol((ColVM)col, sen) && !result.Contains(sen))
-                            result.Add(sen);
-                    }
-
-                    var log = "Analysing " + sentences.Count + " sentences for collocation " +
-                                 actual + " of " + QuestControl.Get(Model.Col).Count() + ". ";
-                    log += result.Count + " suitable sentences found in " + Math.Round(watcher.Elapsed.TotalMinutes, 2) + " minutes. ";
-
-                    if (actual > 10)
-                    {
-                        var quant_missing = QuestControl.Get(Model.Col).Count() - actual;
-                        var time_to_finish = (watcher.Elapsed.TotalMinutes * quant_missing) / actual;
-                        log += "It must finish in " + Math.Round(time_to_finish, 2) + " minutes.";
-                    }
-
-                    Footer.Log(log);
-                    actual = actual + 1;
-                }));
-            await Task.WhenAll(tasks);
-
-            return result;
         }
 
         public static bool DoesSenContainsCol(ColVM col, string sen)
         {
-            if (col.Sentences.Count > 5)
-                return false;
-
             // start checking the comp2 because it's here where is the biggest chance of returning false
             var indexesComp2 = GetIndexOfCompatibleWord(col.Component2, col.IsComp2Verb, sen);
             if (!indexesComp2.Any() || indexesComp2.Count > 1)
@@ -233,25 +180,20 @@ namespace AussieCake.Sentence
             }
             else
             {
-                var watcher = new Stopwatch();
-                watcher.Start();
-
                 var service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
-                //var service = new Pluralizer(new CultureInfo("en-us"));
                 if (service.IsSingular(comp))
                 {
                     var plural = service.Pluralize(comp);
                     if (sen.ContainsInsensitive(plural))
                         return plural;
                 }
-                //Debug.WriteLine("PluralizationService spent " + watcher.Elapsed.TotalSeconds + " sec");
 
             }
 
             return string.Empty;
         }
 
-        public static List<int> GetIndexOfCompatibleWord(string comp, bool isVerb, string sen)
+        private static List<int> GetIndexOfCompatibleWord(string comp, bool isVerb, string sen)
         {
             var result = new List<int>();
 
@@ -296,20 +238,10 @@ namespace AussieCake.Sentence
             }
             else
             {
-                //var service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
-                //if (service.IsSingular(comp))
-                //{
-                //    var plural = service.Pluralize(comp);
-                //    if (sen.ContainsInsensitive(plural, true))
-                //    {
-                //        var indexes = sen.IndexesFrom(plural, true);
-                //        AddUniqueValues(result, indexes);
-                //    }
-                //}
-
-                var plural = comp.Humanize().Pluralize(false);
-                if (!plural.IsEmpty())
+                var service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
+                if (service.IsSingular(comp))
                 {
+                    var plural = service.Pluralize(comp);
                     if (sen.ContainsInsensitive(plural, true))
                     {
                         var indexes = sen.IndexesFrom(plural, true);
@@ -359,7 +291,5 @@ namespace AussieCake.Sentence
             }
             return indexes;
         }
-
-        #endregion
     }
 }

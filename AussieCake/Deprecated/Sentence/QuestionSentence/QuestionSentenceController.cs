@@ -6,32 +6,32 @@ using System.Linq;
 
 namespace AussieCake.Sentence
 {
-    public class QuestSenControl : SqLiteHelper
+    public class QuestSenControl_Deprecated : SqLiteHelper
     {
-        public static IEnumerable<QuestSenVM> Get(Model type)
+        public static IEnumerable<QuestSenVM_Deprecated> Get(Model type)
         {
             LoadDB(type);
 
             switch (type)
             {
                 case Model.Col:
-                    return  CollocationSentences;
+                    //return  CollocationSentences;
                 default:
                     Errors.ThrowErrorMsg(ErrorType.InvalidModelType, type);
-                    return new List<QuestSenVM>();
+                    return new List<QuestSenVM_Deprecated>();
             }
         }
 
-        public static void Insert(QuestSenVM vm)
+        public static void Insert(QuestSenVM_Deprecated vm)
         {
-            InsertQuestionSentence(vm);
+            //InsertQuestionSentence(vm);
             var editedQuest = QuestControl.Get(vm.Type).First(x => x.Id == vm.IdQuest);
             editedQuest.LoadCrossData();
         }
 
-        public static void Remove(QuestSenVM vm)
+        public static void Remove(QuestSenVM_Deprecated vm)
         {
-            RemoveQuestionSentence(vm);
+            //RemoveQuestionSentence(vm);
             var editedQuest = QuestControl.Get(vm.Type).First(x => x.Id == vm.IdQuest);
             editedQuest.LoadCrossData();
         }
@@ -49,8 +49,8 @@ namespace AussieCake.Sentence
 
         public static void LoadDB(Model type)
         {
-            if (type == Model.Col && CollocationSentences == null)
-                GetColSentencesDB();
+            //if (type == Model.Col && CollocationSentences == null)
+            //    GetColSentencesDB();
         }
 
         public static void LoadEveryQuestSenDB()

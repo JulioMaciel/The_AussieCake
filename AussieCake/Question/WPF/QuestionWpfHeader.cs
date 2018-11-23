@@ -3,15 +3,20 @@ using System.Windows.Controls;
 
 namespace AussieCake.Question
 {
-public class QuestWpfHeader
+    public class QuestWpfHeader
     {
         public StackPanel Stk_items { get; set; }
+
+        public StackPanel Stk_insert { get; set; }
+        public Grid Grid_bulk_insert { get; set; }
+
+        public ComboBox Cob_bulk_imp { get; set; }
+        public TextBox Txt_bulk_insert { get; set; }
 
         public TextBox Txt_avg_w { get; set; }
         public TextBox Txt_avg_m { get; set; }
         public TextBox Txt_avg_all { get; set; }
         public TextBox Txt_tries { get; set; }
-        public TextBox Txt_sen { get; set; }
         public TextBox Txt_chance { get; set; }
         public TextBox Txt_def { get; set; }
         public TextBox Txt_ptbr { get; set; }
@@ -34,11 +39,16 @@ public class QuestWpfHeader
         protected void Init()
         {
             Stk_items = new StackPanel();
+
+            Stk_insert = new StackPanel();
+            Grid_bulk_insert = new Grid();
+
+            Txt_bulk_insert = new TextBox();
+
             Txt_avg_w = new TextBox();
             Txt_avg_m = new TextBox();
             Txt_avg_all = new TextBox();
             Txt_tries = new TextBox();
-            Txt_sen = new TextBox();
             Txt_chance = new TextBox();
             Txt_def = new TextBox();
             Txt_ptbr = new TextBox();
@@ -56,6 +66,7 @@ public class QuestWpfHeader
             Btn_insert = new Button();
             Btn_filter = new Button();
 
+            Cob_bulk_imp = new ComboBox();
         }
     }
 }

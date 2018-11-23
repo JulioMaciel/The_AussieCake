@@ -6,13 +6,13 @@ namespace AussieCake.Question
 {
     public class ColVM : QuestVM
     {
-        public List<string> Prefixes { get; private set; }
+        public List<string> Prefixes { get; set; }
         public string Component1 { get; private set; }
         public bool IsComp1Verb { get; private set; }
-        public List<string> LinkWords { get; private set; }
+        public List<string> LinkWords { get; set; }
         public string Component2 { get; private set; }
         public bool IsComp2Verb { get; private set; }
-        public List<string> Suffixes { get; private set; }
+        public List<string> Suffixes { get; set; }
 
         public ColVM(int id, List<string> prefixes, string component1, bool isC1_v, List<string> linkWords,
                         string component2, bool isC2_v, List<string> suffixes, string definition, string ptBr,

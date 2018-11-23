@@ -73,7 +73,6 @@
         </StackPanel>
 
         <StackPanel Name="Menu" Grid.Column="0" Grid.Row="1" Margin="10,20,10,10">
-            <Button Content="Sentences" Name="btnSentences" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnSentences_click" Margin="0,0,0,6" />
             <Button Content="Collocations" Name="btnCollocations" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnCollocations_Click" Margin="0,0,0,6" />
             <Button Content="Collocation Challenge" Name="btnColChallenge" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnColChallenge_Click" />
         </StackPanel>

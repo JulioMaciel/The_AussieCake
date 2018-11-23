@@ -1,14 +1,13 @@
 ﻿using AussieCake.Attempt;
 using AussieCake.Challenge;
 using AussieCake.Question;
-using AussieCake.Sentence;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static AussieCake.Util.WPF.MyChBxs;
 
 namespace AussieCake.Util.WPF
 {
@@ -99,55 +98,7 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button Sen_Edit(int row, int column, Grid parent, SenVM sen, StackPanel item_line, TextBox txt_sen, StackPanel stack_quests)
-        {
-            var btn = Get(new Button(), row, column, parent, UtilWPF.GetIconButton("save_black"));
-            btn.Click += async (source, e) =>
-            {
-                btn.Content = UtilWPF.GetIconButton("save");
-                await System.Threading.Tasks.Task.Delay(2000);
-                btn.Content = UtilWPF.GetIconButton("save_black");
-
-                if (sen.Text != txt_sen.Text)
-                {
-                    sen.Text = txt_sen.Text;
-
-                    if (!SenControl.Update(sen))
-                        return;
-                }
-
-                var cbs = stack_quests.GetChildren<CheckQuest>();
-
-                foreach (var cb in cbs.Where(cb => cb.IsChecked.Value))
-                {
-                    if (!QuestSenControl.Get(cb.Type).Any(x => x.IdSen == sen.Id && x.IdQuest == cb.Id))
-                        QuestSenControl.Insert(new QuestSenVM(cb.Id, sen.Id, cb.Type));
-                }
-
-                foreach (var cb in cbs.Where(cb => !cb.IsChecked.Value))
-                {
-                    if (QuestSenControl.Get(cb.Type).Any(x => x.IdSen == sen.Id && x.IdQuest == cb.Id))
-                    {
-                        var uncheckedQS = QuestSenControl.Get(cb.Type).First(x => x.IdSen == sen.Id && x.IdQuest == cb.Id);
-                        QuestSenControl.Remove(uncheckedQS);
-                        //var edited_quest = QuestControl.Get(cb.Type).Where(q => q.Id == cb.Id).First();
-                        //edited_quest.LoadCrossData();
-                    }
-                }
-
-                sen = SenControl.Get().Where(q => q.Id == sen.Id).First();
-                sen.GetQuestions();
-
-                item_line.Children.Clear();
-                SentenceWpfController.AddIntoThis(sen, item_line);
-
-                Footer.Log("The sentence has been edited.");
-            };
-
-            return btn;
-        }
-
-        public static Button GetRemove(Button reference, int row, int column, Grid parent, StackPanel item_line)
+        public static Button Remove(Button reference, int row, int column, Grid parent, StackPanel item_line)
         {
             var btn = Get(reference, row, column, parent, UtilWPF.GetIconButton("remove_v2"));
             btn.Height = 28;
@@ -158,7 +109,7 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button GetFilter(Button reference, int row, int column, Grid parent, QuestWpfHeader wpf_header, IFilter filter)
+        public static Button Quest_Filter(Button reference, int row, int column, Grid parent, QuestWpfHeader wpf_header, IFilter filter)
         {
             var btn = Get(reference, row, column, parent, "Filter");
 
@@ -168,7 +119,7 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button GetInsert(Button reference, int row, int column, Grid parent, StackPanel stk_items, QuestWpfHeader wpf_header)
+        public static Button Quest_Insert(Button reference, int row, int column, Grid parent, StackPanel stk_items, QuestWpfHeader wpf_header)
         {
             var btn = Get(reference, row, column, parent, "Insert");
 
@@ -184,6 +135,159 @@ namespace AussieCake.Util.WPF
         public static Button Get(Button reference, int row, int column, Grid parent, object content)
         {
             var btn = Get(reference, content);
+            UtilWPF.SetGridPosition(btn, row, column, parent);
+
+            return btn;
+        }
+
+        public static Button Insert_Bulk_Col(Grid parent, QuestWpfHeader header)
+        {
+            var btn = new Button();
+            btn.VerticalAlignment = VerticalAlignment.Center;
+            btn.Margin = new Thickness(1, 0, 1, 0);
+            Get(btn, 1, 1, parent, "Insert");
+
+            btn.Click += (source, e) =>
+            {
+                var watcher = new Stopwatch();
+                watcher.Start();
+
+                var lines = header.Txt_bulk_insert.Text.Replace("\r", "").Split('\n');
+
+                header.Txt_bulk_insert.Text = "// format:  prefixe,comp1(vn),link,comp2(vn),suffix";
+                header.Txt_bulk_insert.Text += "\n// isVerb: (v) yes, (n) no, without () let algorythm decides\n";
+
+                var successful = new List<bool>();
+
+                var inserts = new List<string>();
+                var imp = (Importance)header.Cob_bulk_imp.SelectedIndex;
+
+                foreach (var line in lines)
+                {
+                    if (line.StartsWith("//") || line.StartsWith("Insert failed") || line.IsEmpty())
+                        continue;
+
+                    if (line.Count(x => x == ',') != 4)
+                    {
+                        successful.Add(false);
+                        header.Txt_bulk_insert.Text += "\nInsert failed (must has 4 commas): " + line;
+                        continue;
+                    }
+
+                    var parts = line.Split(',');
+
+                    if (parts.Count() != 5)
+                    {
+                        successful.Add(false);
+                        header.Txt_bulk_insert.Text += "\nInsert failed (must has 5 parts): " + line;
+                        continue;
+                    }
+
+                    var pref = parts[0].ToListString();
+                    var comp1_full = parts[1];
+                    var link = parts[2].ToListString();
+                    var comp2_full = parts[3];
+                    var suff = parts[4].ToListString();
+
+                    var comp1 = "";
+                    var isComp1_v = false;
+                    var comp2 = "";
+                    var isComp2_v = false;
+
+                    if (comp1_full.Contains('('))
+                    {
+                        if (comp1_full.Contains("(v)"))
+                            isComp1_v = true;
+
+                        comp1 = comp1_full.Substring(0, comp1_full.Length - 3);
+                    }
+                    else
+                    {
+                        if (comp1.IsVerb())
+                            isComp1_v = true;
+
+                        comp1 = comp1_full;
+                    }
+
+                    if (comp2_full.Contains('('))
+                    {
+                        if (comp2_full.Contains("(v)"))
+                            isComp2_v = true;
+
+                        comp2 = comp2_full.Substring(0, comp2_full.Length - 3);
+                    }
+                    else
+                    {
+                        if (comp2.IsVerb())
+                            isComp2_v = true;
+
+                        comp2 = comp2_full;
+                    }
+
+                    if (!pref.HasLettersOnly() || !comp1.IsLettersOnly() || !link.HasLettersOnly() ||
+                        !comp2.IsLettersOnly() || !suff.HasLettersOnly())
+                    {
+                        successful.Add(false);
+                        header.Txt_bulk_insert.Text += "\nInsert failed (parts must have only letters): " + line;
+                        continue;
+                    }
+
+                    var col = new ColVM(pref, comp1, isComp1_v, link, comp2, isComp2_v, suff, "", "", imp, true);
+
+                    if (QuestControl.Insert(col))
+                    {
+                        var added = QuestControl.Get(Model.Col).Last();
+                        added.LoadCrossData();
+                        QuestWpfUtil.AddWpfItem(header.Stk_items, added);
+                        successful.Add(true);
+                    }
+                    else
+                    {
+                        header.Txt_bulk_insert.Text += "\nInsert failed (DB validation): " + line;
+                        successful.Add(false);
+                    }
+                }
+                Footer.Log("Of a total of " + successful.Count + " attempts, " +
+                            successful.Where(x => x).Count() + " were inserted, while " +
+                            successful.Where(x => !x).Count() + " failed. Time spent: " +
+                            Math.Round(watcher.Elapsed.TotalSeconds, 2) + " seconds.");
+            };
+
+            return btn;
+        }
+
+        public static Button Bulk_back(Grid parent, ColWpfHeader header)
+        {
+            var btn = new Button();
+            btn.Content = "Back";
+            btn.VerticalAlignment = VerticalAlignment.Center;
+            btn.Margin = new Thickness(1, 0, 1, 0);
+            btn.Height = 28;
+            btn.Click += (source, e) =>
+            {
+                header.Grid_bulk_insert.Visibility = Visibility.Collapsed;
+                header.Stk_insert.Visibility = Visibility.Visible;
+            };
+            UtilWPF.SetGridPosition(btn, 2, 1, parent);
+
+            return btn;
+        }
+
+        public static Button Show_bulk_insert(int row, int column, Grid parent, ColWpfHeader header)
+        {
+            var btn = new Button();
+            btn.Content = UtilWPF.GetIconButton("bulk_insert_2");
+            btn.VerticalAlignment = VerticalAlignment.Center;
+            //btn.Margin = new Thickness(1, 0, 1, 0);
+            btn.Width = 32;
+            btn.Height = 32;
+            btn.Background = Brushes.Transparent;
+            btn.BorderBrush = Brushes.Transparent;
+            btn.Click += (source, e) =>
+            {
+                header.Grid_bulk_insert.Visibility = Visibility.Visible;
+                header.Stk_insert.Visibility = Visibility.Collapsed;
+            };
             UtilWPF.SetGridPosition(btn, row, column, parent);
 
             return btn;
@@ -218,7 +322,7 @@ namespace AussieCake.Util.WPF
 
         public static Button Remove_quest(Button reference, int row, int column, Grid parent, IQuest quest, StackPanel main_line)
         {
-            var btn_remove = GetRemove(reference, row, column, parent, main_line);
+            var btn_remove = Remove(reference, row, column, parent, main_line);
             btn_remove.Click += (source, e) =>
             {
                 var removed = QuestControl.Get(Model.Col).First(s => s.Id == quest.Id);
@@ -230,62 +334,6 @@ namespace AussieCake.Util.WPF
             return btn_remove;
         }
 
-        public static Button Remove_sentence(int row, int column, Grid parent, SenVM sen, StackPanel main_line)
-        {
-            var btn_remove = GetRemove(new Button(), row, column, parent, main_line);
-            btn_remove.Click += (source, e) =>
-            {
-                var removed = SenControl.Get().First(s => s.Id == sen.Id);
-                SenControl.Remove(removed);
-
-                Footer.Log("The sentence has been removed.");
-            };
-
-            return btn_remove;
-        }
-
-        public static Button Show_sentences(Button reference, int row, int column, Grid parent, IQuest quest, StackPanel stk_sen)
-        {
-            var btn = Get(reference, row, column, parent, quest.Sentences.Count + " Sens");
-            btn.Foreground = quest.Sentences.Count == 0 ? Brushes.DarkRed : Brushes.Black;
-            btn.Background = Brushes.Transparent;
-            btn.BorderBrush = Brushes.Transparent;
-
-            btn.Click += (source, e) =>
-            {
-                if (stk_sen.Visibility == Visibility.Collapsed)
-                    stk_sen.Visibility = Visibility.Visible;
-                else
-                    stk_sen.Visibility = Visibility.Collapsed;
-            };
-
-            return btn;
-        }
-
-        public static Button Sen_show_questions(int row, int column, Grid parent, SenVM sen, StackPanel stackCheckQuestions)
-        {
-            var btn = new Button
-            {
-                Content = sen.Questions.Any() ? UtilWPF.GetIconButton("box_full") : UtilWPF.GetIconButton("box_empty"),
-                Background = Brushes.Transparent,
-                BorderBrush = Brushes.Transparent,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Height = 32,
-                Width = 32
-            };
-            btn.Click += (source, e) =>
-            {
-                if (stackCheckQuestions.Visibility == Visibility.Collapsed)
-                    stackCheckQuestions.Visibility = Visibility.Visible;
-                else
-                    stackCheckQuestions.Visibility = Visibility.Collapsed;
-            };
-            UtilWPF.SetGridPosition(btn, row, column, parent);
-
-            return btn;
-        }
-
         public static Button Chal_remove_att(ChalLine line)
         {
             var btn = Get(line.Chal.Remove_att, 0, 0, line.Chal.Row_4, "Remove attempt");
@@ -294,7 +342,6 @@ namespace AussieCake.Util.WPF
             {
                 AttemptsControl.RemoveLast(line.Quest.Type);
                 line.Chal.Remove_att.IsEnabled = false;
-                line.Chal.Disable_sen.IsEnabled = true;
                 line.Chal.Disable_quest.IsEnabled = true;
                 line.Chal.Grid_chal.Background = UtilWPF.Colour_row_off;
 
@@ -307,20 +354,6 @@ namespace AussieCake.Util.WPF
                 line.Chal.Avg_all.Content = updated.Avg_all + "% (all)";
                 line.Chal.Tries.Content = updated.Tries.Count + " tries";
                 line.Chal.Chance.Content = updated.Chance + " (" + Math.Round(updated.Chance_real, 2) + ")";
-            };
-
-            return btn;
-        }
-
-        public static Button Chal_unlink_sen(ChalLine line)
-        {
-            var btn = Get(line.Chal.Disable_sen, 0, 2, line.Chal.Row_4, "Unlink sentence");
-            line.Chal.Disable_sen.Width = 125;
-            line.Chal.Disable_sen.IsEnabled = false;
-            line.Chal.Disable_sen.Click += (source, e) =>
-            {
-                QuestSenControl.Remove(line.QS.QS_id, line.Quest.Type);
-                line.Chal.Disable_sen.IsEnabled = false;
             };
 
             return btn;

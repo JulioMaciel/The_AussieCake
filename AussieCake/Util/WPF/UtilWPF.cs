@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -82,14 +82,9 @@ namespace AussieCake.Util.WPF
             parent.Children.Add(child);
         }
 
-        private static readonly Random random = new Random();
-        private static readonly object syncLock = new object();
-        public static int RandomNumber(int min, int max)
-        {
-            lock (syncLock)
-            { // synchronize
-                return random.Next(min, max);
-            }
-        }
+        static int seed = Environment.TickCount;
+        static readonly ThreadLocal<Random> random =
+            new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref seed)));
+        public static int RandomNumber(int min, int max) => random.Value.Next(min, max);        
     }
 }

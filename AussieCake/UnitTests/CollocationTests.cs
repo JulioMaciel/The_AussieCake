@@ -1,6 +1,8 @@
-﻿using AussieCake.Question;
+﻿using AussieCake.Challenge;
+using AussieCake.Question;
 using AussieCake.Sentence;
 using AussieCake.Util;
+using AussieCake.Verb;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,7 +29,7 @@ namespace AussieCake.UnitTests
             var watcher = new Stopwatch();
             watcher.Start();
 
-            var result = AutoGetSentences.DoesSenContainsCol(vm, sen) && !added.Contains(sen);
+            var result = Sentences.DoesSenContainsCol(vm, sen) && !added.Contains(sen);
 
             watcher.Stop();
 
@@ -48,7 +50,7 @@ namespace AussieCake.UnitTests
             var watcher = new Stopwatch();
             watcher.Start();
 
-            var result = AutoGetSentences.DoesSenContainsCol(vm, sen) && !added.Contains(sen);
+            var result = Sentences.DoesSenContainsCol(vm, sen) && !added.Contains(sen);
 
             watcher.Stop();
 
@@ -79,7 +81,7 @@ namespace AussieCake.UnitTests
 
             var sentences = matchList.Cast<Match>().Select(match => match.Value).ToList();
 
-            sentences = sentences.Where(s => !Errors.IsNullSmallerOrBigger(s, SenVM.MinSize, SenVM.MaxSize, false) &&
+            sentences = sentences.Where(s => !Errors.IsNullSmallerOrBigger(s, SenVM_Deprecated.MinSize, SenVM_Deprecated.MaxSize, false) &&
                                               ((s.EndsWith(".") && !s.EndsWith("Dr.") && !s.EndsWith("Mr.") &&
                                               !s.EndsWith("Ms.")) || s.EndsWith("!") || s.EndsWith("?"))).ToList();
 
@@ -96,7 +98,7 @@ namespace AussieCake.UnitTests
                 Debug.WriteLine("Col started.");
                 foreach (var sen in sentences)
                 {
-                    if (AutoGetSentences.DoesSenContainsCol((ColVM)col, sen) && !found.Contains(sen))
+                    if (Sentences.DoesSenContainsCol((ColVM)col, sen) && !found.Contains(sen))
                         found.Add(sen);
                 }
                 Debug.WriteLine(watcher.Elapsed.TotalSeconds + " sec to finish col id " + col.Id);
@@ -119,130 +121,148 @@ namespace AussieCake.UnitTests
             var model = new ColModel("", "take", 1, "up the", "role", 0, "of;as", "", "", 0, 1);
             var vm = model.ToVM();
             var sen = "The commission may also take up the role of the City Council and rules governing land use.";
-            Assert.IsTrue(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsTrue(Sentences.DoesSenContainsCol(vm, sen));
 
             model = new ColModel("", "experience", 1, "", "difficulties", 0, "", "", "", 0, 1);
             vm = model.ToVM();
             sen = "Most Parties are likely to experience difficulties in implementing measures.";
-            Assert.IsTrue(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsTrue(Sentences.DoesSenContainsCol(vm, sen));
 
             model = new ColModel("", "take", 1, "up the", "role", 0, "of;as", "", "", 0, 1);
             vm = model.ToVM();
             sen = "The commission may also should have taken up the role of the City Council and rules governing land use.";
-            Assert.IsTrue(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsTrue(Sentences.DoesSenContainsCol(vm, sen));
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "The fat dog together with the stupid cat made a adorable malicious party.";
-            Assert.IsTrue(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsTrue(Sentences.DoesSenContainsCol(vm, sen));
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with; and a", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "Nowadays it is amazing to get a cute dog and a cat at a cute, but malicious home.";
-            Assert.IsTrue(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsTrue(Sentences.DoesSenContainsCol(vm, sen));
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "An adorable cow together with a dog and the cat are the most malicious pets.";
-            Assert.IsTrue(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsTrue(Sentences.DoesSenContainsCol(vm, sen));
 
             model = new ColModel("", "experience", 1, "", "difficulties", 0, "", "", "", 0, 1);
             vm = model.ToVM();
             sen = "Most difficulty Parties experienced difficulties in their experiences.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because there're two Component1
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "Adorable dogs together with cats that are fat can be the moment to your realise how cute dogs are.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because there're two Component1
 
             model = new ColModel("", "experience", 1, "", "difficulties", 0, "", "", "", 0, 1);
             vm = model.ToVM();
             sen = "Most Parties have difficulties to experienced difficulty in their experiences.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because the Component2 requires plural. 
             // Algorithm just change form when it is singular to plural, not the opposite.
 
             model = new ColModel("", "take", 1, "up the", "role", 0, "of;as", "", "", 0, 1);
             vm = model.ToVM();
             sen = "The commission may also role up the take of the City Council and rules governing land use.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Componenet2 comes before Component1
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "An adorable cat together with dogs that are fat can be the moment to your realise how cute they are.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Component2 comes before Component1
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with; and a", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "Nowadays it is amazing to get a cute dog and a stupid cat at a cute home.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Suffixe comes before Component2
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "A cow together with a dog can be the best pet ever, much better than a malicious cat.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Link comes before Component1
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "An adorable cow together with a dog can be the best pets ever, and the cat the most stupid one.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Link comes before Component1
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "The very smart and fat animal that was named as dog, together with the stupid cat made a adorable malicious party.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Prefix is too far away from Component1
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with;that", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "That cute dog, because of its long corpse, is causing trouble together with the cat again, so that, I need to kill it.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Component1 is too far away from Component2
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "The fat dog together with the stupid cat made a adorable dance which seemed like a malicious party.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Suffix is too far away from Component2
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "Adorable dogs together with wolfs are the perfect picture of the example that cats are stupid.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because Link is too far away from Component2
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "The fat dog was stupid and with the stupid cat made a adorable malicious party.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because there's no Link
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "The dog and the rat are the perfect example why you should never have a tremendous stupid cat which is also fat.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because there's no Link
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "Who would like to have a fat dog these days when you can have a fat cat instead?";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because there's no Prefix
 
             model = new ColModel("cute;adorable;the", "dog", 0, "and the;together with", "cat", 0, "fat;stupid;malicious", "", "", 0, 1);
             vm = model.ToVM();
             sen = "The fat dog together with the stupid cat made a adorable party.";
-            Assert.IsFalse(AutoGetSentences.DoesSenContainsCol(vm, sen));
+            Assert.IsFalse(Sentences.DoesSenContainsCol(vm, sen));
             // Fails because there's no Suffix
         }
 
+        [TestMethod()]
+        public void TestIsVerbIntegraty()
+        {
+            foreach (ColVM col in QuestControl.Get(Model.Col))
+            {
+                if (col.IsComp1Verb && !col.Component1.IsVerb())
+                    Debug.WriteLine(col.Component1 + " is set as Verb, but the method said no");
+
+                if (!col.IsComp1Verb && col.Component1.IsVerb())
+                    Debug.WriteLine(col.Component1 + " is NOT set as Verb, but the method said yes");
+
+                if (col.IsComp2Verb && !col.Component2.IsVerb())
+                    Debug.WriteLine(col.Component2 + " is set as Verb, but the method said no");
+
+                if (!col.IsComp2Verb && col.Component2.IsVerb())
+                    Debug.WriteLine(col.Component2 + " is NOT set as Verb, but the method said yes");
+            }
+        }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using AussieCake.Attempt;
-using AussieCake.Sentence;
 using AussieCake.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AussieCake.Question
@@ -15,7 +15,6 @@ namespace AussieCake.Question
         public string PtBr { get; protected set; }
         public string Definition { get; protected set; }
         public Importance Importance { get; protected set; }
-        public List<QuestSen> Sentences { get; protected set; }
 
         public Model Type { get; protected set; }
 
@@ -55,9 +54,7 @@ namespace AussieCake.Question
         public virtual void LoadCrossData()
         {
             Tries = new List<DateTry>();
-            Sentences = new List<QuestSen>();
 
-            GetSentences();
             GetAttempts();
 
             LastTry = Tries.Any() ? Tries.Last() : null;
@@ -74,14 +71,6 @@ namespace AussieCake.Question
             IsActive = false;
         }
 
-        public void AddLastSentence()
-        {
-            var qs = QuestSenControl.Get(Type).Last();
-            var sen = SenControl.Get().First(x => x.Id == qs.IdSen);
-
-            Sentences.Add(new QuestSen(sen, qs.Id));
-        }
-
         private double GetAverageScoreByTime(int lastDays)
         {
             if (!Tries.Any())
@@ -95,20 +84,6 @@ namespace AussieCake.Question
                     return 0;
             }
 
-        }
-
-        private void GetSentences()
-        {
-            var qs_list = QuestSenControl.Get(Type);
-
-            foreach (var qs in qs_list)
-            {
-                if (qs.IdQuest != Id)
-                    continue;
-
-                var sen = SenControl.Get().First(x => x.Id == qs.IdSen);
-                Sentences.Add(new QuestSen(sen, qs.Id));
-            }
         }
 
         private void GetAttempts()
@@ -140,13 +115,15 @@ namespace AussieCake.Question
             }
             else
                 lastTry_score = 20;
-            
+
             // peso 4
-            var inv_avg_week = (20*Avg_week)/100;
-            var inv_avg_month = (15*Avg_month)/100;
-            var inv_avg_all = (05*Avg_all)/100;
-            var inv_avg = daysSince <= 7 ? (inv_avg_week + inv_avg_month + inv_avg_all) :
-                        (daysSince <= 30 ? (Avg_month + Avg_all) * 2 : Avg_all - 100 * -0.4);
+            var inv_avg = 40.0;
+            if (daysSince <= 7)
+                inv_avg -= ((20 * Avg_week) / 100) + ((15 * Avg_month) / 100) + ((05 * Avg_all) / 100);
+            else if (daysSince <= 30)
+                inv_avg -= ((30 * Avg_month) / 100) + ((10 * Avg_all) / 100);
+            else if (daysSince <= 7)
+                inv_avg -= ((40 * Avg_all) / 100);
 
             // peso 1
             var lastWasWrong = Tries.Any() ? (LastTry.Score == 100 ? 0 : 10) : 10;
@@ -182,18 +159,6 @@ namespace AussieCake.Question
         {
             Score = score;
             When = when;
-        }
-    }
-
-    public class QuestSen
-    {
-        public SenVM Sen { get; set; }
-        public int QS_id { get; set; }
-
-        public QuestSen(SenVM sen, int qs_id)
-        {
-            Sen = sen;
-            QS_id = qs_id;
         }
     }
 }

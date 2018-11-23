@@ -1,6 +1,5 @@
 ﻿using AussieCake.Attempt;
 using AussieCake.Question;
-using AussieCake.Sentence;
 using AussieCake.Util;
 using AussieCake.Util.WPF;
 using System;
@@ -16,7 +15,7 @@ namespace AussieCake.Challenge
 {
     public static class ChalWPFControl
     {
-        public static ChalLine CreateChalLine(IQuest quest, int row, Grid userControlGrid, Microsoft.Office.Interop.Word.Application wordApp)
+        public async static Task<ChalLine> CreateChalLine(IQuest quest, int row, Grid userControlGrid, Microsoft.Office.Interop.Word.Application wordApp)
         {
             var line = new ChalLine();
             line.Quest = quest;
@@ -31,7 +30,7 @@ namespace AussieCake.Challenge
             line.Chal.PtBr.Foreground = Brushes.DarkBlue;
             MyLbls.Get(line.Chal.Definition, line.Chal.Row_1, line.Quest.Definition);
 
-            var stk_2 = BuildSenChal(line, wordApp);
+            var stk_2 = await BuildSenChal(line, wordApp);
             UtilWPF.SetGridPosition(stk_2, 1, 0, line.Chal.Grid_chal);
 
             MyGrids.GetRow(line.Chal.Row_3, 2, 0, line.Chal.Grid_chal, new List<int>() { 1, 1, 1, 1, 1, 1 });
@@ -48,9 +47,7 @@ namespace AussieCake.Challenge
             line.Chal.Row_4.Visibility = Visibility.Collapsed;
 
             MyBtns.Chal_remove_att(line);
-            MyLbls.Chal_id(false, line);
-            MyBtns.Chal_unlink_sen(line);
-            MyLbls.Chal_id(true, line);
+            MyLbls.Chal_quest_id(line, 3);
             MyBtns.Chal_disable_quest(line);
 
             return line;
@@ -76,7 +73,8 @@ namespace AussieCake.Challenge
 
             foreach (var word in sentence.Split())
             {
-                var found = AutoGetSentences.GetCompatibleWord(choosen, isVerb, word);
+                // check if choosen is in any way the 'word'
+                var found =  Sentences.GetCompatibleWord(choosen, isVerb, word);
 
                 if (found.Length > 0)
                 {
@@ -91,45 +89,22 @@ namespace AussieCake.Challenge
                 }
             }
 
-            //var tasks = sentence.Split().Select(word =>
-            //    Task.Factory.StartNew(() =>
-            //    {
-            //        var found = AutoGetSentences.GetCompatibleWord(choosen, isVerb, word);
-
-            //        if (found.Length > 0)
-            //        {
-            //            MyCbBxs.BuildSynonyms(found, cb_word, parent, char.IsUpper(word[1]), wordApp);
-            //        }
-            //        else
-            //        {
-            //            Application.Current.Dispatcher.Invoke(() =>
-            //            {
-            //                var lbl = new Label();
-            //                lbl.Margin = new Thickness(-3, 0, -3, 0);
-            //                lbl.Content = word;
-            //                parent.Children.Add(lbl);
-            //            });
-            //        }
-            //    }));
-            //await Task.WhenAll(tasks);
-
             return cb_word;
         }
 
-        private static StackPanel BuildSenChal(ChalLine line, Microsoft.Office.Interop.Word.Application wordApp)
+        private async static Task<StackPanel> BuildSenChal(ChalLine line, Microsoft.Office.Interop.Word.Application wordApp)
         {
             var stk_sentence = line.Chal.Row_2;
             stk_sentence.Orientation = Orientation.Horizontal;
             stk_sentence.VerticalAlignment = VerticalAlignment.Center;
             stk_sentence.HorizontalAlignment = HorizontalAlignment.Center;
 
-            var random_elem = UtilWPF.RandomNumber(0, line.Quest.Sentences.Count() - 1);
-            line.QS = line.Quest.Sentences.ElementAt(random_elem);
+            string sen_from_web = await Sentences.GetSentenceToCollocation(line.Quest);
 
-            line.Choosen_word = ChooseWord(line.Quest);
-            var isChoosenVerb = IsChosenVerb(line.Quest, line.Choosen_word);
+            line.Choosen_word = ChooseWord(line.Quest, wordApp);
+            var isChoosenVerb = IsPartVerb(line.Quest, line.Choosen_word);
 
-            line.Chal.Choosen_word = CreateSentence(line.QS.Sen.Text, line.Choosen_word, isChoosenVerb, stk_sentence, wordApp);
+            line.Chal.Choosen_word = CreateSentence(sen_from_web, line.Choosen_word, isChoosenVerb, stk_sentence, wordApp);
 
             foreach (var q_word in stk_sentence.Children.OfType<Label>())
                 GetChallengeSentenceChildren(line.Quest, q_word, line);
@@ -147,27 +122,43 @@ namespace AussieCake.Challenge
                 if (col.Prefixes.Any(x => x == part) ||
                     col.LinkWords.Any(x => x == part) ||
                     col.Suffixes.Any(x => x == part) ||
-                    !AutoGetSentences.GetCompatibleWord(col.Component1, col.IsComp1Verb, part).IsEmpty() ||
-                    !AutoGetSentences.GetCompatibleWord(col.Component2, col.IsComp2Verb, part).IsEmpty())
+                    !Sentences.GetCompatibleWord(col.Component1, col.IsComp1Verb, part).IsEmpty() ||
+                    !Sentences.GetCompatibleWord(col.Component2, col.IsComp2Verb, part).IsEmpty())
 
                     line.Chal.Quest_words.Add(q_word);
             }
         }
 
-        private static string ChooseWord(IQuest quest)
+        private static string ChooseWord(IQuest quest, Microsoft.Office.Interop.Word.Application wordApp)
         {
-            var random = new Random().Next(0, 1).ToBool();
+            var choosen = string.Empty;
+            var alternative = string.Empty;
 
             if (quest.Type == Model.Col)
             {
                 var col = quest as ColVM;
-                return random ? col.Component1 : col.Component2;
+
+                if (UtilWPF.RandomNumber(0, 2).ToBool())
+                {
+                    choosen = col.Component1;
+                    alternative = col.Component2;
+                }
+                else
+                {
+                    choosen = col.Component2;
+                    alternative = col.Component1;
+                }
             }
 
-            return string.Empty;
+            var hasSynonyms = FileHtmlControls.GetSynonyms(choosen, wordApp).Any();
+
+            if (!hasSynonyms)
+                choosen = alternative;
+
+            return choosen;
         }
 
-        private static bool IsChosenVerb(IQuest quest, string chosen)
+        private static bool IsPartVerb(IQuest quest, string chosen)
         {
             if (quest.Type == Model.Col)
             {
@@ -217,7 +208,7 @@ namespace AussieCake.Challenge
             line.Chal.Row_4.Visibility = Visibility.Visible;
         }
 
-        public static void PopulateRows(Grid parent, Model type, List<ChalLine> lines, Microsoft.Office.Interop.Word.Application wordApp)
+        public async static void PopulateRows(Grid parent, Model type, List<ChalLine> lines, Microsoft.Office.Interop.Word.Application wordApp)
         {
             var watcher = new Stopwatch();
             watcher.Start();
@@ -226,26 +217,16 @@ namespace AussieCake.Challenge
 
             lines.Clear();
 
-            if (QuestControl.Get(type).First().Sentences == null)
-                QuestControl.LoadCrossData(type);
-
             var actual_chosen = new List<int>();
             for (int row = 0; row < 4; row++)
             {
                 var quest = QuestControl.GetRandomAvailableQuestion(type, actual_chosen);
                 actual_chosen.Add(quest.Id);
 
-                var item = CreateChalLine(quest, row, parent, wordApp);
+                var item = await CreateChalLine(quest, row, parent, wordApp);
                 lines.Add(item);
-                Footer.Log("Challenge " + (row + 1) + " was loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
+                Footer.Log("Loading... Challenge " + (row + 1) + " was loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
             };
-
-            //Task tasks = Task.Run(() => Parallel.For(0, 3, index =>
-            //{
-            //    var item = CreateChalLine(actual_chosen[index], index, parent);
-            //    lines.Add(item);
-            //}));
-            //await Task.WhenAll(tasks);
 
             Footer.Log("4 challenges loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
         }
@@ -253,7 +234,6 @@ namespace AussieCake.Challenge
 
     public class ChalLine
     {
-        public QuestSen QS { get; set; }
         public ChalWpfItem Chal { get; set; }
         public IQuest Quest { get; set; }
         public string Choosen_word { get; set; }

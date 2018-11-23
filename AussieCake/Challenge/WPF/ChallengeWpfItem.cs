@@ -27,8 +27,6 @@ namespace AussieCake.Challenge
         public Label Importante { get; set; }
         public Label Chance { get; set; }
         public Label Id_col { get; set; }
-        public Label Id_sen { get; set; }
-        public Button Disable_sen { get; set; }
         public Button Disable_quest { get; set; }
         public Button Remove_att { get; set; }
 
@@ -56,8 +54,6 @@ namespace AussieCake.Challenge
             Chance = new Label();
 
             Id_col = new Label();
-            Id_sen = new Label();
-            Disable_sen = new Button();
             Disable_quest = new Button();
             Remove_att = new Button();
         }

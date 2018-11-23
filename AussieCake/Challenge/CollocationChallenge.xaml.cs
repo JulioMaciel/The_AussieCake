@@ -1,8 +1,7 @@
-﻿using AussieCake.Sentence;
-using AussieCake.Util;
+﻿using AussieCake.Question;
 using AussieCake.Util.WPF;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,17 +19,17 @@ namespace AussieCake.Challenge
         {
             InitializeComponent();
 
-            if (!SenControl.Get().Any() || SenControl.Get().Count() <= 4)
-            {
-                Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, "There's no enough sentences to generate the challenge.");
-                return;
-            }
-
-            WordApp = new Microsoft.Office.Interop.Word.Application();
+            LoadRequirements();
 
             ChalWPFControl.PopulateRows(userControlGrid, Model.Col, lines, WordApp);
 
             CreateFrame();
+        }
+
+        private void LoadRequirements()
+        {
+            WordApp = new Microsoft.Office.Interop.Word.Application();
+            QuestControl.LoadCrossData(Model.Col);
         }
 
         private void CreateFrame()
@@ -47,6 +46,6 @@ namespace AussieCake.Challenge
             MyBtns.Chal_next(btn_next, stk_btns, btn_verify, userControlGrid, lines, Model.Col, WordApp);
         }
 
-        
+
     }
 }

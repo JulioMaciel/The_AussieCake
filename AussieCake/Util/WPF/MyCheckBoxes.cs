@@ -66,10 +66,5 @@ namespace AussieCake.Util.WPF
             }
 
         }
-
-        public class CheckBoxSen : CheckBox
-        {
-            public QuestSen QS { get; set; }
-        }
     }
 }

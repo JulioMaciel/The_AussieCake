@@ -9,13 +9,13 @@ namespace AussieCake.Util.WPF
 {
     public static class MyCbBxs
     {
-        public static ComboBox GetImportance(ComboBox reference, int row, int column, Grid parent, Importance imp, bool isFilter)
+        public static ComboBox Importance(ComboBox reference, int row, int column, Grid parent, Importance imp, bool addAnyOption)
         {
             var cb = Get(reference, row, column, parent);
             var source = Enum.GetValues(typeof(Importance)).Cast<Importance>();
 
-            if (!isFilter) // remove Any when edit line
-                source = source.Where(i => i != Importance.Any);
+            if (!addAnyOption) // remove Any when edit line
+                source = source.Where(i => i != Util.Importance.Any);
 
             cb.ItemsSource = source;
             cb.SelectedValue = imp;
@@ -59,6 +59,9 @@ namespace AussieCake.Util.WPF
                 synonyms.ForEach(x => x.First().ToString().ToUpper());
                 word = word.UpperFirst();
             }
+
+            if (!synonyms.Any())
+                synonyms = FileHtmlControls.GetSynonymsOnWeb(word, isFirstUp);
 
             if (!synonyms.Any())
                 Errors.ThrowErrorMsg(ErrorType.SynonymsNotFound, word);
