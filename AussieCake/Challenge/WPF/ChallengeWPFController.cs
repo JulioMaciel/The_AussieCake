@@ -15,7 +15,7 @@ namespace AussieCake.Challenge
 {
     public static class ChalWPFControl
     {
-        public async static Task<ChalLine> CreateChalLine(IQuest quest, int row, Grid userControlGrid, Microsoft.Office.Interop.Word.Application wordApp)
+        public static ChalLine CreateChalLine(IQuest quest, int row, Grid userControlGrid, Microsoft.Office.Interop.Word.Application wordApp)
         {
             var line = new ChalLine();
             line.Quest = quest;
@@ -30,7 +30,7 @@ namespace AussieCake.Challenge
             line.Chal.PtBr.Foreground = Brushes.DarkBlue;
             MyLbls.Get(line.Chal.Definition, line.Chal.Row_1, line.Quest.Definition);
 
-            var stk_2 = await BuildSenChal(line, wordApp);
+            var stk_2 = BuildSenChal(line, wordApp);
             UtilWPF.SetGridPosition(stk_2, 1, 0, line.Chal.Grid_chal);
 
             MyGrids.GetRow(line.Chal.Row_3, 2, 0, line.Chal.Grid_chal, new List<int>() { 1, 1, 1, 1, 1, 1 });
@@ -47,7 +47,7 @@ namespace AussieCake.Challenge
             line.Chal.Row_4.Visibility = Visibility.Collapsed;
 
             MyBtns.Chal_remove_att(line);
-            MyLbls.Chal_quest_id(line, 3);
+            MyLbls.Chal_quest_id(line, 2);
             MyBtns.Chal_disable_quest(line);
 
             return line;
@@ -60,25 +60,44 @@ namespace AussieCake.Challenge
             if (quest.Type == Model.Col)
             {
                 var col = quest as ColVM;
-                answer = col.Prefixes.ToText() + " / " + col.Component1 + " / " +
-                        col.LinkWords.ToText() + " / " + col.Component2 + " / " + col.Suffixes.ToText();
+                answer = col.Text;
             }
 
             return answer;
         }
 
-        private static ComboChallenge CreateSentence(string sentence, string choosen, bool isVerb, StackPanel parent, Microsoft.Office.Interop.Word.Application wordApp)
+        private static StackPanel BuildSenChal(ChalLine line, Microsoft.Office.Interop.Word.Application wordApp)
+        {
+            var stk_sentence = line.Chal.Row_2;
+            stk_sentence.Orientation = Orientation.Horizontal;
+            stk_sentence.VerticalAlignment = VerticalAlignment.Center;
+            stk_sentence.HorizontalAlignment = HorizontalAlignment.Center;
+
+            line.Chal.Cb_Answer = CreateSentence(line, stk_sentence, wordApp);
+
+            return stk_sentence;
+        }
+
+        private static ComboChallenge CreateSentence(ChalLine line, StackPanel parent, Microsoft.Office.Interop.Word.Application wordApp)
         {
             var cb_word = new ComboChallenge();
+
+            string sentence = Sentences.GetSentenceToCollocation(line.Quest);
+
+            var invalid_synonyms = GetInvalidSynonyms(line.Quest);
 
             foreach (var word in sentence.Split())
             {
                 // check if choosen is in any way the 'word'
-                var found =  Sentences.GetCompatibleWord(choosen, isVerb, word);
+                string answer = string.Empty;
+                if (line.Quest.Type == Model.Col)
+                    answer = (line.Quest as ColVM).Answer;
 
-                if (found.Length > 0)
+                var answers_compatibility = Sentences.GetCompatibleWord(answer, word);
+
+                if (answers_compatibility.Length > 0)
                 {
-                    MyCbBxs.BuildSynonyms(found, cb_word, parent, char.IsUpper(word[1]), wordApp);
+                    MyCbBxs.BuildSynonyms(answers_compatibility, invalid_synonyms, cb_word, parent, char.IsUpper(word[1]), wordApp);
                 }
                 else
                 {
@@ -86,96 +105,40 @@ namespace AussieCake.Challenge
                     lbl.Margin = new Thickness(-3, 0, -3, 0);
                     lbl.Content = word;
                     parent.Children.Add(lbl);
+                    line.Chal.Quest_words.Add(lbl);
                 }
             }
 
             return cb_word;
         }
 
-        private async static Task<StackPanel> BuildSenChal(ChalLine line, Microsoft.Office.Interop.Word.Application wordApp)
+        private static List<string> GetInvalidSynonyms(IQuest quest)
         {
-            var stk_sentence = line.Chal.Row_2;
-            stk_sentence.Orientation = Orientation.Horizontal;
-            stk_sentence.VerticalAlignment = VerticalAlignment.Center;
-            stk_sentence.HorizontalAlignment = HorizontalAlignment.Center;
-
-            string sen_from_web = await Sentences.GetSentenceToCollocation(line.Quest);
-
-            line.Choosen_word = ChooseWord(line.Quest, wordApp);
-            var isChoosenVerb = IsPartVerb(line.Quest, line.Choosen_word);
-
-            line.Chal.Choosen_word = CreateSentence(sen_from_web, line.Choosen_word, isChoosenVerb, stk_sentence, wordApp);
-
-            foreach (var q_word in stk_sentence.Children.OfType<Label>())
-                GetChallengeSentenceChildren(line.Quest, q_word, line);
-
-            return stk_sentence;
-        }
-
-        private static void GetChallengeSentenceChildren(IQuest quest, Label q_word, ChalLine line)
-        {
-            if (quest.Type == Model.Col)
-            {
-                var col = quest as ColVM;
-                var part = q_word.Content.ToString();
-
-                if (col.Prefixes.Any(x => x == part) ||
-                    col.LinkWords.Any(x => x == part) ||
-                    col.Suffixes.Any(x => x == part) ||
-                    !Sentences.GetCompatibleWord(col.Component1, col.IsComp1Verb, part).IsEmpty() ||
-                    !Sentences.GetCompatibleWord(col.Component2, col.IsComp2Verb, part).IsEmpty())
-
-                    line.Chal.Quest_words.Add(q_word);
-            }
-        }
-
-        private static string ChooseWord(IQuest quest, Microsoft.Office.Interop.Word.Application wordApp)
-        {
-            var choosen = string.Empty;
-            var alternative = string.Empty;
+            var invalid_synonyms = new List<string>();
 
             if (quest.Type == Model.Col)
             {
-                var col = quest as ColVM;
-
-                if (UtilWPF.RandomNumber(0, 2).ToBool())
+                foreach (ColVM col in QuestControl.Get(Model.Col))
                 {
-                    choosen = col.Component1;
-                    alternative = col.Component2;
+                    if (col.Text.Contains((quest as ColVM).Answer))
+                    {
+                        var words = col.Text.Split(' ');
+                        invalid_synonyms.AddRange(words);
+                    }
                 }
-                else
-                {
-                    choosen = col.Component2;
-                    alternative = col.Component1;
-                }
+
+
             }
 
-            var hasSynonyms = FileHtmlControls.GetSynonyms(choosen, wordApp).Any();
-
-            if (!hasSynonyms)
-                choosen = alternative;
-
-            return choosen;
-        }
-
-        private static bool IsPartVerb(IQuest quest, string chosen)
-        {
-            if (quest.Type == Model.Col)
-            {
-                var col = quest as ColVM;
-                if (chosen == col.Component1 && col.IsComp1Verb || chosen == col.Component2 && col.IsComp2Verb)
-                    return true;
-            }
-
-            return false;
+            return invalid_synonyms;
         }
 
         public static void Verify(ChalLine line, Button btn_verify, Button btn_next)
         {
-            line.Chal.Choosen_word.IsEnabled = false;
+            line.Chal.Cb_Answer.IsEnabled = false;
 
             int score = 0;
-            if (line.Chal.Choosen_word.IsCorrect())
+            if (line.Chal.Cb_Answer.IsCorrect())
             {
                 line.Chal.Grid_chal.Background = UtilWPF.Colour_Correct;
                 score = 10;
@@ -193,8 +156,16 @@ namespace AussieCake.Challenge
             line.Chal.Avg_all.Content = updated_quest.Avg_all + "% (all)";
             line.Chal.Tries.Content = updated_quest.Tries.Count + " tries";
 
-            foreach (var lbl in line.Chal.Quest_words)
-                lbl.FontWeight = FontWeights.Bold;
+            foreach (var lbl in line.Chal.Quest_words) {
+
+                if (line.Quest.Type == Model.Col)
+                {
+                    var col = line.Quest as ColVM;
+
+                    if (col.Text.Split(' ').Contains(lbl.Content.ToString()))
+                        lbl.FontWeight = FontWeights.Bold;
+                }
+            }
 
             TurnElemsVisible(line);
             btn_next.IsEnabled = true;
@@ -208,7 +179,7 @@ namespace AussieCake.Challenge
             line.Chal.Row_4.Visibility = Visibility.Visible;
         }
 
-        public async static void PopulateRows(Grid parent, Model type, List<ChalLine> lines, Microsoft.Office.Interop.Word.Application wordApp)
+        public static void PopulateRows(Grid parent, Model type, List<ChalLine> lines, Microsoft.Office.Interop.Word.Application wordApp)
         {
             var watcher = new Stopwatch();
             watcher.Start();
@@ -223,7 +194,7 @@ namespace AussieCake.Challenge
                 var quest = QuestControl.GetRandomAvailableQuestion(type, actual_chosen);
                 actual_chosen.Add(quest.Id);
 
-                var item = await CreateChalLine(quest, row, parent, wordApp);
+                var item = CreateChalLine(quest, row, parent, wordApp);
                 lines.Add(item);
                 Footer.Log("Loading... Challenge " + (row + 1) + " was loaded in " + watcher.Elapsed.TotalSeconds + " seconds.");
             };
@@ -236,7 +207,6 @@ namespace AussieCake.Challenge
     {
         public ChalWpfItem Chal { get; set; }
         public IQuest Quest { get; set; }
-        public string Choosen_word { get; set; }
 
         public ChalLine()
         {

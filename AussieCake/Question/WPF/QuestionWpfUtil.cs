@@ -16,13 +16,8 @@ namespace AussieCake
                 return;
             }
 
-            var col = new ColVM(wpf_header.Txt_pref.Text.ToListString(),
-                wpf_header.Txt_comp1.Text,
-                wpf_header.Chb_isComp1_v.IsChecked.Value,
-                wpf_header.Txt_link.Text.ToListString(),
-                wpf_header.Txt_comp2.Text,
-                wpf_header.Chb_isComp2_v.IsChecked.Value,
-                wpf_header.Txt_suff.Text.ToListString(),
+            var col = new ColVM(wpf_header.Txt_words.Text,
+                wpf_header.Txt_answer.Text,
                 wpf_header.Txt_def.Text,
                 wpf_header.Txt_ptbr.Text,
                 (Importance)wpf_header.Cob_imp.SelectedIndex,
@@ -30,16 +25,11 @@ namespace AussieCake
 
             if (QuestControl.Insert(col))
             {
-                wpf_header.Txt_pref.Text = string.Empty;
-                wpf_header.Txt_comp1.Text = string.Empty;
-                wpf_header.Chb_isComp1_v.IsChecked = false;
-                wpf_header.Txt_link.Text = string.Empty;
-                wpf_header.Txt_comp2.Text = string.Empty;
-                wpf_header.Chb_isComp2_v.IsChecked = false;
-                wpf_header.Txt_suff.Text = string.Empty;
+                wpf_header.Txt_words.Text = string.Empty;
+                wpf_header.Txt_answer.Text = string.Empty;
                 wpf_header.Txt_def.Text = string.Empty;
                 wpf_header.Txt_ptbr.Text = string.Empty;
-                wpf_header.Cob_imp.SelectedIndex = (int)Importance.Any;
+                //wpf_header.Cob_imp.SelectedIndex = (int)Importance.Any;
 
                 var added = QuestControl.Get(Model.Col).Last();
                 added.LoadCrossData();
@@ -53,13 +43,8 @@ namespace AussieCake
         public static void EditColClick(ColVM col, ColWpfItem wpf_item, StackPanel item_line)
         {
             var edited = new ColVM(col.Id,
-                wpf_item.Pref.Text.ToListString(),
-                wpf_item.Comp1.Text,
-                wpf_item.IsComp1_v.IsChecked.Value,
-                wpf_item.Link.Text.ToListString(),
-                wpf_item.Comp2.Text,
-                wpf_item.IsComp2_v.IsChecked.Value,
-                wpf_item.Suff.Text.ToListString(),
+                wpf_item.Words.Text,
+                wpf_item.Answer.Text,
                 wpf_item.Def.Text,
                 wpf_item.Ptbr.Text,
                 (Importance)(wpf_item.Imp).SelectedValue,

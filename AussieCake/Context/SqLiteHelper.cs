@@ -21,6 +21,9 @@ namespace AussieCake.Context
         protected static List<ColVM> Collocations { get; private set; }
         protected static List<AttemptVM> CollocationAttempts { get; private set; }
         protected static List<VerbModel> Verbs { get; private set; }
+        protected static List<AttemptVM> EssayAttempts { get; private set; }
+        protected static List<AttemptVM> SumRetellAttempts { get; private set; }
+        protected static List<AttemptVM> DescImgAttempts { get; private set; }
 
         public static void InitializeDB()
         {
@@ -50,6 +53,24 @@ namespace AussieCake.Context
             CollocationAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.Col)).ToList();
         }
 
+        protected static void GetEssayAttemptsDB()
+        {
+            var dataset = GetTable(GetDBAttemptName(Model.Essay));
+            EssayAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.Essay)).ToList();
+        }
+
+        protected static void GetSumRetellAttemptsDB()
+        {
+            var dataset = GetTable(GetDBAttemptName(Model.SumRetell));
+            SumRetellAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.SumRetell)).ToList();
+        }
+
+        protected static void GetDescImgAttemptsDB()
+        {
+            var dataset = GetTable(GetDBAttemptName(Model.DescImg));
+            DescImgAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.DescImg)).ToList();
+        }
+
         protected static void GetVerbsDB()
         {
             var dataset = GetTable(Model.Verb);
@@ -63,10 +84,9 @@ namespace AussieCake.Context
 
         protected static bool InsertCollocation(ColModel col)
         {
-            string query = string.Format(InsertSQL + "'{1}', '{2}', {3}, '{4}', '{5}', {6}, '{7}', {8}, {9}, {10}, {11})",
+            string query = string.Format(InsertSQL + "'{1}', '{2}', {3}, '{4}', '{5}', {6})",
                                         Model.Col.ToDesc(),
-                                        col.Prefixes, col.Component1, col.IsComp1Verb, col.LinkWords,
-                                        col.Component2, col.IsComp2Verb, col.Suffixes,
+                                        col.Text, col.Answer,
                                         Null, Null, col.Importance, col.IsActive);
             if (!SendQuery(query))
                 return false;
@@ -78,7 +98,7 @@ namespace AussieCake.Context
             return true;
         }
 
-        protected static bool InsertQuestionAttempt(AttemptVM att)
+        protected static bool InsertAttempt(AttemptVM att)
         {
             string query = string.Format(InsertSQL + "'{1}', '{2}', '{3}')",
                                          GetDBAttemptName(att.Type),
@@ -88,11 +108,38 @@ namespace AussieCake.Context
 
             var inserted = GetLast(GetDBAttemptName(att.Type));
 
-            if (CollocationAttempts == null)
-                CollocationAttempts = new List<AttemptVM>();
+            if (att.Type == Model.Col)
+            {
+                if (CollocationAttempts == null)
+                    CollocationAttempts = new List<AttemptVM>();
 
-            CollocationAttempts.Add(inserted.Tables[0].AsEnumerable().
-                                    Select(GetDatarowAttempts(att.Type)).First());
+                CollocationAttempts.Add(inserted.Tables[0].AsEnumerable().
+                                        Select(GetDatarowAttempts(att.Type)).First());
+            }
+            else if (att.Type == Model.Essay)
+            {
+                if (EssayAttempts == null)
+                    EssayAttempts = new List<AttemptVM>();
+
+                EssayAttempts.Add(inserted.Tables[0].AsEnumerable().
+                                        Select(GetDatarowAttempts(att.Type)).First());
+            }
+            else if (att.Type == Model.SumRetell)
+            {
+                if (SumRetellAttempts == null)
+                    SumRetellAttempts = new List<AttemptVM>();
+
+                SumRetellAttempts.Add(inserted.Tables[0].AsEnumerable().
+                                        Select(GetDatarowAttempts(att.Type)).First());
+            }
+            else if (att.Type == Model.DescImg)
+            {
+                if (DescImgAttempts == null)
+                    DescImgAttempts = new List<AttemptVM>();
+
+                DescImgAttempts.Add(inserted.Tables[0].AsEnumerable().
+                                        Select(GetDatarowAttempts(att.Type)).First());
+            }
 
             return true;
         }
@@ -122,13 +169,8 @@ namespace AussieCake.Context
             int field = 0;
             string columnsToUpdate = string.Empty;
 
-            CheckFieldUpdate("Prefixes", col.Prefixes, oldCol.Prefixes, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("Component1", col.Component1, oldCol.Component1, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("IsComp1Verb", col.IsComp1Verb, oldCol.IsComp1Verb, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("LinkWords", col.LinkWords, oldCol.LinkWords, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("Component2", col.Component2, oldCol.Component2, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("IsComp2Verb", col.IsComp2Verb, oldCol.IsComp2Verb, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("Suffixes", col.Suffixes, oldCol.Suffixes, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("Words", col.Text, oldCol.Text, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("Answer", col.Answer, oldCol.Answer, ref field, ref columnsToUpdate);
 
             CheckQuestionChanges(col, oldCol, ref field, ref columnsToUpdate);
 
@@ -171,13 +213,8 @@ namespace AussieCake.Context
         {
             return dataRow => new ColModel(
                                 Convert.ToInt16(dataRow.Field<Int64>("Id")),
-                                dataRow.Field<string>("Prefixes"),
-                                dataRow.Field<string>("Component1"),
-                                Convert.ToInt16(dataRow.Field<Int64>("IsComp1Verb")),
-                                dataRow.Field<string>("LinkWords"),
-                                dataRow.Field<string>("Component2"),
-                                Convert.ToInt16(dataRow.Field<Int64>("IsComp2Verb")),
-                                dataRow.Field<string>("Suffixes"),
+                                dataRow.Field<string>("Words"),
+                                dataRow.Field<string>("Answer"),
                                 dataRow.Field<string>("PtBr"),
                                 dataRow.Field<string>("Definition"),
                                 Convert.ToInt16(dataRow.Field<Int64>("Importance")),
@@ -188,7 +225,7 @@ namespace AussieCake.Context
         {
             return dataRow => new AttemptVM(
                         Convert.ToInt16(dataRow.Field<Int64>("Id")),
-                        Convert.ToInt16(dataRow.Field<Int64>("IdCollocation")),
+                        Convert.ToInt16(dataRow.Field<Int64>("Id" + type.ToDesc())),
                         Convert.ToInt16(dataRow.Field<Int64>("Score")),
                         Convert.ToDateTime(dataRow.Field<string>("When")),
                         type
@@ -240,13 +277,8 @@ namespace AussieCake.Context
         {
             if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Collocation' " +
                 "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-                "'Prefixes' TEXT, " +
-                "'Component1' TEXT NOT NULL, " +
-                "'IsComp1Verb' INTEGER NOT NULL, " +
-                "'LinkWords' TEXT, " +
-                "'Component2' TEXT NOT NULL, " +
-                "'IsComp2Verb' INTEGER NOT NULL, " +
-                "'Suffixes' TEXT, " +
+                "'Words' TEXT NOT NULL, " +
+                "'Answer' TEXT NOT NULL, " +
                 "'Definition' TEXT, " +
                 "'PtBr' TEXT, " +
                 "'Importance' INTEGER NOT NULL, " +
@@ -259,6 +291,15 @@ namespace AussieCake.Context
                 "'Score' INTEGER NOT NULL, " +
                 "'When' TEXT NOT NULL, " +
                 "FOREIGN KEY(`IdCollocation`) REFERENCES `Collocation`(`Id`) )"))
+                return false;
+
+            if (!SendQuery(GetCreatingQueryForTemplate(Model.Essay)))
+                return false;
+
+            if (!SendQuery(GetCreatingQueryForTemplate(Model.SumRetell)))
+                return false;
+
+            if (!SendQuery(GetCreatingQueryForTemplate(Model.DescImg)))
                 return false;
 
             if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Verb' " +
@@ -285,6 +326,15 @@ namespace AussieCake.Context
         private static string GetDBAttemptName(Model type)
         {
             return type.ToDesc() + "Attempt";
+        }
+
+        private static string GetCreatingQueryForTemplate(Model type)
+        {
+            return "CREATE TABLE IF NOT EXISTS '" + type.ToDesc() + "Attempt' " +
+                "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "'Id" + type.ToDesc() + "' INTEGER NOT NULL, " +
+                "'Score' INTEGER NOT NULL, " +
+                "'When' TEXT NOT NULL )";
         }
     }
 }

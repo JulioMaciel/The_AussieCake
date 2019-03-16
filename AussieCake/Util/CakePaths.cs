@@ -17,6 +17,8 @@ namespace AussieCake.Util
 
         public static string WelcomeCake = Project + "\\Images\\its_a_lie.png";
 
+        public static string DescImgFolder = Project + "\\Images\\DescribeImages\\";
+
         public static string GetIconPath(string icon)
 		{
 			return Project + @"\\Images\\Icons\\" + icon + ".ico";

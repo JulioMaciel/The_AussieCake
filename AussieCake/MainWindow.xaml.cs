@@ -1,6 +1,7 @@
 ﻿using AussieCake.Challenge;
 using AussieCake.Context;
 using AussieCake.Question;
+using AussieCake.Templates;
 using AussieCake.Util;
 using System;
 using System.Windows;
@@ -63,6 +64,30 @@ namespace AussieCake
         {
             btnCollocations.IsEnabled = true;
             btnColChallenge.IsEnabled = true;
+            btnEssay.IsEnabled = true;
+            btnSumRetell.IsEnabled = true;
+            btnDescImg.IsEnabled = true;
+        }
+
+        private void btnEssay_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new Essay();
+            btnEssay.IsEnabled = false;
+        }
+
+        private void btnSumRetell_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new SumRetell();
+            btnSumRetell.IsEnabled = false;
+        }
+
+        private void btnDescImg_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new DescImg();
+            btnDescImg.IsEnabled = false;
         }
     }
 }

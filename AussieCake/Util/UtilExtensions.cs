@@ -202,9 +202,9 @@ namespace AussieCake.Util
         }
 
 
-        public static List<string> ToListString(this string raw)
+        public static List<string> ToListString(this string raw, char separator = ';')
         {
-            return raw.IsEmpty() ? new List<string>() : raw.Split(';').ToList();
+            return raw.IsEmpty() ? new List<string>() : raw.Split(separator).ToList();
         }
 
         public static List<int> ToListInt(this string raw)

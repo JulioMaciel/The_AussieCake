@@ -17,7 +17,7 @@ namespace AussieCake.Question
         public static void AddIntoThis(ColVM col, StackPanel item_line)
         {
             var row1 = MyGrids.GetRowItem(new List<int>() {
-                1, 2, 1, 1, 2, 1, 1, 2
+                3, 1, 1
             }, item_line);
 
             var row2 = MyGrids.GetRowItem(new List<int>() {
@@ -30,15 +30,10 @@ namespace AussieCake.Question
 
             var wpf = new ColWpfItem();
 
-            MyTxts.Get(wpf.Pref, 0, 0, row1, col.Prefixes.ToText());
-            wpf.Pref.ToolTip = "Id " + col.Id;
-            MyTxts.Get(wpf.Comp1, 0, 1, row1, col.Component1);
-            MyChBxs.IsVerb(wpf.IsComp1_v, 0, 2, row1, col.IsComp1Verb);
-            MyTxts.Get(wpf.Link, 0, 3, row1, col.LinkWords.ToText());
-            MyTxts.Get(wpf.Comp2, 0, 4, row1, col.Component2);
-            MyChBxs.IsVerb(wpf.IsComp2_v, 0, 5, row1, col.IsComp2Verb);
-            MyTxts.Get(wpf.Suff, 0, 6, row1, col.Suffixes.ToText());
-            MyCbBxs.Importance(wpf.Imp, 0, 7, row1, col.Importance, false);
+            MyTxts.Get(wpf.Words, 0, 0, row1, col.Text);
+            wpf.Words.ToolTip = "Id " + col.Id;
+            MyTxts.Get(wpf.Answer, 0, 1, row1, col.Answer);
+            MyCbBxs.Importance(wpf.Imp, 0, 2, row1, col.Importance, false);
 
             MyLbls.AvgScore(wpf.Avg_w, 0, 0, row2, col, 7);
             MyLbls.AvgScore(wpf.Avg_m, 0, 1, row2, col, 30);

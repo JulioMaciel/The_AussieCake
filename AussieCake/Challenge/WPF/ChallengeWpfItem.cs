@@ -18,7 +18,7 @@ namespace AussieCake.Challenge
         public Label Definition { get; set; }
 
         public List<Label> Quest_words { get; set; }
-        public ComboChallenge Choosen_word { get; set; }
+        public ComboChallenge Cb_Answer { get; set; }
 
         public Label Avg_w { get; set; }
         public Label Avg_m { get; set; }
@@ -43,7 +43,7 @@ namespace AussieCake.Challenge
             Definition = new Label();
 
             Quest_words = new List<Label>();
-            Choosen_word = new ComboChallenge();
+            Cb_Answer = new ComboChallenge();
 
             Answer = new Label();
             Avg_w = new Label();

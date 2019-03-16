@@ -42,29 +42,29 @@ namespace AussieCake.Util.WPF
             return reference;
         }
 
-        public class CheckQuest : CheckBox
-        {
-            public Model Type { get; set; }
-            public int Id { get; set; }
+        //public class CheckQuest : CheckBox
+        //{
+        //    public Model Type { get; set; }
+        //    public int Id { get; set; }
 
-            public CheckQuest(IQuest quest, bool isChecked)
-            {
-                Content = quest.ToText();
+        //    public CheckQuest(IQuest quest, bool isChecked)
+        //    {
+        //        Content = quest.ToText();
 
-                MouseEnter += new MouseEventHandler((source, e) => Foreground = Brushes.DarkRed);
-                MouseLeave += new MouseEventHandler((source, e) => Foreground = Brushes.Black);
-                ToolTip = "Question Id " + quest.Id + "; Click to copy";
-                Type = Model.Col;
-                Id = quest.Id;
-                IsChecked = isChecked;
-                VerticalContentAlignment = VerticalAlignment.Center;
-                MouseLeftButtonDown += (source, e) =>
-                {
-                    Clipboard.SetText(quest.Id.ToString());
-                    Foreground = Brushes.DarkGreen;
-                };
-            }
+        //        MouseEnter += new MouseEventHandler((source, e) => Foreground = Brushes.DarkRed);
+        //        MouseLeave += new MouseEventHandler((source, e) => Foreground = Brushes.Black);
+        //        ToolTip = "Question Id " + quest.Id + "; Click to copy";
+        //        Type = Model.Col;
+        //        Id = quest.Id;
+        //        IsChecked = isChecked;
+        //        VerticalContentAlignment = VerticalAlignment.Center;
+        //        MouseLeftButtonDown += (source, e) =>
+        //        {
+        //            Clipboard.SetText(quest.Id.ToString());
+        //            Foreground = Brushes.DarkGreen;
+        //        };
+        //    }
 
-        }
+        //}
     }
 }

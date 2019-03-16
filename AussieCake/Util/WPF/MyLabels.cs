@@ -79,8 +79,8 @@ namespace AussieCake.Util.WPF
 
             lbl.MouseLeftButtonDown += (source, e) => filter.SetSort(sort, stk_items);
 
-            if (sort == SortLbl.Col_comp1 || sort == SortLbl.Col_comp2)
-                Grid.SetColumnSpan(lbl, 2);
+            //if (sort == SortLbl.Answer || sort == SortLbl.Col_comp2)
+            //    Grid.SetColumnSpan(lbl, 2);
 
             return lbl;
         }
@@ -127,7 +127,7 @@ namespace AussieCake.Util.WPF
         public static Label Chal_quest_id(ChalLine line, int column)
         {
             var reference = line.Chal.Id_col;
-            var content = line.Quest.Id + " (quest)";
+            var content = "Quest Id: " + line.Quest.Id;
             Get(reference, 0, column, line.Chal.Row_4, content);
             reference.ToolTip = "Right click to copy the Id";
             reference.MouseRightButtonDown += (source, e) => Clipboard.SetText(line.Quest.Id.ToString());
@@ -168,18 +168,9 @@ public enum SortLbl
     [Description("PtBr")]
     PtBr,
 
-    [Description("Prefixes [Id]")]
-    Col_pref,
+    [Description("Words [Id]")]
+    Words,
 
-    [Description("Component 1")]
-    Col_comp1,
-
-    [Description("Link")]
-    Col_link,
-
-    [Description("Component 2")]
-    Col_comp2,
-
-    [Description("Suffixes")]
-    Col_suf,
+    [Description("Answer")]
+    Answer,
 }

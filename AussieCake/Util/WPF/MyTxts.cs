@@ -39,8 +39,7 @@ namespace AussieCake.Util.WPF
 
         public static TextBox Bulk_Insert(TextBox reference, Grid parent)
         {
-            reference.Text = "// format:  prefixe,comp1(vn),link,comp2(vn),suffix";
-            reference.Text += "\n// isVerb: (v) yes, (n) no, without () let algorythm decides\n";
+            reference.Text = "// format:  words;answer";
             reference.TextWrapping = TextWrapping.Wrap;
             reference.AcceptsReturn = true;
             UtilWPF.SetGridPosition(reference, 0, 0, parent);

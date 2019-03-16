@@ -3,7 +3,6 @@ using AussieCake.Util;
 using AussieCake.Verb;
 using System.Collections.Generic;
 using System.Data.Entity.Design.PluralizationServices;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,19 +11,25 @@ namespace AussieCake.Challenge
 {
     public static class Sentences
     {
-        public async static Task<string> GetSentenceToCollocation(IQuest col)
+        public static string GetSentenceToCollocation(IQuest col)
         {
-            var raw_Text = await FileHtmlControls.GetTextFromSite(col.ToLudwigUrl());
+            var url = col.ToLudwigUrl();
+            var raw_Text = FileHtmlControls.GetTextFromSite(url);
 
-            var raw_sentences = await GetRawSentencesFromSource(raw_Text);
+            var raw_sentences = GetRawSentencesFromSource(raw_Text);
 
             var result = new List<string>();
-            var task = raw_sentences.Select(sen => Task.Factory.StartNew(() =>
+            foreach (var sen in raw_sentences)
             {
                 if (DoesSenContainsCol((ColVM)col, sen) && !result.Contains(sen))
                     result.Add(sen);
-            }));
-            await Task.WhenAll(task);
+            }
+
+            if (!result.Any())
+            {
+                System.Console.WriteLine(url);
+                return string.Empty;
+            }
 
             var chosen = result.PickRandom();
 
@@ -43,131 +48,84 @@ namespace AussieCake.Challenge
             return matchList.Cast<Match>().Select(match => match.Value).ToList();
         }
 
-        private static async Task<List<string>> GetRawSentencesFromSource(string source)
+        private static List<string> GetRawSentencesFromSource(string source)
         {
             var sentences = new List<string>();
 
-            Task tasks = Task.Run(() => sentences = GetSentencesFromSource(source));
-            await Task.WhenAll(tasks);
+            sentences = GetSentencesFromSource(source);
 
             var filteredSentences = new List<string>();
-            var task = sentences.Select(sen => Task.Factory.StartNew(() =>
+            foreach (var sen in sentences)
             {
-                if (!Errors.IsNullSmallerOrBigger(sen, 40, 120, false))
+                if (!Errors.IsNullSmallerOrBigger(sen, 40, 80, false))
                 {
                     if (DoesStartEndProperly(sen))
                         filteredSentences.Add(sen);
                 }
-            }));
-            await Task.WhenAll(task);
+            }
 
             return filteredSentences;
         }
 
         public static bool DoesSenContainsCol(ColVM col, string sen)
         {
-            // start checking the comp2 because it's here where is the biggest chance of returning false
-            var indexesComp2 = GetIndexOfCompatibleWord(col.Component2, col.IsComp2Verb, sen);
-            if (!indexesComp2.Any() || indexesComp2.Count > 1)
-                return false;
+            //System.Console.WriteLine(col.Text + ": " + sen);
 
-            var indexComp2 = indexesComp2.First();
-
-            var indexesComp1 = GetIndexOfCompatibleWord(col.Component1, col.IsComp1Verb, sen);
-            if (!indexesComp1.Any() || indexesComp1.Count > 1)
-                return false;
-
-            var indexComp1 = indexesComp1.First();
-
-            if (indexComp2 < indexComp1)
-                return false;
-
-            var max_comp_distance = 25;
-            var max_part_distance = 15;
-
-            if (indexComp2 - indexComp1 > max_comp_distance)
-                return false;
-
-            var hasLink = col.LinkWords != null && col.LinkWords.Any();
-            var indexesLink = GetIndexOfPart(col.LinkWords, sen);
-            if (hasLink)
+            var lastIndexFound = -1;
+            var words = col.Text.Split(' ').ToList();
+            for (int i = 0; i < words.Count; i++)
             {
-                if (!indexesLink.Any())
+                var word = words[i];
+                var actualIndex = -1;
+
+                if (word.Length < 5)
+                {
+                    if (!sen.ContainsInsensitive(word))
+                        return false;
+                    else
+                        actualIndex = sen.IndexOf(word);
+                }
+                else
+                {
+                    var that = GetIndexOfCompatibleWord(word, sen);
+
+                    if (that.Any())
+                        actualIndex = that.First();
+                    else
+                        return false;
+                }
+
+                if (lastIndexFound - actualIndex > 20)
                     return false;
 
-                if (!indexesLink.Any(x => x > indexComp1))
-                    return false;
-
-                if (!indexesLink.Any(y => y < indexComp2))
-                    return false;
-
-                if (indexesLink.GetMinimumDistance(indexesComp1) > max_part_distance)
-                    return false;
-
-                if (indexesComp2.GetMinimumDistance(indexesLink) > max_part_distance)
-                    return false;
-            }
-
-            var hasPref = col.Prefixes != null && col.Prefixes.Any();
-            var indexesPref = GetIndexOfPart(col.Prefixes, sen);
-            if (hasPref)
-            {
-                if (!indexesPref.Any())
-                    return false;
-
-                if (!indexesPref.Any(x => x < indexComp1))
-                    return false;
-
-                if (hasLink && !indexesPref.Any(y => y < indexesLink.Max()))
-                    return false;
-
-                if (indexesComp1.GetMinimumDistance(indexesPref) > max_part_distance)
-                    return false;
-            }
-
-            var hasSuff = col.Suffixes != null && col.Suffixes.Any();
-            var indexesSuff = GetIndexOfPart(col.Suffixes, sen);
-            if (hasSuff)
-            {
-                if (!indexesSuff.Any())
-                    return false;
-
-                if (!indexesSuff.Any(x => x > indexComp2))
-                    return false;
-
-                if (hasLink && !indexesSuff.Any(y => y > indexesLink.Max()))
-                    return false;
-
-                if (indexesSuff.GetMinimumDistance(indexesComp2) > max_part_distance)
-                    return false;
+                lastIndexFound = actualIndex;
             }
 
             return true;
         }
 
-        private static bool DoesSenContainsComp(string comp, bool isVerb, string sentence)
-        {
-            var compatible = GetCompatibleWord(comp, isVerb, sentence);
+        //private static bool DoesSenContainsComp(string comp, bool isVerb, string sentence)
+        //{
+        //    var compatible = GetCompatibleWord(comp, sentence);
 
-            if (!compatible.IsEmpty())
-                return true;
+        //    if (!compatible.IsEmpty())
+        //        return true;
 
-            return false;
-        }
+        //    return false;
+        //}
 
-        public static string GetCompatibleWord(string comp, bool isVerb, string sen)
+        public static string GetCompatibleWord(string comp, string sen)
         {
             if (sen.ContainsInsensitive(comp))
                 return comp;
 
-            if (isVerb)
-            {
-                VerbModel staticVerb = new VerbModel();
+            VerbModel staticVerb = new VerbModel();
 
-                if (VerbsController.Get().Any(v => v.Infinitive.EqualsNoCase(comp)))
-                    staticVerb = VerbsController.Get().First(v => v.Infinitive.EqualsNoCase(comp));
-                else
-                    staticVerb = VerbsController.ConjugateUnknownVerb(comp);
+            if (VerbsController.Get().Any(v => v.Infinitive.EqualsNoCase(comp)))
+            {
+                staticVerb = VerbsController.Get().First(v => v.Infinitive.EqualsNoCase(comp));
+                //else
+                //    staticVerb = VerbsController.ConjugateUnknownVerb(comp);
 
                 if (sen.ContainsInsensitive(staticVerb.Gerund))
                     return staticVerb.Gerund;
@@ -178,22 +136,19 @@ namespace AussieCake.Challenge
                 else if (sen.ContainsInsensitive(staticVerb.Person))
                     return staticVerb.Person;
             }
-            else
-            {
-                var service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
-                if (service.IsSingular(comp))
-                {
-                    var plural = service.Pluralize(comp);
-                    if (sen.ContainsInsensitive(plural))
-                        return plural;
-                }
 
+            var service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
+            if (service.IsSingular(comp))
+            {
+                var plural = service.Pluralize(comp);
+                if (sen.ContainsInsensitive(plural))
+                    return plural;
             }
 
             return string.Empty;
         }
 
-        private static List<int> GetIndexOfCompatibleWord(string comp, bool isVerb, string sen)
+        private static List<int> GetIndexOfCompatibleWord(string comp, string sen)
         {
             var result = new List<int>();
 
@@ -203,14 +158,13 @@ namespace AussieCake.Challenge
                 AddUniqueValues(result, indexes);
             }
 
-            if (isVerb)
-            {
-                VerbModel staticVerb = new VerbModel();
+            VerbModel staticVerb = new VerbModel();
 
-                if (VerbsController.Get().Any(v => v.Infinitive.EqualsNoCase(comp)))
-                    staticVerb = VerbsController.Get().First(v => v.Infinitive.EqualsNoCase(comp));
-                else
-                    staticVerb = VerbsController.ConjugateUnknownVerb(comp);
+            if (VerbsController.Get().Any(v => v.Infinitive.EqualsNoCase(comp)))
+            {
+                staticVerb = VerbsController.Get().First(v => v.Infinitive.EqualsNoCase(comp));
+                //else
+                //    staticVerb = VerbsController.ConjugateUnknownVerb(comp);
 
                 if (sen.ContainsInsensitive(staticVerb.Gerund, true))
                 {
@@ -236,19 +190,18 @@ namespace AussieCake.Challenge
                     AddUniqueValues(result, indexes);
                 }
             }
-            else
+
+            var service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
+            if (service.IsSingular(comp))
             {
-                var service = PluralizationService.CreateService(System.Globalization.CultureInfo.CurrentCulture);
-                if (service.IsSingular(comp))
+                var plural = service.Pluralize(comp);
+                if (sen.ContainsInsensitive(plural, true))
                 {
-                    var plural = service.Pluralize(comp);
-                    if (sen.ContainsInsensitive(plural, true))
-                    {
-                        var indexes = sen.IndexesFrom(plural, true);
-                        AddUniqueValues(result, indexes);
-                    }
+                    var indexes = sen.IndexesFrom(plural, true);
+                    AddUniqueValues(result, indexes);
                 }
             }
+
 
             return result;
         }

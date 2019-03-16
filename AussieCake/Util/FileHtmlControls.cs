@@ -12,12 +12,12 @@ namespace AussieCake.Util
 {
     public static class FileHtmlControls
     {
-        public async static Task<string> GetTextFromSite(string url)
+        public static string GetTextFromSite(string url)
         {
             string htmlCode = string.Empty;
 
             using (WebClient client = new WebClient())
-                htmlCode = await client.DownloadStringTaskAsync(url);
+                htmlCode = client.DownloadString(url);
 
             string cleanedCode = CleanHtmlCode(htmlCode);
 
@@ -60,7 +60,7 @@ namespace AussieCake.Util
             return cleanedCode;
         }
 
-        public static List<string> GetSynonymsOnWeb(string word, bool isFirstUp)
+        public static List<string> GetSynonymsOnWeb(string word, List<string> invalid_synonyms, bool isFirstUp)
         {
             string htmlCode = string.Empty;
 
@@ -86,7 +86,14 @@ namespace AussieCake.Util
                 syn = syn.Remove(0, 17); // remove (3kshty etbu2a31">)
 
                 if (!syn.IsLettersOnly() && syn.Length < 20)
-                    result.Add(syn);
+                {
+                    if (!invalid_synonyms.Contains(syn))
+                    {
+                        result.Add(syn);
+                    }
+                    else
+                        Debug.WriteLine("Synonym " + syn + " was blocked because it was on the invalid list.");
+                }
             }
 
             if (!result.Any() || result.Count < 6)
@@ -109,7 +116,14 @@ namespace AussieCake.Util
                     syn = syn.GetBetween(">", "<");
 
                     if (!syn.IsLettersOnly() && !result.Contains(syn) && syn.Length < 20)
-                        result.Add(syn);
+                    {
+                        if (!invalid_synonyms.Contains(syn))
+                        {
+                            result.Add(syn);
+                        }
+                        else
+                            Debug.WriteLine("Synonym " + syn + " was blocked because it was on the invalid list.");
+                    }
                 }
             }
 
@@ -140,7 +154,7 @@ namespace AussieCake.Util
             return result;
         }
 
-        public static IEnumerable<string> GetSynonyms(string word, Microsoft.Office.Interop.Word.Application wordApp)
+        public static IEnumerable<string> GetSynonyms(string word, List<string> invalid_synonyms, Microsoft.Office.Interop.Word.Application wordApp)
         {
             word = word.ToLower();
 
@@ -154,7 +168,14 @@ namespace AussieCake.Util
 
                 var synonym = Meaning.ToString();
                 if (!IsSynonymTooSimilar(word, synonym, found))
-                    found.Add(synonym);
+                {
+                    if (!invalid_synonyms.Contains(synonym))
+                    {
+                        found.Add(synonym);
+                    }
+                    else
+                        Debug.WriteLine("Synonym " + synonym + " was blocked because it was on the invalid list.");
+                }
             }
 
             for (int ii = 0; ii < found.Count; ii++)

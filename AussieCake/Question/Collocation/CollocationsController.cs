@@ -11,29 +11,24 @@ namespace AussieCake.Question
     {
         protected static bool Insert(ColVM collocation)
 		{
-            if (Collocations.Any(s => s.Component1 == collocation.Component1 && s.Component2 == collocation.Component2))
+            if (Collocations.Any(s => s.Text == collocation.Text))
             {
-                var old_col = Collocations.First(s => s.Component1 == collocation.Component1 && s.Component2 == collocation.Component2);
+                var old_col = Collocations.First(s => s.Text == collocation.Text);
                 var old_score = ScoreHelper.GetScoreFromImportance(old_col.Importance);
                 var new_score = ScoreHelper.GetScoreFromImportance(collocation.Importance);
 
                 if (new_score > old_score)
                 {
-                    var to_update = new ColVM(old_col.Id, old_col.Prefixes, old_col.Component1, old_col.IsComp1Verb, old_col.LinkWords, 
-                                              old_col.Component2, old_col.IsComp2Verb, old_col.Suffixes, old_col.Definition, 
+                    var to_update = new ColVM(old_col.Id, old_col.Text, old_col.Answer, old_col.Definition, 
                                               old_col.PtBr, collocation.Importance, old_col.IsActive);
                     return Update(to_update);
                 }
                 else
-                return Errors.ThrowErrorMsg(ErrorType.AlreadyInserted, collocation.Component1 + " or " + collocation.Component2);
+                return Errors.ThrowErrorMsg(ErrorType.AlreadyInserted, collocation.Text);
             }
 
-            if (!ValidCompContentAndSizeValid(collocation.Component1) || !ValidCompContentAndSizeValid(collocation.Component2))
+            if (!ValidWordsAndAnswerSize(collocation.Text, collocation.Answer))
                 return false;
-
-            collocation.Prefixes = RemoveUselessPart(collocation.Prefixes);
-            collocation.LinkWords = RemoveUselessPart(collocation.LinkWords);
-            collocation.Suffixes = RemoveUselessPart(collocation.Suffixes);
 
             if (!InsertCollocation(collocation.ToModel()))
                 return false;
@@ -45,7 +40,7 @@ namespace AussieCake.Question
 
         protected static bool Update(ColVM collocation)
 		{
-            if (!ValidCompContentAndSizeValid(collocation.Component1) || !ValidCompContentAndSizeValid(collocation.Component2))
+            if (!ValidWordsAndAnswerSize(collocation.Text, collocation.Answer))
                 return false;
 
             if (!UpdateCollocation(collocation.ToModel()))
@@ -66,10 +61,19 @@ namespace AussieCake.Question
             return true;
         }
 
-        private static bool ValidCompContentAndSizeValid(string comp)
+        private static bool ValidWordsAndAnswerSize(string words, string answer)
         {
-            if (comp.IsEmpty() || (comp.Length < 3 && !comp.EqualsNoCase("be")))
-                return Errors.ThrowErrorMsg(ErrorType.TooSmall, "Item wasn't saved. '" + comp + "' is not valid.");
+            if (!words.Contains(answer))
+                return Errors.ThrowErrorMsg(ErrorType.AnswerNotFound, answer);
+
+            if (answer.Length < 3 && !answer.EqualsNoCase("be"))
+                return Errors.ThrowErrorMsg(ErrorType.TooSmall, "Item wasn't saved. '" + answer + "' is not valid.");
+
+            if (words.Length < 6)
+                return Errors.ThrowErrorMsg(ErrorType.TooSmall, "Item wasn't saved. '" + words + "' is not valid.");
+
+            if (!words.Contains(' '))
+                return Errors.ThrowErrorMsg(ErrorType.InvalidCharacters, "Item wasn't saved. There's just one word.");
 
             return true;
         }

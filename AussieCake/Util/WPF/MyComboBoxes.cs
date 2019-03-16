@@ -47,13 +47,13 @@ namespace AussieCake.Util.WPF
             return reference;
         }
 
-        public static ComboChallenge BuildSynonyms(string word, ComboChallenge reference, StackPanel parent, bool isFirstUp, Microsoft.Office.Interop.Word.Application wordApp)
+        public static ComboChallenge BuildSynonyms(string word, List<string> invalid_synonyms, ComboChallenge reference, StackPanel parent, bool isFirstUp, Microsoft.Office.Interop.Word.Application wordApp)
         {
             reference.VerticalContentAlignment = VerticalAlignment.Center;
             reference.Margin = new Thickness(1, 0, 1, 0);
             parent.Children.Add(reference);
 
-            var synonyms = FileHtmlControls.GetSynonyms(word, wordApp).ToList();
+            var synonyms = FileHtmlControls.GetSynonyms(word, invalid_synonyms, wordApp).ToList();
             if (isFirstUp)
             {
                 synonyms.ForEach(x => x.First().ToString().ToUpper());
@@ -61,7 +61,7 @@ namespace AussieCake.Util.WPF
             }
 
             if (!synonyms.Any())
-                synonyms = FileHtmlControls.GetSynonymsOnWeb(word, isFirstUp);
+                synonyms = FileHtmlControls.GetSynonymsOnWeb(word, invalid_synonyms, isFirstUp);
 
             if (!synonyms.Any())
                 Errors.ThrowErrorMsg(ErrorType.SynonymsNotFound, word);

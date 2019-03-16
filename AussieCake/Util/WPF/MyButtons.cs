@@ -154,8 +154,7 @@ namespace AussieCake.Util.WPF
 
                 var lines = header.Txt_bulk_insert.Text.Replace("\r", "").Split('\n');
 
-                header.Txt_bulk_insert.Text = "// format:  prefixe,comp1(vn),link,comp2(vn),suffix";
-                header.Txt_bulk_insert.Text += "\n// isVerb: (v) yes, (n) no, without () let algorythm decides\n";
+                header.Txt_bulk_insert.Text = "// format:  words;answer";
 
                 var successful = new List<bool>();
 
@@ -167,72 +166,33 @@ namespace AussieCake.Util.WPF
                     if (line.StartsWith("//") || line.StartsWith("Insert failed") || line.IsEmpty())
                         continue;
 
-                    if (line.Count(x => x == ',') != 4)
+                    if (line.Count(x => x == '1') != 1)
                     {
                         successful.Add(false);
-                        header.Txt_bulk_insert.Text += "\nInsert failed (must has 4 commas): " + line;
+                        header.Txt_bulk_insert.Text += "\nInsert failed (must has 1 ';'): " + line;
                         continue;
                     }
 
-                    var parts = line.Split(',');
+                    var parts = line.Split(';');
 
-                    if (parts.Count() != 5)
+                    if (parts.Count() != 2)
                     {
                         successful.Add(false);
-                        header.Txt_bulk_insert.Text += "\nInsert failed (must has 5 parts): " + line;
+                        header.Txt_bulk_insert.Text += "\nInsert failed (must has 2 parts): " + line;
                         continue;
                     }
 
-                    var pref = parts[0].ToListString();
-                    var comp1_full = parts[1];
-                    var link = parts[2].ToListString();
-                    var comp2_full = parts[3];
-                    var suff = parts[4].ToListString();
+                    var words = parts[0];
+                    var answer = parts[1];
 
-                    var comp1 = "";
-                    var isComp1_v = false;
-                    var comp2 = "";
-                    var isComp2_v = false;
-
-                    if (comp1_full.Contains('('))
-                    {
-                        if (comp1_full.Contains("(v)"))
-                            isComp1_v = true;
-
-                        comp1 = comp1_full.Substring(0, comp1_full.Length - 3);
-                    }
-                    else
-                    {
-                        if (comp1.IsVerb())
-                            isComp1_v = true;
-
-                        comp1 = comp1_full;
-                    }
-
-                    if (comp2_full.Contains('('))
-                    {
-                        if (comp2_full.Contains("(v)"))
-                            isComp2_v = true;
-
-                        comp2 = comp2_full.Substring(0, comp2_full.Length - 3);
-                    }
-                    else
-                    {
-                        if (comp2.IsVerb())
-                            isComp2_v = true;
-
-                        comp2 = comp2_full;
-                    }
-
-                    if (!pref.HasLettersOnly() || !comp1.IsLettersOnly() || !link.HasLettersOnly() ||
-                        !comp2.IsLettersOnly() || !suff.HasLettersOnly())
+                    if (words.IsLettersOnly() || !answer.IsLettersOnly())
                     {
                         successful.Add(false);
                         header.Txt_bulk_insert.Text += "\nInsert failed (parts must have only letters): " + line;
                         continue;
                     }
 
-                    var col = new ColVM(pref, comp1, isComp1_v, link, comp2, isComp2_v, suff, "", "", imp, true);
+                    var col = new ColVM(words, answer, "", "", imp, true);
 
                     if (QuestControl.Insert(col))
                     {

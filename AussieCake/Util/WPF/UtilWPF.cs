@@ -33,14 +33,10 @@ namespace AussieCake.Util.WPF
 
         public static SolidColorBrush GetAvgColor(double percentage)
         {
-            //if (percentage == null)
-            //    return Brushes.Black;
-
             var red = Color.FromRgb(255, 0, 0);
             var yellow = Color.FromRgb(255, 255, 0);
             var lime = Color.FromRgb(0, 255, 0);
 
-            // testing better gray colors
             var darkRed = Color.FromRgb(139, 0, 0);
             var goldenrod = Color.FromRgb(179, 143, 0);
             var seaGreen = Color.FromRgb(26, 101, 64);

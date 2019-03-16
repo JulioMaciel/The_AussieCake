@@ -1,0 +1,240 @@
+﻿using AussieCake.Attempt;
+using AussieCake.Question;
+using AussieCake.Util;
+using AussieCake.Util.WPF;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+
+namespace AussieCake.Templates
+{
+    public static class TemplateWPF
+    {
+
+        public static List<CellTemplate> BuildTemplate(List<IQuest> templateList, double percentageTextBox, StackPanel parent, List<int> skip = null)
+        {
+            parent.Children.Clear();
+
+            var LineLenght = 140;
+            if (percentageTextBox == 100)
+                LineLenght = 100;
+            else if (percentageTextBox == 80)
+                LineLenght = 100;
+            else if (percentageTextBox == 60)
+                LineLenght = 110;
+            else if (percentageTextBox == 40)
+                LineLenght = 115;
+            else if (percentageTextBox == 20)
+                LineLenght = 120;
+
+            var templateLines = new List<StackPanel>();
+
+            var cellList = new List<CellTemplate>();
+
+            var actualLine = new StackPanel();
+            templateLines.Add(actualLine);
+            var actualLineLenght = 0.0;
+
+            for (int i = 0; i < templateList.Count; i++)
+            {
+                var item = templateList[i];
+                var nextItem = item;
+
+                if (i != templateList.Count - 1)
+                    nextItem = templateList[i + 1];
+
+                if (item.Text == TemplateEssay.Paragraph)
+                {
+                    actualLine = new StackPanel();
+                    templateLines.Add(actualLine);
+                    actualLineLenght = 0;
+                    continue;
+                }
+
+                actualLineLenght = actualLineLenght + item.Text.Length * 1.5 + 0.5;
+                var willNextBreakLine = (actualLineLenght + nextItem.Text.Length * 1.5 + 1) > LineLenght;
+
+                if (((item.Text != "," && item.Text != "." && item.Text != ")" && item.Text != "]") &&
+                    actualLineLenght >= LineLenght) ||
+                    (willNextBreakLine && (item.Text == "[" || item.Text == "(")))
+                {
+                    actualLine = new StackPanel();
+                    templateLines.Add(actualLine);
+                    actualLineLenght = 0;
+                }
+
+                var cell = new CellTemplate(item, skip);
+                cellList.Add(cell);
+                actualLine.Children.Add(cell.Stk);
+            }
+
+            var avaliable_cells = cellList.Where(w => w.IsAvailableToTurnTxtOn());
+            int quantToAnswer = Convert.ToInt16(((double)avaliable_cells.Count() / 100) * percentageTextBox);
+
+            for (int i = 0; i < quantToAnswer; i++)
+            {
+                var rnd = cellList.Where(c => c.IsAvailableToTurnTxtOn()).PickRandom();
+                rnd.TurnTxtOn();
+            }
+
+            foreach (var stk in templateLines)
+            {
+                stk.Orientation = Orientation.Horizontal;
+                stk.VerticalAlignment = VerticalAlignment.Center;
+                parent.Children.Add(stk);
+            }
+
+            return cellList;
+        }
+
+        public static void ShowScoredTemplate(List<CellTemplate> cellList, int lastDays)
+        {
+            foreach (var item in cellList)
+            {
+                item.Quest.LoadCrossData();
+
+                if (item.Quest.Tries.Count != 0)
+                {
+                    var avg = item.Quest.GetAverageScoreByTime(lastDays);
+                    item.Lbl.Foreground = UtilWPF.GetAvgColor(avg);
+
+                    var tries_period = item.Quest.Tries.Where(x => x.When >= (DateTime.Now.AddDays(-lastDays)));
+                    var corrects_period = tries_period.Where(x => x.Score == 10);
+                    item.Lbl.ToolTip = corrects_period.Count() + " / " + tries_period.Count();
+                }
+            }
+        }
+
+        public static (string, int) CheckAnswers(List<CellTemplate> cellList)
+        {
+            var total = 0;
+            var corrects = 0;
+
+            foreach (var item in cellList)
+            {
+                if (item.Txt != null)
+                {
+                    item.Txt.IsReadOnly = true;
+                    var answer = string.Empty;
+
+                    if (!item.Txt.IsEmpty())
+                        answer = item.Txt.Text;
+
+                    var isCorrect = answer.Equals(item.Quest.Text, StringComparison.OrdinalIgnoreCase);
+                    var score = 0;
+
+                    if (isCorrect)
+                    {
+                        score = 10;
+                        item.Txt.Background = Brushes.LightGreen;
+                        corrects = corrects + 1;
+                    }
+                    else
+                    {
+                        item.Txt.Background = Brushes.LightSalmon;
+                        item.Txt.ToolTip = item.Quest.Text;
+                    }
+
+                    var vm = new AttemptVM(item.Quest.Id, score, DateTime.Now, item.Quest.Type);
+                    AttemptsControl.Insert(vm);
+                    total = total + 1;
+                }
+            }
+
+            var percent_corrects = 0;
+            if (corrects != 0)
+                percent_corrects = (int)Math.Round((double)(100 * corrects) / total);
+
+            return (percent_corrects + "% (" + corrects + " corrects)", percent_corrects);
+        }
+    }
+
+    public class CellTemplate
+    {
+        public IQuest Quest { get; private set; }
+
+        public TextBlock Lbl { get; private set; }
+        public TextBox Txt { get; private set; }
+
+        public StackPanel Stk { get; private set; }
+
+        private List<int> Skip { get; set; }
+
+        public CellTemplate(IQuest quest, List<int> skip = null)
+        {
+            Quest = quest;
+            var word = quest.Text;
+            Stk = new StackPanel();
+
+            if (skip != null)
+                Skip = skip;
+            else
+                Skip = new List<int>();
+
+            Lbl = new TextBlock();
+            Lbl.Text = quest.Text;
+            Lbl.Margin = new Thickness(0, 0, 3, 1);
+            Stk.Children.Add(Lbl);
+        }
+
+        public void TurnTxtOn()
+        {
+            Stk.Children.Clear();
+
+            var word = Quest.Text;
+
+            if (IsWordAvailable(word))
+            {
+                Txt = new TextBox();
+                Txt.Width = word.Length * 5 + 26;
+                Txt.Margin = new Thickness(0, 0, 3, 1);
+                Txt.PreviewKeyDown += (sender, e) =>
+                {
+                    if (e.Key == Key.Space)
+                    {
+                        var focusDirection = FocusNavigationDirection.Next;
+                        var request = new TraversalRequest(focusDirection);
+                        var elementWithFocus = Keyboard.FocusedElement as UIElement;
+                        if (elementWithFocus != null)
+                            elementWithFocus.MoveFocus(request);
+                        e.Handled = true;
+                    }
+                    else if (e.Key == Key.OemQuotes)
+                    {
+                        var focusDirection = FocusNavigationDirection.Previous;
+                        var request = new TraversalRequest(focusDirection);
+                        var elementWithFocus = Keyboard.FocusedElement as UIElement;
+                        if (elementWithFocus != null)
+                            elementWithFocus.MoveFocus(request);
+                        e.Handled = true;
+                    }
+                };
+                Stk.Children.Add(Txt);
+            }
+        }
+
+        public bool IsAvailableToTurnTxtOn()
+        {
+            if (Skip.Contains(Quest.Id))
+                return false;
+
+            var word = Quest.Text;
+            if (IsWordAvailable(word) && Txt == null)
+                return true;
+
+            return false;
+        }
+
+        private bool IsWordAvailable(string word)
+        {
+            if (word.IsLettersOnly() || word.Contains('-') || word.Contains('+'))
+                return true;
+
+            return false;
+        }
+    }
+}

@@ -8,6 +8,7 @@ namespace AussieCake.Question
         int Id { get; }
 
         bool IsActive { get; }
+        string Text { get; }
         string PtBr { get; }
         string Definition { get; }
         Importance Importance { get; }
@@ -31,6 +32,8 @@ namespace AussieCake.Question
 
         void LoadCrossData();
         void Disable();
+
+        double GetAverageScoreByTime(int lastDays);
 
         string ToText();
         string ToLudwigUrl();

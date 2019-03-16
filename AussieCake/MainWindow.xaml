@@ -74,7 +74,10 @@
 
         <StackPanel Name="Menu" Grid.Column="0" Grid.Row="1" Margin="10,20,10,10">
             <Button Content="Collocations" Name="btnCollocations" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnCollocations_Click" Margin="0,0,0,6" />
-            <Button Content="Collocation Challenge" Name="btnColChallenge" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnColChallenge_Click" />
+            <Button Content="Collocation Challenge" Name="btnColChallenge" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnColChallenge_Click" Margin="0,0,0,6"/>
+            <Button Content="Essay" Name="btnEssay" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnEssay_Click" Margin="0,0,0,6"/>
+            <Button Content="Describe Image" Name="btnDescImg" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnDescImg_Click" Margin="0,0,0,6"/>
+            <Button Content="Summarize Retell" Name="btnSumRetell" Height="30" Style="{StaticResource BaseButtonStyle}" Click="btnSumRetell_Click" />
         </StackPanel>
 
         <UserControl Name="ContentControl" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">

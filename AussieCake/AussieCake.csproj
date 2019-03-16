@@ -154,6 +154,7 @@
       <HintPath>..\packages\System.Data.SQLite.Linq.1.0.108.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -195,6 +196,23 @@
     <Compile Include="Deprecated\Sentence\QuestionSentence\QuestionSentenceController.cs" />
     <Compile Include="Deprecated\Sentence\QuestionSentence\QuestionSentenceVM.cs" />
     <Compile Include="Deprecated\Sentence\SentencesController.cs" />
+    <Compile Include="Templates\DescImg\DescImg.xaml.cs">
+      <DependentUpon>DescImg.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\DescImg\DescImgVM.cs" />
+    <Compile Include="Templates\DescImg\TemplateDescImg.cs" />
+    <Compile Include="Templates\Essay\Essay.xaml.cs">
+      <DependentUpon>Essay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\Essay\EssayVM.cs" />
+    <Compile Include="Templates\SumRetell\SumRetell.xaml.cs">
+      <DependentUpon>SumRetell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\SumRetell\SumRetellVM.cs" />
+    <Compile Include="Templates\SumRetell\TemplateSumRetell.cs" />
+    <Compile Include="Templates\Template.cs" />
+    <Compile Include="Templates\TemplateWPF.cs" />
+    <Compile Include="Templates\Essay\TemplateEssay.cs" />
     <Compile Include="UnitTests\CollocationTests.cs" />
     <Compile Include="Util\FileHtmlControls.cs" />
     <Compile Include="Util\IFilter.cs" />
@@ -253,6 +271,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Templates\DescImg\DescImg.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Templates\Essay\Essay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Templates\SumRetell\SumRetell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -298,6 +328,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Images\DescribeImages\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>

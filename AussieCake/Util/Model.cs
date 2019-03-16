@@ -11,13 +11,15 @@ namespace AussieCake
 		Sen,
 
 		[Description("Verb")]
-		Verb
-	}
+		Verb,
 
-    //public enum LoadLevel
-    //{
-    //    Unloaded = 0,
-    //    DB = 1,
-    //    CrossData = 2
-    //}
+        [Description("Essay")]
+        Essay,
+
+        [Description("SumRetell")]
+        SumRetell,
+
+        [Description("DescribeImage")]
+        DescImg,
+    }
 }

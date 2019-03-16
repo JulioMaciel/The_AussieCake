@@ -12,6 +12,7 @@ namespace AussieCake.Question
         public int Id { get; protected set; }
 
         public bool IsActive { get; protected set; }
+        public string Text { get; protected set; }
         public string PtBr { get; protected set; }
         public string Definition { get; protected set; }
         public Importance Importance { get; protected set; }
@@ -33,16 +34,17 @@ namespace AussieCake.Question
 
         protected bool IsReal { get; set; } = false;
 
-        protected QuestVM(int id, string definition, string ptBr, Importance importance, bool isActive, Model type)
-            : this(definition, ptBr, importance, isActive, type)
+        protected QuestVM(int id, string text, string definition, string ptBr, Importance importance, bool isActive, Model type)
+            : this(text, definition, ptBr, importance, isActive, type)
         {
             Id = id;
 
             IsReal = true;
         }
 
-        protected QuestVM(string definition, string ptBr, Importance importance, bool isActive, Model type)
+        protected QuestVM(string text, string definition, string ptBr, Importance importance, bool isActive, Model type)
         {
+            Text = text;
             Definition = definition;
             PtBr = ptBr;
             Importance = importance;
@@ -53,6 +55,12 @@ namespace AussieCake.Question
 
         public virtual void LoadCrossData()
         {
+            LoadTries();
+            LoadChanceToAppear();
+        }
+
+        public void LoadTries()
+        {
             Tries = new List<DateTry>();
 
             GetAttempts();
@@ -62,8 +70,6 @@ namespace AussieCake.Question
             Avg_week = Math.Round(GetAverageScoreByTime(7), 2);
             Avg_month = Math.Round(GetAverageScoreByTime(30), 2);
             Avg_all = Math.Round(GetAverageScoreByTime(2000), 2);
-
-            LoadChanceToAppear();
         }
 
         public void Disable()
@@ -71,7 +77,7 @@ namespace AussieCake.Question
             IsActive = false;
         }
 
-        private double GetAverageScoreByTime(int lastDays)
+        public double GetAverageScoreByTime(int lastDays)
         {
             if (!Tries.Any())
                 return 0;
@@ -88,10 +94,18 @@ namespace AussieCake.Question
 
         private void GetAttempts()
         {
-            var attempts = AttemptsControl.Get(Type).Where(x => x.IdQuestion == Id);
+            //var attempts = AttemptsControl.Get(Type).Where(x => x.IdQuestion == Id);
+            //debuging
+            var att = AttemptsControl.Get(Type);
+            Console.WriteLine("att: " + att.Count());
+            var attempts = att.Where(x => x.IdQuestion == Id);
+            Console.WriteLine("attemps: " + attempts.Count());
+
 
             foreach (var item in attempts)
                 Tries.Add(new DateTry(item.Score, item.When));
+
+            Console.WriteLine("Tries: " + Tries.Count());
         }
 
         public void RemoveAllAttempts()

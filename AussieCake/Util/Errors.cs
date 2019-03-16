@@ -83,5 +83,8 @@ namespace AussieCake.Util
 
         [Description("SynonymsNotFound")]
         SynonymsNotFound,
+
+        [Description("AnswerNotFound")]
+        AnswerNotFound,
     }
 }
