@@ -10,7 +10,7 @@ namespace AussieCake.Templates
     {
         public static List<int> OptionalExclusives = new List<int>()
         {
-            7, 9, 11, 13, 28, 30, 246, 247, 248, 249, 250, 251, 252
+            7, 9, 11, 13, 28, 30, //246, 247, 248, 249, 250, 251, 252
         };
 
         public static List<int> TemplateGaps = new List<int>()
@@ -35,13 +35,13 @@ namespace AussieCake.Templates
             new DescImgVM(4, "title"),
             //new DescImgVM(5, "]"),
             //new DescImgVM(6, "("), //*
-            new DescImgVM(7, "from"), //1
+            //new DescImgVM(7, "from"), //1
             //new DescImgVM(8, "["), //1
-            new DescImgVM(9, "time1"), //1
+            //new DescImgVM(9, "time1"), //1
             //new DescImgVM(10, "]"), //1
-            new DescImgVM(11, "to"), //1
+            //new DescImgVM(11, "to"), //1
             //new DescImgVM(12, "["), //1
-            new DescImgVM(13, "time2"), //1
+            //new DescImgVM(13, "time2"), //1
             //new DescImgVM(14, "]"), //1
             //new DescImgVM(15, ")"), //*
             new DescImgVM(16, "in"),
@@ -56,9 +56,9 @@ namespace AussieCake.Templates
             new DescImgVM(25, "so"),
             new DescImgVM(26, "on"),
             //new DescImgVM(27, "("), //*
-            new DescImgVM(28, "in"), //0?
+            //new DescImgVM(28, "in"), //0?
             //new DescImgVM(29, "["), //0?
-            new DescImgVM(30, "unit"), //0?
+            //new DescImgVM(30, "unit"), //0?
             //new DescImgVM(31, "]"), //0?
             //new DescImgVM(32, ")"), //*
             new DescImgVM(33, "."),
@@ -82,12 +82,12 @@ namespace AussieCake.Templates
             new DescImgVM(51, "the"),
             new DescImgVM(52, "highest"),
             new DescImgVM(53, ","),
-            new DescImgVM(54, "which"),
-            new DescImgVM(55, "is"),
+            //new DescImgVM(54, "which"),
+            //new DescImgVM(55, "is"),
             //new DescImgVM(56, "["),
-            new DescImgVM(57, "n%"),
+            //new DescImgVM(57, "n%"),
             //new DescImgVM(58, "]"),
-            new DescImgVM(59, ","),
+            //new DescImgVM(59, ","),
             new DescImgVM(60, "on"),
             new DescImgVM(61, "the"),
             new DescImgVM(62, "other"),
@@ -105,10 +105,10 @@ namespace AussieCake.Templates
             new DescImgVM(74, "the"),
             new DescImgVM(75, "lowest"),
             //new DescImgVM(76, "("), //*
-            new DescImgVM(77, "which"), //0?
-            new DescImgVM(78, "is"), //0?
+            //new DescImgVM(77, "which"), //0?
+            //new DescImgVM(78, "is"), //0?
             //new DescImgVM(79, "["), //0?
-            new DescImgVM(80, "n%"), //0?
+            //new DescImgVM(80, "n%"), //0?
             //new DescImgVM(81, "]"), //0?
             //new DescImgVM(82, ")"), //*
             new DescImgVM(83, "."),

@@ -65,6 +65,7 @@ namespace AussieCake
             btnCollocations.IsEnabled = true;
             btnColChallenge.IsEnabled = true;
             btnEssay.IsEnabled = true;
+            btnEssayByTopic.IsEnabled = true;
             btnSumRetell.IsEnabled = true;
             btnDescImg.IsEnabled = true;
         }
@@ -74,6 +75,13 @@ namespace AussieCake
             EnableButtons();
             frame_content.Content = new Essay();
             btnEssay.IsEnabled = false;
+        }
+
+        private void BtnEssayByTopic_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new ByTopic();
+            btnEssayByTopic.IsEnabled = false;
         }
 
         private void btnSumRetell_Click(object sender, RoutedEventArgs e)

@@ -6,30 +6,20 @@ namespace AussieCake.Templates
 {
     public class TemplateEssay : Template
     {
-        public static List<int> OneTwoTopicsExclusives = new List<int>()
-        {
-            1, 2, 3, 4, 5, 37, 98, 99, 100, 101, 163, 164, 165, 166, 167, 168, 169, 177
-        };
+        //public static List<int> OneTwoTopicsExclusives = new List<int>()
+        //{
+        //    1, 2, 3, 4, 5, 37, 98, 99, 100, 101, 163, 164, 165, 166, 167, 168, 169, 177
+        //};
 
-        public static List<int> ProblemSolutionExclusives = new List<int>()
-        {
-            6, 38, 62, 66, 67, 68, 69, 179, 180, 181, 182, 219
-        };
+        //public static List<int> ProblemSolutionExclusives = new List<int>()
+        //{
+        //    6, 38, 62, 66, 67, 68, 69, 179, 180, 181, 182, 219
+        //};
 
-        public static List<int> GeneralOptionalExclusives = new List<int>()
-        {
-            90, 92, 222, 224, 232, 234, 237, 239
-        };
-
-        //const string tt_ = "[";
-        //const string _tt = "]";
-
-        //const string pb_ = "(";
-        //const string _pb = ")";
-
-        //const string or_ = "{";
-        //const string or = "/";
-        //const string _or = "}";
+        //public static List<int> GeneralOptionalExclusives = new List<int>()
+        //{
+        //    90, 92, 222, 224, 232, 234, 237, 239
+        //};
 
         public static List<IQuest> Words = new List<IQuest>()
         {
@@ -37,10 +27,10 @@ namespace AussieCake.Templates
             //new EssayVM(1, tt_), //
             new EssayVM(2, "importance"), //
             //new EssayVM(3, or), //
-            new EssayVM(4, "effects"), //
+            //new EssayVM(4, "effects"), //
             //new EssayVM(5, _tt), //
             //new EssayVM(500, pb_),
-            new EssayVM(6, "causes"), //2
+            //new EssayVM(6, "causes"), //2
             //new EssayVM(501, _pb),
             new EssayVM(7, "of"),
             //new EssayVM(8, "["),
@@ -52,7 +42,7 @@ namespace AussieCake.Templates
             new EssayVM(14, "always"),
             new EssayVM(15, "debatable"),
             new EssayVM(16, ","),
-            new EssayVM(17, "have"),
+            new EssayVM(17, "has"),
             new EssayVM(18, "now"),
             new EssayVM(19, "become"),
             new EssayVM(20, "more"),
@@ -76,7 +66,7 @@ namespace AussieCake.Templates
             new EssayVM(37, "favourable"), //
             //new EssayVM(503, _tt),
             //new EssayVM(504, pb_),
-            new EssayVM(38, "debatable"), //2
+            //new EssayVM(38, "debatable"), //2
             //new EssayVM(505, _pb),
             new EssayVM(39, "arguments"),
             new EssayVM(40, ","),
@@ -97,21 +87,21 @@ namespace AussieCake.Templates
             new EssayVM(55, "elaborate"),
             new EssayVM(56, "how"),
             //new EssayVM(57, "["),
-            new EssayVM(58, "idea1-"),
+            new EssayVM(58, "i1"),
             //new EssayVM(59, "]"),
             new EssayVM(60, "and"),
             new EssayVM(61, "how"),
             //new EssayVM(506, pb_),
-            new EssayVM(62, "by"), //2
+            //new EssayVM(62, "by"), //2
             //new EssayVM(507, _pb),
             //new EssayVM(63, "["),
-            new EssayVM(64, "idea2+"),
+            new EssayVM(64, "i2"),
             //new EssayVM(65, "]"),
             //new EssayVM(508, pb_),
-            new EssayVM(66, "this"), //2
-            new EssayVM(67, "can"), //2
-            new EssayVM(68, "be"), //2
-            new EssayVM(69, "resolved"), //2
+            //new EssayVM(66, "this"), //2
+            //new EssayVM(67, "can"), //2
+            //new EssayVM(68, "be"), //2
+            //new EssayVM(69, "resolved"), //2
             //new EssayVM(509, _pb),
             new EssayVM(70, ","),
             new EssayVM(71, "and"),
@@ -135,7 +125,7 @@ namespace AussieCake.Templates
             //new EssayVM(89, or_),
             new EssayVM(90, "why"),
             //new EssayVM(91, or),
-            new EssayVM(92, "for"),
+            //new EssayVM(92, "for"),
             //new EssayVM(93, _or),
             //new EssayVM(94, "["),
             new EssayVM(95, "topic"),
@@ -158,7 +148,7 @@ namespace AussieCake.Templates
             new EssayVM(112, "fact"),
             new EssayVM(113, "that"),
             //new EssayVM(114, "["),
-            new EssayVM(115, "idea1-causes"),
+            new EssayVM(115, "i1-causes"),
             //new EssayVM(116, "]"),
             new EssayVM(117, ","),
             new EssayVM(118, "and"),
@@ -170,7 +160,7 @@ namespace AussieCake.Templates
             new EssayVM(124, "factor"),
             new EssayVM(125, "to"),
             //new EssayVM(126, "["),
-            new EssayVM(127, "idea1-bad-possibility"),
+            new EssayVM(127, "i1-badposs"),
             //new EssayVM(128, "]"),
             new EssayVM(129, "."),
             new EssayVM(130, "For"),
@@ -182,7 +172,7 @@ namespace AussieCake.Templates
             new EssayVM(136, "shows"),
             new EssayVM(137, "that"),
             //new EssayVM(138, "["),
-            new EssayVM(139, "idea1-%"),
+            new EssayVM(139, "i1%"),
             //new EssayVM(140, "]"),
             new EssayVM(141, "."),
             new EssayVM(142, "For"),
@@ -223,10 +213,10 @@ namespace AussieCake.Templates
             new EssayVM(177, "has"), //
             //new EssayVM(515, _tt),
             //new EssayVM(516, pb_),
-            new EssayVM(179, "can"), //2
-            new EssayVM(180, "be"), //2
-            new EssayVM(181, "addressed"), //2
-            new EssayVM(182, "with"), //2
+            //new EssayVM(179, "can"), //2
+            //new EssayVM(180, "be"), //2
+            //new EssayVM(181, "addressed"), //2
+            //new EssayVM(182, "with"), //2
             //new EssayVM(517, _pb),
             new EssayVM(184, "some"),
             new EssayVM(185, "positive"),
@@ -255,7 +245,7 @@ namespace AussieCake.Templates
             new EssayVM(208, "fact"),
             new EssayVM(209, "that"),
             //new EssayVM(210, "["),
-            new EssayVM(211, "idea2+does"),
+            new EssayVM(211, "i2-does"),
             //new EssayVM(212, "]"),
             new EssayVM(213, ","),
             new EssayVM(214, "which"),
@@ -263,27 +253,27 @@ namespace AussieCake.Templates
             new EssayVM(216, "not"),
             new EssayVM(217, "only"),
             //new EssayVM(518, pb_),
-            new EssayVM(219, "beneficial"), //2
+            //new EssayVM(219, "beneficial"), //2
             //new EssayVM(519, _pb),
             //new EssayVM(520, or_),
             new EssayVM(222, "for"),
             //new EssayVM(521, or),
-            new EssayVM(224, "to"),
+            //new EssayVM(224, "to"),
             //new EssayVM(522, _or),
             //new EssayVM(226, "["),
-            new EssayVM(227, "idea2+someone"),
+            new EssayVM(227, "i2-so"),
             //new EssayVM(228, "]"),
             new EssayVM(229, "but"),
             new EssayVM(230, "also"),
             //new EssayVM(523, or_),
             new EssayVM(232, "for"),
             //new EssayVM(524, or),
-            new EssayVM(234, "can"),
+            //new EssayVM(234, "can"),
             //new EssayVM(525, _or),
             //new EssayVM(526, or_),
-            new EssayVM(237, "idea2+someone"),
+            new EssayVM(237, "i2-so"),
             //new EssayVM(527, or),
-            new EssayVM(239, "does"),
+            //new EssayVM(239, "does"),
             //new EssayVM(528, _or),
             new EssayVM(241, "."),
             new EssayVM(242, "As"),
@@ -297,7 +287,7 @@ namespace AussieCake.Templates
             new EssayVM(250, "reveal"),
             new EssayVM(251, "that"),
             //new EssayVM(252, "["),
-            new EssayVM(253, "idea2+most"),
+            new EssayVM(253, "i2%"),
             //new EssayVM(254, "]"),
             new EssayVM(255, "."),
             new EssayVM(256, "Therefore"),
@@ -339,7 +329,7 @@ namespace AussieCake.Templates
             new EssayVM(292, "it"),
             new EssayVM(293, "affects"),
             //new EssayVM(294, "["),
-            new EssayVM(295, "idea1-possibility"),
+            new EssayVM(295, "i1-badposs"),
             //new EssayVM(296, "]"),
             new EssayVM(297, "should"),
             new EssayVM(298, "not"),

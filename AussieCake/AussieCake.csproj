@@ -201,6 +201,9 @@
     </Compile>
     <Compile Include="Templates\DescImg\DescImgVM.cs" />
     <Compile Include="Templates\DescImg\TemplateDescImg.cs" />
+    <Compile Include="Templates\Essay\ByTopic.xaml.cs">
+      <DependentUpon>ByTopic.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Templates\Essay\Essay.xaml.cs">
       <DependentUpon>Essay.xaml</DependentUpon>
     </Compile>
@@ -274,6 +277,10 @@
     <Page Include="Templates\DescImg\DescImg.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Templates\Essay\ByTopic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Templates\Essay\Essay.xaml">
       <Generator>MSBuild:Compile</Generator>

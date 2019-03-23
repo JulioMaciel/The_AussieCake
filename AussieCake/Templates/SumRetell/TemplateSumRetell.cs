@@ -43,7 +43,7 @@ namespace AussieCake.Templates
             new SumRetellVM(22, ","), //-
             new SumRetellVM(23, "it"),
             //new SumRetellVM(90, "("), //*
-            new SumRetellVM(91, "also"), //+
+            //new SumRetellVM(91, "also"), //+
             //new SumRetellVM(92, ")"), //*
             new SumRetellVM(24, "denotes"),
             //new SumRetellVM(25, "["),
@@ -60,11 +60,11 @@ namespace AussieCake.Templates
             new SumRetellVM(36, "it"),
             new SumRetellVM(37, "can"),
             //new SumRetellVM(93, "("), //*
-            new SumRetellVM(94, "also"), //+
+            //new SumRetellVM(94, "also"), //+
             //new SumRetellVM(95, ")"), //*
             new SumRetellVM(38, "be"),
             new SumRetellVM(39, "stated"),
-            new SumRetellVM(40, "that"),
+            //new SumRetellVM(40, "that"),
             //new SumRetellVM(41, "["),
             new SumRetellVM(42, "key3"),
             //new SumRetellVM(43, "]"),

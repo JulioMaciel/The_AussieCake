@@ -23,7 +23,7 @@ namespace AussieCake.Templates
             slider.Value = 80;
 
             CellList = TemplateWPF.BuildTemplate(TemplateEssay.Words, 0, StkTemplate);
-            HighlightEssayType();
+            //HighlightEssayType();
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -60,38 +60,38 @@ namespace AussieCake.Templates
             var percentageTxt = 100 - slider.Value;
 
             CellList = TemplateWPF.BuildTemplate(TemplateEssay.Words, percentageTxt, StkTemplate);
-            HighlightEssayType();
+            //HighlightEssayType();
 
             btnFinish.IsEnabled = true;
             lblScore.Visibility = Visibility.Hidden;
         }
 
-        private void HighlightEssayType()
-        {
-            foreach (var quest in CellList)
-            {
-                if (TemplateEssay.ProblemSolutionExclusives.Any(x => x == quest.Quest.Id))
-                {
-                    var colour = Brushes.LightSkyBlue;
-                    quest.Lbl.Background = colour;
-                    if (quest.Txt != null)
-                        quest.Txt.Background = colour;
-                }
-                else if (TemplateEssay.OneTwoTopicsExclusives.Any(x => x == quest.Quest.Id))
-                {
-                    var colour = Brushes.Moccasin;
-                    quest.Lbl.Background = colour;
-                    if (quest.Txt != null)
-                        quest.Txt.Background = colour;
-                }
-                else if (TemplateEssay.GeneralOptionalExclusives.Any(x => x == quest.Quest.Id))
-                {
-                    var colour = Brushes.Silver;
-                    quest.Lbl.Background = colour;
-                    if (quest.Txt != null)
-                        quest.Txt.Background = colour;
-                }
-            }
-        }
+        //private void HighlightEssayType()
+        //{
+        //    foreach (var quest in CellList)
+        //    {
+        //        if (TemplateEssay.ProblemSolutionExclusives.Any(x => x == quest.Quest.Id))
+        //        {
+        //            var colour = Brushes.LightSkyBlue;
+        //            quest.Lbl.Background = colour;
+        //            if (quest.Txt != null)
+        //                quest.Txt.Background = colour;
+        //        }
+        //        else if (TemplateEssay.OneTwoTopicsExclusives.Any(x => x == quest.Quest.Id))
+        //        {
+        //            var colour = Brushes.Moccasin;
+        //            quest.Lbl.Background = colour;
+        //            if (quest.Txt != null)
+        //                quest.Txt.Background = colour;
+        //        }
+        //        else if (TemplateEssay.GeneralOptionalExclusives.Any(x => x == quest.Quest.Id))
+        //        {
+        //            var colour = Brushes.Silver;
+        //            quest.Lbl.Background = colour;
+        //            if (quest.Txt != null)
+        //                quest.Txt.Background = colour;
+        //        }
+        //    }
+        //}
     }
 }
