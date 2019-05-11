@@ -9,9 +9,9 @@ namespace AussieCake.Util.WPF
 {
     public static class MyCbBxs
     {
-        public static ComboBox Importance(ComboBox reference, int row, int column, Grid parent, Importance imp, bool addAnyOption)
+        public static ComboBox Importance(ComboBox reference, int row, int Column, Grid parent, Importance imp, bool addAnyOption)
         {
-            var cb = Get(reference, row, column, parent);
+            var cb = Get(reference, row, Column, parent);
             var source = Enum.GetValues(typeof(Importance)).Cast<Importance>();
 
             if (!addAnyOption) // remove Any when edit line
@@ -23,10 +23,10 @@ namespace AussieCake.Util.WPF
             return cb;
         }
 
-        public static ComboBox Get(ComboBox reference, int row, int column, Grid parent)
+        public static ComboBox Get(ComboBox reference, int row, int Column, Grid parent)
         {
             var cb = Get(reference);
-            UtilWPF.SetGridPosition(cb, row, column, parent);
+            UtilWPF.SetGridPosition(cb, row, Column, parent);
 
             return cb;
         }
@@ -70,13 +70,6 @@ namespace AussieCake.Util.WPF
             if (service.IsPlural(word))
                 for (int i = 0; i < synonyms.Count; i++)
                     synonyms[i] = service.Pluralize(synonyms[i]);
-
-            //var plural = word.Humanize().Pluralize(false);
-            //if (!plural.IsEmpty())
-            //{
-            //    for (int i = 0; i < synonyms.Count; i++)
-            //        synonyms[i] = synonyms[i].Humanize().Pluralize(false);
-            //}
 
             synonyms.Add(word);
 

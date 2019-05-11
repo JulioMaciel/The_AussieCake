@@ -274,5 +274,46 @@ namespace AussieCake.Util
                 }
             }
         }
+
+        public static IEnumerable<T> GetRandomPercent<T>(this IEnumerable<T> source, int percent)
+        {
+            return source.OrderBy(arg => Guid.NewGuid()).Take(percent);
+        }
+
+        public static IEnumerable<string> SplitSentence(this string source)
+        {
+            if (!source.Contains(' '))
+                return new List<string>() { source };
+
+            var words = new List<string>();
+            var actualWord = string.Empty;
+            //Console.WriteLine("sen original: " + source);
+
+            foreach (char c in source)
+            {
+                if (char.IsLetter(c))
+                    actualWord += c;
+                else
+                {
+                    words.Add(actualWord);
+                    actualWord = string.Empty;
+
+                    if (c != ' ')
+                        actualWord = c.ToString();
+                }
+            }
+            words.Add(actualWord);
+
+            //Console.WriteLine("sen modified: ");
+            //foreach (var w in words)
+            //    Console.Write(" " + w);
+
+            return words;
+        }
+
+        public static string ReplaceIgnoreCase(this string source, string toReplace, string replacement)
+        {
+            return Regex.Replace(source, toReplace, replacement, RegexOptions.IgnoreCase);
+        }
     }
 }

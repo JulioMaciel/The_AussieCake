@@ -32,9 +32,9 @@ namespace AussieCake.Util.WPF
             return txt;
         }
 
-        public static TextBox Get(TextBox reference, int row, int column, Grid parent)
+        public static TextBox Get(TextBox reference, int row, int Column, Grid parent)
         {
-            return Get(reference, row, column, parent, string.Empty);
+            return Get(reference, row, Column, parent, string.Empty);
         }
 
         public static TextBox Bulk_Insert(TextBox reference, Grid parent)
@@ -53,10 +53,10 @@ namespace AussieCake.Util.WPF
             return Get(reference, string.Empty, parent);
         }
 
-        public static TextBox Get(TextBox reference, int row, int column, Grid parent, string content)
+        public static TextBox Get(TextBox reference, int row, int Column, Grid parent, string content)
         {
             var txt = Get(reference, content);
-            UtilWPF.SetGridPosition(txt, row, column, parent);
+            UtilWPF.SetGridPosition(txt, row, Column, parent);
 
             return txt;
         }

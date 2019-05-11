@@ -9,7 +9,7 @@ namespace AussieCake.Util
 
 		public static string Database = Project + "\\Cake.sqlite";
 
-		public static string ScriptCollocations = Project + Script + "\\Insert_Collocations.sql";
+		public static string ScriptVocabulary = Project + Script + "\\Insert_Vocabulary.sql";
 		public static string ScriptVerbs = Project + Script + "\\Insert_Verbs.sql";
 
 		public static string ResourceHtmlBooks = Project + "\\Resources\\Books\\html";

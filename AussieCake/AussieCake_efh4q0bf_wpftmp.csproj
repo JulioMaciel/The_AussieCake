@@ -124,29 +124,71 @@
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Challenge\Sentences.cs" />
     <Compile Include="Challenge\WPF\ChallengeWpfItem.cs" />
     <Compile Include="Context\ScriptFileCommands.cs" />
     <Compile Include="Context\SqLiteCommands.cs" />
     <Compile Include="Attempt\AttemptsController.cs" />
     <Compile Include="Challenge\WPF\ChallengeWPFController.cs" />
-    <Compile Include="Challenge\CollocationChallenge.xaml.cs">
-      <DependentUpon>CollocationChallenge.xaml</DependentUpon>
+    <Compile Include="Challenge\VocabularyChallenge.xaml.cs">
+      <DependentUpon>VocabularyChallenge.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Question\Collocation\CollocationFilter.cs" />
-    <Compile Include="Question\Collocation\CollocationModel.cs" />
-    <Compile Include="Question\Collocation\CollocationsController.cs" />
-    <Compile Include="Question\Collocation\WPF\CollocationWpfHeader.cs" />
-    <Compile Include="Question\Collocation\WPF\CollocationWpfItem.cs" />
+    <Compile Include="Question\Spelling\SpellingController.cs" />
+    <Compile Include="Question\Spelling\SpellingFilter.cs" />
+    <Compile Include="Question\Spelling\SpellingModel.cs" />
+    <Compile Include="Question\Spelling\Spellings.xaml.cs">
+      <DependentUpon>Spellings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Question\Spelling\SpellingVM.cs" />
+    <Compile Include="Question\Spelling\WPF\SpellingWpfController.cs" />
+    <Compile Include="Question\Spelling\WPF\SpellingWpfHeader.cs" />
+    <Compile Include="Question\Spelling\WPF\SpellingWpfItem.cs" />
+    <Compile Include="Question\Pronunciation\Pronunciations.xaml.cs">
+      <DependentUpon>Pronunciations.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Question\Pronunciation\PronunciationController.cs" />
+    <Compile Include="Question\Pronunciation\PronunciationFilter.cs" />
+    <Compile Include="Question\Pronunciation\PronunciationModel.cs" />
+    <Compile Include="Question\Pronunciation\PronunciationVM.cs" />
+    <Compile Include="Question\Pronunciation\WPF\PronunciationWpfController.cs" />
+    <Compile Include="Question\Pronunciation\WPF\PronunciationWpfHeader.cs" />
+    <Compile Include="Question\Pronunciation\WPF\PronunciationWpfItem.cs" />
+    <Compile Include="Question\Vocabulary\VocabularyFilter.cs" />
+    <Compile Include="Question\Vocabulary\VocabularyModel.cs" />
+    <Compile Include="Question\Vocabulary\VocabularyController.cs" />
+    <Compile Include="Question\Vocabulary\WPF\VocabularyWpfHeader.cs" />
+    <Compile Include="Question\Vocabulary\WPF\VocabularyWpfItem.cs" />
     <Compile Include="Question\QuestionModel.cs" />
     <Compile Include="Question\QuestionsController.cs" />
     <Compile Include="Question\QuestionVM.cs" />
     <Compile Include="Question\QuestionFilter.cs" />
+    <Compile Include="Question\WPF\IQuestWpfHeader.cs" />
     <Compile Include="Question\WPF\QuestionWpfHeader.cs" />
     <Compile Include="Question\WPF\QuestionWpfItem.cs" />
-    <Compile Include="Sentence\AutoGetSentences.cs" />
-    <Compile Include="Sentence\QuestionSentence\QuestionSentenceController.cs" />
-    <Compile Include="Sentence\QuestionSentence\QuestionSentenceVM.cs" />
-    <Compile Include="Sentence\SentencesController.cs" />
+    <Compile Include="Deprecated\Sentence\AutoGetSentences.cs" />
+    <Compile Include="Deprecated\Sentence\QuestionSentence\QuestionSentenceController.cs" />
+    <Compile Include="Deprecated\Sentence\QuestionSentence\QuestionSentenceVM.cs" />
+    <Compile Include="Deprecated\Sentence\SentencesController.cs" />
+    <Compile Include="Templates\DescImg\DescImg.xaml.cs">
+      <DependentUpon>DescImg.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\DescImg\DescImgVM.cs" />
+    <Compile Include="Templates\DescImg\TemplateDescImg.cs" />
+    <Compile Include="Templates\Essay\ByTopic.xaml.cs">
+      <DependentUpon>ByTopic.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\Essay\Essay.xaml.cs">
+      <DependentUpon>Essay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\Essay\EssayVM.cs" />
+    <Compile Include="Templates\SumRetell\SumRetell.xaml.cs">
+      <DependentUpon>SumRetell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\SumRetell\SumRetellVM.cs" />
+    <Compile Include="Templates\SumRetell\TemplateSumRetell.cs" />
+    <Compile Include="Templates\Template.cs" />
+    <Compile Include="Templates\TemplateWPF.cs" />
+    <Compile Include="Templates\Essay\TemplateEssay.cs" />
     <Compile Include="UnitTests\CollocationTests.cs" />
     <Compile Include="Util\FileHtmlControls.cs" />
     <Compile Include="Util\IFilter.cs" />
@@ -167,17 +209,17 @@
     <Compile Include="Util\CakePaths.cs" />
     <Compile Include="Util\UtilExtensions.cs" />
     <Compile Include="Util\Importance.cs" />
-    <Compile Include="Question\Collocation\WPF\CollocationWpfController.cs" />
-    <Compile Include="Sentence\SentenceWPFController.cs" />
+    <Compile Include="Question\Vocabulary\WPF\VocabularyWpfController.cs" />
+    <Compile Include="Deprecated\Sentence\SentenceWPFController.cs" />
     <Compile Include="Util\WPF\UtilWPF.cs" />
     <Compile Include="Question\IQuestion.cs" />
     <Compile Include="Attempt\AttemptVM.cs" />
-    <Compile Include="Question\Collocation\CollocationVM.cs" />
-    <Compile Include="Sentence\SentenceVM.cs" />
-    <Compile Include="Question\Collocation\Collocations.xaml.cs">
-      <DependentUpon>Collocations.xaml</DependentUpon>
+    <Compile Include="Question\Vocabulary\VocabularyVM.cs" />
+    <Compile Include="Deprecated\Sentence\SentenceVM.cs" />
+    <Compile Include="Question\Vocabulary\Vocabularies.xaml.cs">
+      <DependentUpon>Vocabularies.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Sentence\Sentences.xaml.cs">
+    <Compile Include="Deprecated\Sentence\Sentences.xaml.cs">
       <DependentUpon>Sentences.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
@@ -234,6 +276,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Images\DescribeImages\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -318,6 +361,7 @@
     <ReferencePath Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\Microsoft\Microsoft.NET.Build.Extensions\net471\lib\System.Security.Cryptography.Algorithms.dll" />
     <ReferencePath Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\Microsoft\Microsoft.NET.Build.Extensions\net471\lib\System.Security.SecureString.dll" />
     <ReferencePath Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\Microsoft\Microsoft.NET.Build.Extensions\net471\lib\System.Threading.Overlapped.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\System.Windows.Forms.dll" />
     <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\System.Xaml.dll" />
     <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\System.Xml.dll" />
     <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\System.Xml.Linq.dll" />
@@ -429,12 +473,18 @@
     <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\Facades\System.Xml.XPath.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x86\Debug\MainWindow.g.cs" />
-    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x86\Debug\Challenge\CollocationChallenge.g.cs" />
-    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x86\Debug\Question\Collocation\Collocations.g.cs" />
-    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x86\Debug\Sentence\Sentences.g.cs" />
-    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x86\Debug\App.g.cs" />
-    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x86\Debug\AussieCake_Content.g.cs" />
-    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\MainWindow.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Challenge\VocabularyChallenge.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Question\Spelling\Spellings.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Question\Pronunciation\Pronunciations.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Question\Vocabulary\Vocabularies.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Deprecated\Sentence\Sentences.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Templates\DescImg\DescImg.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Templates\Essay\ByTopic.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Templates\Essay\Essay.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\Templates\SumRetell\SumRetell.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\App.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\AussieCake_Content.g.cs" />
+    <Compile Include="C:\Users\Juketo\Dropbox\Aus\App\The_AussieCake\AussieCake\obj\x64\Debug\GeneratedInternalTypeHelper.g.cs" />
   </ItemGroup>
 </Project>

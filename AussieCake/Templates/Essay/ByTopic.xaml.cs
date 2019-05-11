@@ -91,7 +91,7 @@ namespace AussieCake.Templates
                                     "\n believe that topic has -> believe that topic can be addressed with" +
                                     "\n not only to -> not only beneficial to";
 
-                var missing = txtTemplate.Text.Split(' ').Intersect(answer.Split(' '));
+                var missing = txtTemplate.Text.SplitSentence().Intersect(answer.SplitSentence());
                 txtTemplate.Text += "\n\n" + string.Join(";", missing);
             } 
 

@@ -20,7 +20,7 @@ namespace AussieCake.Sentence
             watcher.Start();
 
             var sentences = new List<string>();
-            //QuestControl.LoadCrossData(Model.Col);
+            //QuestControl.LoadCrossData(Model.Voc);
 
             //Task tasks = Task.Run(() => sentences = GetSentencesFromSource(source));
             //await Task.WhenAll(tasks);
@@ -36,17 +36,17 @@ namespace AussieCake.Sentence
             }));
             await Task.WhenAll(task);
 
-            var senFromCols = await GetColSentenceFromList(filteredSentences);
+            var senFromVocs = await GetVocSentenceFromList(filteredSentences);
 
             var found = new List<string>();
-            found.AddRange(senFromCols);
+            found.AddRange(senFromVocs);
 
             return found;
         }
 
-        #region Collocations
+        #region Vocabulary
 
-        private async static Task<List<string>> GetColSentenceFromList(List<string> sentences)
+        private async static Task<List<string>> GetVocSentenceFromList(List<string> sentences)
         {
             var result = new List<string>();
 
@@ -54,22 +54,22 @@ namespace AussieCake.Sentence
             watcher.Start();
 
             int actual = 1;
-            var tasks = QuestControl.Get(Model.Col).Select(col =>
+            var tasks = QuestControl.Get(Model.Voc).Select(Voc =>
                 Task.Factory.StartNew(() =>
                 {
                     foreach (var sen in sentences)
                     {
-                        //if (DoesSenContainsCol((ColVM)col, sen) && !result.Contains(sen))
+                        //if (DoesSenContainsVoc((VocVM)Voc, sen) && !result.Contains(sen))
                         //    result.Add(sen);
                     }
 
-                    var log = "Analysing " + sentences.Count + " sentences for collocation " +
-                                 actual + " of " + QuestControl.Get(Model.Col).Count() + ". ";
+                    var log = "Analysing " + sentences.Count + " sentences for Vocabulary " +
+                                 actual + " of " + QuestControl.Get(Model.Voc).Count() + ". ";
                     log += result.Count + " suitable sentences found in " + Math.Round(watcher.Elapsed.TotalMinutes, 2) + " minutes. ";
 
                     if (actual > 10)
                     {
-                        var quant_missing = QuestControl.Get(Model.Col).Count() - actual;
+                        var quant_missing = QuestControl.Get(Model.Voc).Count() - actual;
                         var time_to_finish = (watcher.Elapsed.TotalMinutes * quant_missing) / actual;
                         log += "It must finish in " + Math.Round(time_to_finish, 2) + " minutes.";
                     }

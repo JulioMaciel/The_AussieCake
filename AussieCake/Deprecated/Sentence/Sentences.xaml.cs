@@ -157,12 +157,12 @@ namespace AussieCake.Sentence
                 links_found = await SentenceWpfController_Deprecated.LinkQuestType(stk_sentences, cb_QuestType.SelectedModalType, watcher);
             else
             {
-                links_found.AddRange(await SentenceWpfController_Deprecated.LinkQuestType(stk_sentences, Model.Col, watcher));
+                links_found.AddRange(await SentenceWpfController_Deprecated.LinkQuestType(stk_sentences, Model.Voc, watcher));
                 // and so on;
             }
 
             RestoreBtnUIStatus();
-            Footer.Log(links_found.Count + " sentences were linked to collocations. Time spent: " +
+            Footer.Log(links_found.Count + " sentences were linked to Vocabulary. Time spent: " +
                         Math.Round(watcher.Elapsed.TotalMinutes, 2) + " minutes.");
         }
 

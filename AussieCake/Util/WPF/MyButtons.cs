@@ -13,9 +13,9 @@ namespace AussieCake.Util.WPF
 {
     public static class MyBtns
     {
-        public static ButtonActive Is_active(ButtonActive reference, int row, int column, Grid parent, bool isActive)
+        public static ButtonActive Is_active(ButtonActive reference, int row, int Column, Grid parent, bool isActive)
         {
-            UtilWPF.SetGridPosition(reference, row, column, parent);
+            UtilWPF.SetGridPosition(reference, row, Column, parent);
 
             CreateBtnActive(reference, isActive);
 
@@ -51,19 +51,19 @@ namespace AussieCake.Util.WPF
             };
         }
 
-        public static Button PtBr(Button reference, int row, int column, Grid parent, string ptBr, TextBox txt_ptBr)
+        public static Button PtBr(Button reference, int row, int Column, Grid parent, string ptBr, TextBox txt_ptBr)
         {
             var content = ptBr.IsEmpty() ? UtilWPF.GetIconButton("br_gray") : UtilWPF.GetIconButton("br");
 
-            var btn = Get(reference, row, column, parent, content);
+            var btn = Get(reference, row, Column, parent, content);
             CreateBtnLineBehavior(ptBr, txt_ptBr, btn);
 
             return btn;
         }
 
-        public static Button Definition(Button reference, int row, int column, Grid parent, string def, TextBox txt_def)
+        public static Button Definition(Button reference, int row, int Column, Grid parent, string def, TextBox txt_def)
         {
-            var btn = Get(reference, row, column, parent, UtilWPF.GetIconButton("definition"));
+            var btn = Get(reference, row, Column, parent, UtilWPF.GetIconButton("definition"));
             CreateBtnLineBehavior(def, txt_def, btn);
 
             return btn;
@@ -82,25 +82,29 @@ namespace AussieCake.Util.WPF
             };
         }
 
-        public static Button Quest_Edit(Button reference, int row, int column, Grid parent, IQuest quest, QuestWpfItem wpf_item, StackPanel item_line)
+        public static Button Quest_Edit(Button reference, int row, int Column, Grid parent, IQuest quest, QuestWpfItem wpf_item, StackPanel item_line)
         {
-            var btn = Get(reference, row, column, parent, UtilWPF.GetIconButton("save_black"));
+            var btn = Get(reference, row, Column, parent, UtilWPF.GetIconButton("save_black"));
             btn.Click += async (source, e) =>
             {
                 btn.Content = UtilWPF.GetIconButton("save");
                 await System.Threading.Tasks.Task.Delay(2000);
                 btn.Content = UtilWPF.GetIconButton("save_black");
 
-                if (quest is ColVM)
-                    QuestWpfUtil.EditColClick(quest as ColVM, wpf_item as ColWpfItem, item_line);
+                if (quest is VocVM)
+                    QuestWpfUtil.EditClick(quest as VocVM, wpf_item as VocWpfItem, item_line);
+                else if (quest is PronVM)
+                    QuestWpfUtil.EditClick(quest as PronVM, wpf_item as PronWpfItem, item_line);
+                else if (quest is SpellVM)
+                    QuestWpfUtil.EditClick(quest as SpellVM, wpf_item as SpellWpfItem, item_line);
             };
 
             return btn;
         }
 
-        public static Button Remove(Button reference, int row, int column, Grid parent, StackPanel item_line)
+        public static Button Remove(Button reference, int row, int Column, Grid parent, StackPanel item_line)
         {
-            var btn = Get(reference, row, column, parent, UtilWPF.GetIconButton("remove_v2"));
+            var btn = Get(reference, row, Column, parent, UtilWPF.GetIconButton("remove_v2"));
             btn.Height = 28;
             btn.Width = 28;
 
@@ -109,38 +113,46 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button Quest_Filter(Button reference, int row, int column, Grid parent, QuestWpfHeader wpf_header, IFilter filter)
+        public static Button Quest_Filter(Button reference, int row, int Column, Grid parent, QuestWpfHeader wpf_header, IFilter filter)
         {
-            var btn = Get(reference, row, column, parent, "Filter");
+            var btn = Get(reference, row, Column, parent, "Filter");
 
-            if (wpf_header is ColWpfHeader)
-                btn.Click += (source, e) => filter.Filter(wpf_header as ColWpfHeader);
+            if (wpf_header is VocWpfHeader)
+                btn.Click += (source, e) => filter.Filter(wpf_header as VocWpfHeader);
+            else if (wpf_header is PronWpfHeader)
+                btn.Click += (source, e) => filter.Filter(wpf_header as PronWpfHeader);
+            else if (wpf_header is SpellWpfHeader)
+                btn.Click += (source, e) => filter.Filter(wpf_header as SpellWpfHeader);
 
             return btn;
         }
 
-        public static Button Quest_Insert(Button reference, int row, int column, Grid parent, StackPanel stk_items, QuestWpfHeader wpf_header)
+        public static Button Quest_Insert(Button reference, int row, int Column, Grid parent, StackPanel stk_items, QuestWpfHeader wpf_header)
         {
-            var btn = Get(reference, row, column, parent, "Insert");
+            var btn = Get(reference, row, Column, parent, "Insert");
 
             btn.Click += (source, e) =>
             {
-                if (wpf_header is ColWpfHeader)
-                    QuestWpfUtil.InsertColClick(stk_items, wpf_header as ColWpfHeader);
+                if (wpf_header is VocWpfHeader)
+                    QuestWpfUtil.InsertClick(stk_items, wpf_header as VocWpfHeader);
+                else if (wpf_header is PronWpfHeader)
+                    QuestWpfUtil.InsertClick(stk_items, wpf_header as PronWpfHeader);
+                else if (wpf_header is SpellWpfHeader)
+                    QuestWpfUtil.InsertClick(stk_items, wpf_header as SpellWpfHeader);
             };
 
             return btn;
         }
 
-        public static Button Get(Button reference, int row, int column, Grid parent, object content)
+        public static Button Get(Button reference, int row, int Column, Grid parent, object content)
         {
             var btn = Get(reference, content);
-            UtilWPF.SetGridPosition(btn, row, column, parent);
+            UtilWPF.SetGridPosition(btn, row, Column, parent);
 
             return btn;
         }
 
-        public static Button Insert_Bulk_Col(Grid parent, QuestWpfHeader header)
+        public static Button Insert_Bulk(Grid parent, IQuestWpfHeader header)
         {
             var btn = new Button();
             btn.VerticalAlignment = VerticalAlignment.Center;
@@ -166,46 +178,48 @@ namespace AussieCake.Util.WPF
                     if (line.StartsWith("//") || line.StartsWith("Insert failed") || line.IsEmpty())
                         continue;
 
-                    if (line.Count(x => x == '1') != 1)
-                    {
-                        successful.Add(false);
-                        header.Txt_bulk_insert.Text += "\nInsert failed (must has 1 ';'): " + line;
-                        continue;
-                    }
+                    //if (line.Count(x => x == '1') != 1)
+                    //{
+                    //    successful.Add(false);
+                    //    header.Txt_bulk_insert.Text += "\nInsert failed (must has 1 ';'): " + line;
+                    //    continue;
+                    //}
 
                     var parts = line.Split(';');
 
-                    if (parts.Count() != 2)
+                    if (parts.Count() != 2 && !(header is SpellWpfController))
                     {
                         successful.Add(false);
                         header.Txt_bulk_insert.Text += "\nInsert failed (must has 2 parts): " + line;
                         continue;
                     }
 
-                    var words = parts[0];
-                    var answer = parts[1];
+                    var part1 = parts[0];
+                    var part2 = parts[1];
 
-                    if (words.IsLettersOnly() || !answer.IsLettersOnly())
+                    if (header is VocWpfController)
                     {
-                        successful.Add(false);
-                        header.Txt_bulk_insert.Text += "\nInsert failed (parts must have only letters): " + line;
-                        continue;
+                        if (!part1.IsLettersOnly() || !part2.IsLettersOnly())
+                        {
+                            successful.Add(false);
+                            header.Txt_bulk_insert.Text += "\nInsert failed (parts must have only letters): " + line;
+                            continue;
+                        }
                     }
 
-                    var col = new ColVM(words, answer, "", "", imp, true);
+                    var vm = new QuestVM();
 
-                    if (QuestControl.Insert(col))
-                    {
-                        var added = QuestControl.Get(Model.Col).Last();
-                        added.LoadCrossData();
-                        QuestWpfUtil.AddWpfItem(header.Stk_items, added);
-                        successful.Add(true);
-                    }
+                    if (header is VocWpfHeader)
+                        vm = new VocVM(part1, part2, "", "", imp, true);
+                    if (header is PronWpfHeader)
+                        vm = new PronVM(part1, part2, imp, true);
+                    if (header is SpellWpfHeader)
+                        vm = new SpellVM(part1, imp, true);
+
+                    if (QuestControl.Insert(vm))
+                        SuccessfulInserted(header, successful);
                     else
-                    {
-                        header.Txt_bulk_insert.Text += "\nInsert failed (DB validation): " + line;
-                        successful.Add(false);
-                    }
+                        FailedInsert(header, successful, line);
                 }
                 Footer.Log("Of a total of " + successful.Count + " attempts, " +
                             successful.Where(x => x).Count() + " were inserted, while " +
@@ -216,7 +230,25 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button Bulk_back(Grid parent, ColWpfHeader header)
+        private static void FailedInsert(IQuestWpfHeader header, List<bool> successful, string line)
+        {
+            header.Txt_bulk_insert.Text += "\nInsert failed (DB validation): " + line;
+            successful.Add(false);
+        }
+
+        private static void SuccessfulInserted(IQuestWpfHeader header, List<bool> successful)
+        {
+            var type = header is VocWpfHeader ? Model.Voc :
+                       header is PronWpfHeader ? Model.Pron :
+                       header is SpellWpfHeader ? Model.Spell : 0;
+
+            var added = QuestControl.Get(type).Last();
+            added.LoadCrossData();
+            QuestWpfUtil.AddWpfItem(header.Stk_items, added);
+            successful.Add(true);
+        }
+
+        public static Button Bulk_back(Grid parent, IQuestWpfHeader header)
         {
             var btn = new Button();
             btn.Content = "Back";
@@ -233,7 +265,7 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button Show_bulk_insert(int row, int column, Grid parent, ColWpfHeader header)
+        public static Button Show_bulk_insert(int row, int Column, Grid parent, IQuestWpfHeader header)
         {
             var btn = new Button();
             btn.Content = UtilWPF.GetIconButton("bulk_insert_2");
@@ -248,7 +280,7 @@ namespace AussieCake.Util.WPF
                 header.Grid_bulk_insert.Visibility = Visibility.Visible;
                 header.Stk_insert.Visibility = Visibility.Collapsed;
             };
-            UtilWPF.SetGridPosition(btn, row, column, parent);
+            UtilWPF.SetGridPosition(btn, row, Column, parent);
 
             return btn;
         }
@@ -280,12 +312,12 @@ namespace AussieCake.Util.WPF
             return reference;
         }
 
-        public static Button Remove_quest(Button reference, int row, int column, Grid parent, IQuest quest, StackPanel main_line)
+        public static Button Remove_quest(Button reference, int row, int Column, Grid parent, IQuest quest, StackPanel main_line)
         {
-            var btn_remove = Remove(reference, row, column, parent, main_line);
+            var btn_remove = Remove(reference, row, Column, parent, main_line);
             btn_remove.Click += (source, e) =>
             {
-                var removed = QuestControl.Get(Model.Col).First(s => s.Id == quest.Id);
+                var removed = QuestControl.Get(quest.Type).First(s => s.Id == quest.Id);
                 QuestControl.Remove(removed);
 
                 Footer.Log("The question has been removed.");
@@ -303,7 +335,7 @@ namespace AussieCake.Util.WPF
                 AttemptsControl.RemoveLast(line.Quest.Type);
                 line.Chal.Remove_att.IsEnabled = false;
                 line.Chal.Disable_quest.IsEnabled = true;
-                line.Chal.Grid_chal.Background = UtilWPF.Colour_row_off;
+                line.Chal.Grid_chal.Background = UtilWPF.Vocour_row_off;
 
                 line.Quest.LoadCrossData();
 
@@ -334,7 +366,7 @@ namespace AussieCake.Util.WPF
             return btn;
         }
 
-        public static Button Chal_next(Button reference, StackPanel parent, Button btn_verify, Grid userControlGrid, List<ChalLine> lines, Model type, Microsoft.Office.Interop.Word.Application wordApp)
+        public static Button Chal_next(Button reference, StackPanel parent, Button btn_verify, Grid userControlGrid, List<ChalLine> lines, Model type, Microsoft.Office.Interop.Word.Application wordApp = null)
         {
             parent.Children.Add(reference);
             reference.Content = "Next";

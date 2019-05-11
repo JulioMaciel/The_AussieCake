@@ -4,8 +4,8 @@ namespace AussieCake
 {
 	public enum Model
 	{
-		[Description("Collocation")]
-		Col,
+		[Description("Vocabulary")]
+		Voc,
 
 		[Description("Sentence")]
 		Sen,
@@ -21,5 +21,11 @@ namespace AussieCake
 
         [Description("DescribeImage")]
         DescImg,
+
+        [Description("Pronunciation")]
+        Pron,
+
+        [Description("Spelling")]
+        Spell,
     }
 }

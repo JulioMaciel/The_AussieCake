@@ -1,4 +1,4 @@
-﻿using AussieCake.Question;
+﻿using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace AussieCake.Util
 {
@@ -210,6 +211,80 @@ namespace AussieCake.Util
                 return true;
 
             return false;
+        }
+
+        public static void PlayMp3FromUrl(string url)
+        {
+            using (Stream ms = new MemoryStream())
+            {
+                using (Stream stream = WebRequest.Create(url)
+                    .GetResponse().GetResponseStream())
+                {
+                    byte[] buffer = new byte[32768];
+                    int read;
+                    while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        ms.Write(buffer, 0, read);
+                    }
+                }
+
+                ms.Position = 0;
+                using (WaveStream blockAlignedStream =
+                    new BlockAlignReductionStream(
+                        WaveFormatConversionStream.CreatePcmStream(
+                            new Mp3FileReader(ms))))
+                {
+                    using (WaveOut waveOut = new WaveOut(WaveCallbackInfo.FunctionCallback()))
+                    {
+                        waveOut.Init(blockAlignedStream);
+                        waveOut.Play();
+                        while (waveOut.PlaybackState == PlaybackState.Playing)
+                        {
+                            System.Threading.Thread.Sleep(100);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void PlayPronunciation(string text, Control ctrl = null)
+        {
+            var url = "https://dictionary.cambridge.org/dictionary/english/" + text.ToLower();
+            var html = string.Empty;
+
+            using (WebClient client = new WebClient())
+                html = client.DownloadString(url);
+
+            var pattern = "British English pronunciation\" data-src-mp3=\"/media/english/(.*?)\"";
+            var matches = Regex.Matches(html, pattern, RegexOptions.Singleline);
+
+            if (matches.Count < 1)
+            {
+                pattern = "American pronunciation\" data-src-mp3=\"/media/english/(.*?)\"";
+                matches = Regex.Matches(html, pattern, RegexOptions.Singleline);
+
+                if (matches.Count < 1)
+                {
+                    (ctrl as TextBox).Background = Brushes.LightGoldenrodYellow;
+                    (ctrl as TextBox).Text = url;
+                }
+                else
+                {
+                    PlayIt(matches);
+                }
+            }
+            else
+                PlayIt(matches);
+        }
+
+        private static void PlayIt(MatchCollection matches)
+        {
+            var url_audio_word = matches[0].Value;
+            var form = url_audio_word.Remove(0, 46);
+            var form2 = form.Remove(form.IndexOf(".mp3") + 4);
+            var url_audio = "https://dictionary.cambridge.org/" + form2;
+
+            PlayMp3FromUrl(url_audio);
         }
     }
 }

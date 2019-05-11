@@ -6,40 +6,40 @@ namespace AussieCake.Util.WPF
 {
     public static class MyGrids
     {
-        public static Grid GetRowItem(List<int> columnSizes, StackPanel parent)
+        public static Grid GetRowItem(List<int> ColumnSizes, StackPanel parent)
         {
-            var rowGrid = GetRow(columnSizes, parent);
+            var rowGrid = GetRow(ColumnSizes, parent);
             rowGrid.Margin = new Thickness(1, 2, 1, 0);
 
             return rowGrid;
         }
 
-        public static Grid GetRow(List<int> columnSizes, StackPanel parent)
+        public static Grid GetRow(List<int> ColumnSizes, StackPanel parent)
         {
-            var rowGrid = Get(columnSizes, 1, parent);
+            var rowGrid = Get(ColumnSizes, 1, parent);
 
             return rowGrid;
         }
 
-        public static Grid GetRow(int row, int column, Grid parent, List<int> columnSizes)
+        public static Grid GetRow(int row, int Column, Grid parent, List<int> ColumnSizes)
         {
-            var rowGrid = Get(row, column, parent, columnSizes, 1);
+            var rowGrid = Get(row, Column, parent, ColumnSizes, 1);
 
             return rowGrid;
         }
 
-        public static Grid GetRow(Grid reference, int row, int column, Grid parent, List<int> columnSizes)
+        public static Grid GetRow(Grid reference, int row, int Column, Grid parent, List<int> ColumnSizes)
         {
-            SetColumns(reference, columnSizes);
-            UtilWPF.SetGridPosition(reference, row, column, parent);
+            SetColumns(reference, ColumnSizes);
+            UtilWPF.SetGridPosition(reference, row, Column, parent);
             reference.RowDefinitions.Add(new RowDefinition());
 
             return reference;
         }
 
-        private static void SetColumns(Grid reference, List<int> columnSizes)
+        private static void SetColumns(Grid reference, List<int> ColumnSizes)
         {
-            foreach (var size in columnSizes)
+            foreach (var size in ColumnSizes)
             {
                 reference.ColumnDefinitions.Add(new ColumnDefinition()
                 {
@@ -48,22 +48,22 @@ namespace AussieCake.Util.WPF
             }
         }
 
-        public static Grid Get(int row, int column, Grid parent, List<int> columnSizes, int rowQuantity)
+        public static Grid Get(int row, int Column, Grid parent, List<int> ColumnSizes, int rowQuantity)
         {
-            var grid = Get(columnSizes, rowQuantity);
-            UtilWPF.SetGridPosition(grid, row, column, parent);
+            var grid = Get(ColumnSizes, rowQuantity);
+            UtilWPF.SetGridPosition(grid, row, Column, parent);
 
             return grid;
         }
 
-        public static Grid Get(int row, int column, Grid parent, int rowQuantity)
+        public static Grid Get(int row, int Column, Grid parent, int rowQuantity)
         {
-            return Get(row, column, parent, new List<int>() { 1 }, rowQuantity);
+            return Get(row, Column, parent, new List<int>() { 1 }, rowQuantity);
         }
 
-        public static Grid Get(List<int> columnSizes, int rowQuantity, StackPanel parent)
+        public static Grid Get(List<int> ColumnSizes, int rowQuantity, StackPanel parent)
         {
-            var grid = Get(columnSizes, rowQuantity);
+            var grid = Get(ColumnSizes, rowQuantity);
             parent.Children.Add(grid);
 
             return grid;
@@ -78,16 +78,16 @@ namespace AussieCake.Util.WPF
             reference.Margin = new Thickness(2, 0, 2, 0);
             UtilWPF.SetGridPosition(reference, 0, 0, parent);
             reference.Visibility = Visibility.Collapsed;
-            reference.Background = UtilWPF.Colour_header;
+            reference.Background = UtilWPF.Vocour_header;
 
             return reference;
         }
 
-        private static Grid Get(List<int> columnSizes, int rowQuantity)
+        private static Grid Get(List<int> ColumnSizes, int rowQuantity)
         {
             var grid = new Grid();
 
-            SetColumns(grid, columnSizes);
+            SetColumns(grid, ColumnSizes);
 
             for (int i = 1; i <= rowQuantity; i++)
                 grid.RowDefinitions.Add(new RowDefinition());
@@ -98,7 +98,7 @@ namespace AussieCake.Util.WPF
         public static Grid GetChallenge(int row, Grid parent)
         {
             var grid = Get(row, 0, parent, 4);
-            grid.Background = UtilWPF.Colour_row_off;
+            grid.Background = UtilWPF.Vocour_row_off;
             grid.SnapsToDevicePixels = true;
             grid.Margin = new Thickness(0, 2, 2, 0);
 

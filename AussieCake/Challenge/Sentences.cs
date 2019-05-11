@@ -1,39 +1,61 @@
 ﻿using AussieCake.Question;
 using AussieCake.Util;
 using AussieCake.Verb;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity.Design.PluralizationServices;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace AussieCake.Challenge
 {
     public static class Sentences
     {
-        public static string GetSentenceToCollocation(IQuest col)
+        public static string GetSentenceToQuestion(IQuest quest)
         {
-            var url = col.ToLudwigUrl();
-            var raw_Text = FileHtmlControls.GetTextFromSite(url);
+            var sens = quest.GetSentences();
 
-            var raw_sentences = GetRawSentencesFromSource(raw_Text);
-
-            var result = new List<string>();
-            foreach (var sen in raw_sentences)
+            if (sens.Any())
+                Console.WriteLine("Sen got on DB.");
+            else if (!sens.Any())
             {
-                if (DoesSenContainsCol((ColVM)col, sen) && !result.Contains(sen))
-                    result.Add(sen);
+                var url = quest.ToLudwigUrl();
+                TryToGetSentencesOnThisSite(quest, sens, url);
+
+                if (sens.Any())
+                    Console.WriteLine("Sen got on Ludwig.");
+
+                if (!sens.Any() && !quest.Text.Contains(' '))
+                {
+                    url = quest.ToBritannicaUrl();
+                    TryToGetSentencesOnThisSite(quest, sens, url);
+
+                    if (sens.Any())
+                        Console.WriteLine("Sen got on Britannica.");
+                }
+
+                if (!sens.Any())
+                {
+                    Console.WriteLine("Sen not found. URL: " + url);
+                    return quest.Text;
+                }
             }
 
-            if (!result.Any())
-            {
-                System.Console.WriteLine(url);
-                return string.Empty;
-            }
-
-            var chosen = result.PickRandom();
+            var chosen = sens.PickRandom();
 
             return chosen;
+        }
+
+        private static void TryToGetSentencesOnThisSite(IQuest quest, List<string> sens, string url)
+        {
+            var raw_Text = FileHtmlControls.GetTextFromSite(url);
+            var raw_sentences = GetRawSentencesFromSource(raw_Text);
+
+            foreach (var sen in raw_sentences)
+            {
+                if (DoesSenContainsVoc(quest, sen) && !sens.Contains(sen))
+                    sens.Add(sen);
+            }
         }
 
         private static bool DoesStartEndProperly(string s)
@@ -67,12 +89,12 @@ namespace AussieCake.Challenge
             return filteredSentences;
         }
 
-        public static bool DoesSenContainsCol(ColVM col, string sen)
+        public static bool DoesSenContainsVoc(IQuest quest, string sen)
         {
-            //System.Console.WriteLine(col.Text + ": " + sen);
+            //System.Console.WriteLine(Voc.Text + ": " + sen);
 
             var lastIndexFound = -1;
-            var words = col.Text.Split(' ').ToList();
+            var words = quest.Text.SplitSentence().ToList();
             for (int i = 0; i < words.Count; i++)
             {
                 var word = words[i];

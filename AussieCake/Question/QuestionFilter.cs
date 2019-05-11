@@ -75,18 +75,6 @@ namespace AussieCake.Question
                     else
                         Filtered_quests = Filtered_quests.OrderByDescending(q => (int)q.Importance * -1).ToList();
                     break;
-                case SortLbl.Def:
-                    if (IsNextSortAsc)
-                        Filtered_quests = Filtered_quests.OrderBy(q => q.Definition).ToList();
-                    else
-                        Filtered_quests = Filtered_quests.OrderByDescending(q => q.Definition).ToList();
-                    break;
-                case SortLbl.PtBr:
-                    if (IsNextSortAsc)
-                        Filtered_quests = Filtered_quests.OrderBy(q => q.PtBr).ToList();
-                    else
-                        Filtered_quests = Filtered_quests.OrderByDescending(q => q.PtBr).ToList();
-                    break;
                 default:
                     if (IsNextSortAsc)
                         Filtered_quests = Filtered_quests.OrderBy(q => q.Id).ToList();
@@ -96,7 +84,7 @@ namespace AussieCake.Question
             }
         }
 
-        protected void Filter(QuestWpfHeader wpf_header)
+        protected void Filter(IQuestWpfHeader wpf_header)
         {
             Filtered_quests = Original_quests;
 
@@ -138,12 +126,6 @@ namespace AussieCake.Question
 
                 Filtered_quests = Filtered_quests.Where(q => q.Chance >= Convert.ToInt16(wpf_header.Txt_chance.Text)).ToList();
             }
-
-            if (!wpf_header.Txt_def.Text.IsEmpty())
-                Filtered_quests = Filtered_quests.Where(q => q.Definition.Contains(wpf_header.Txt_def.Text)).ToList();
-
-            if (!wpf_header.Txt_ptbr.Text.IsEmpty())
-                Filtered_quests = Filtered_quests.Where(q => q.PtBr.Contains(wpf_header.Txt_ptbr.Text)).ToList();
 
             Filtered_quests = Filtered_quests.Where(q => q.IsActive == wpf_header.Btn_isActive.IsActived).ToList();
 

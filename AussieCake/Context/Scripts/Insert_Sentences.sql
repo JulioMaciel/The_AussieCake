@@ -7,7 +7,7 @@ insert into Sentence values(NULL, 'The balance of power had suddenly and dramati
 insert into Sentence values(NULL, 'But gradually as she rested, she became more aware of her predicament.', NULL, 0);
 insert into Sentence values(NULL, 'Chamomile is commonly used in teas and potpourri.', NULL, 0);
 insert into Sentence values(NULL, 'Essential oils are generally considered too strong to take internally, but Dr.', NULL, 0);
-insert into Sentence values(NULL, 'The New Order collected information relentlessly.', NULL, 0);
+insert into Sentence values(NULL, 'The New Order Voclected information relentlessly.', NULL, 0);
 insert into Sentence values(NULL, 'At the same time, the fenmen became aware of us.', NULL, 0);
 insert into Sentence values(NULL, 'Peterborough Hound Shows bears ample evidence to.', NULL, 0);
 insert into Sentence values(NULL, 'Also the definition of wiring demands careful attention.', NULL, 0);
@@ -204,7 +204,7 @@ insert into Sentence values(NULL, 'Professor Trelawney make a real prediction?',
 insert into Sentence values(NULL, 'How nice to see you in the physical world at last.', NULL, 0);
 insert into Sentence values(NULL, 'And afterwards the brief, preoccupied introductions aboard the Star Cruiser...', NULL, 0);
 insert into Sentence values(NULL, 'Hallows, but I could not resist, could not help taking a closer look.', NULL, 0);
-insert into Sentence values(NULL, 'Even if your duty consists entirely of collecting information?', NULL, 0);
+insert into Sentence values(NULL, 'Even if your duty consists entirely of Voclecting information?', NULL, 0);
 insert into Sentence values(NULL, 'Consider the impact that will have on the current balance of power.', NULL, 0);
 insert into Sentence values(NULL, 'As well as drawing away some of the Rebel pressure on our shipyard supply lines.', NULL, 0);
 insert into Sentence values(NULL, 'Chewie was down there earlier working on theFalcon .', NULL, 0);
@@ -237,7 +237,7 @@ insert into Sentence values(NULL, 'Perhaps a closer examination will tell us som
 insert into Sentence values(NULL, 'He gave the small black device a closer look.', NULL, 0);
 insert into Sentence values(NULL, 'Thrawn leaned over his shoulder for a closer look.', NULL, 0);
 insert into Sentence values(NULL, 'Han jumped back out of the way and took a closer look at the shadow.', NULL, 0);
-insert into Sentence values(NULL, 'Leia murmured to Han as the others began collecting their data cards together.', NULL, 0);
+insert into Sentence values(NULL, 'Leia murmured to Han as the others began Voclecting their data cards together.', NULL, 0);
 insert into Sentence values(NULL, 'Cooley had never seriously considered the possibility that he would be turned.', NULL, 0);
 insert into Sentence values(NULL, 'She gave them her best smile, always the quickest way to convey the message.', NULL, 0);
 insert into Sentence values(NULL, 'Intercultural Center was quite a contrast to the CIA institutional drab.', NULL, 0);
@@ -273,7 +273,7 @@ insert into Sentence values(NULL, 'Where I live we have slightly different prior
 insert into Sentence values(NULL, 'Take a slightly different route to work every day.', NULL, 0);
 insert into Sentence values(NULL, 'Even so, I spare a brief time, in order to judge justly in a hard matter.', NULL, 0);
 insert into Sentence values(NULL, 'Ron, crouching over the fire to get a closer look at the egg.', NULL, 0);
-insert into Sentence values(NULL, 'Jaw clenched tightly, Han began collecting his data cards together.', NULL, 0);
+insert into Sentence values(NULL, 'Jaw clenched tightly, Han began Voclecting his data cards together.', NULL, 0);
 insert into Sentence values(NULL, 'But the time draws swiftly to some great conclusion.', NULL, 0);
 insert into Sentence values(NULL, 'Which could be extremely useful at times.', NULL, 0);
 insert into Sentence values(NULL, 'Often afterwards Pippin tried to describe his first impression of them.', NULL, 0);

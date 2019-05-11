@@ -9,8 +9,6 @@ namespace AussieCake.Question
 
         bool IsActive { get; }
         string Text { get; }
-        string PtBr { get; }
-        string Definition { get; }
         Importance Importance { get; }
 
         Model Type { get; }
@@ -37,5 +35,7 @@ namespace AussieCake.Question
 
         string ToText();
         string ToLudwigUrl();
+        string ToBritannicaUrl();
+        List<string> GetSentences();
     }
 }

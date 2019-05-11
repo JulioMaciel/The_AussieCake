@@ -98,9 +98,9 @@ namespace AussieCake.Sentence
             {
                 foreach (var sen in SenControl_Deprecated.Get())
                 {
-                    if (type == Model.Col)
+                    if (type == Model.Voc)
                     {
-                        //if (AutoGetSentences_Deprecated.DoesSenContainsCol((ColVM)quest, sen.Text))
+                        //if (AutoGetSentences_Deprecated.DoesSenContainsVoc((VocVM)quest, sen.Text))
                         //{
                         //    if (!QuestSenControl_Deprecated.Get(type).Any(qs => qs.IdQuest == quest.Id && qs.IdSen == sen.Id))
                         //        links_found.Add((quest.Id, sen.Id));

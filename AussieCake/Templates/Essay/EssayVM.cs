@@ -7,7 +7,7 @@ namespace AussieCake.Templates
     {
         public string Word { get; set; }
 
-        public EssayVM(int id, string word) : base(id, word, "", "", Importance.Any, true, Model.Essay)
+        public EssayVM(int id, string word) : base(id, word, Importance.Any, true, Model.Essay)
         {
         }
     }

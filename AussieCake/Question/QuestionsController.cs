@@ -1,4 +1,5 @@
-﻿using AussieCake.Util;
+﻿using AussieCake.Context;
+using AussieCake.Util;
 using AussieCake.Util.WPF;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace AussieCake.Question
 {
-    public class QuestControl : ColControl
+    public class QuestControl : SqLiteHelper
     {
         public static IEnumerable<IQuest> Get(Model type)
         {
@@ -14,8 +15,12 @@ namespace AussieCake.Question
 
             switch (type)
             {
-                case Model.Col:
-                    return Collocations.Cast<IQuest>();
+                case Model.Voc:
+                    return Vocabularies.Cast<IQuest>();
+                case Model.Pron:
+                    return Pronunciations.Cast<IQuest>();
+                case Model.Spell:
+                    return Spellings.Cast<IQuest>();
                 default:
                     Errors.ThrowErrorMsg(ErrorType.InvalidModelType, type);
                     return new List<IQuest>();
@@ -24,24 +29,36 @@ namespace AussieCake.Question
 
         public static bool Insert(IQuest quest)
         {
-            if (quest is ColVM col)
-                return ColControl.Insert(col);
+            if (quest is VocVM Voc)
+                return VocControl.Insert(Voc);
+            else if (quest is PronVM pron)
+                return PronControl.Insert(pron);
+            else if (quest is SpellVM spell)
+                return SpellControl.Insert(spell);
 
             return false;
         }
 
         public static bool Update(IQuest quest)
         {
-            if (quest is ColVM col)
-                return ColControl.Update(col);
+            if (quest is VocVM Voc)
+                return VocControl.Update(Voc);
+            else if (quest is PronVM pron)
+                return PronControl.Update(pron);
+            else if (quest is SpellVM spell)
+                return SpellControl.Update(spell);
 
             return false;
         }
 
         public static void Remove(IQuest quest)
         {
-            if (quest is ColVM col)
-                ColControl.Remove(col);
+            if (quest is VocVM Voc)
+                VocControl.Remove(Voc);
+            else if (quest is PronVM pron)
+                PronControl.Remove(pron);
+            else if (quest is SpellVM spell)
+                SpellControl.Remove(spell);
 
             quest.RemoveAllAttempts();
         }
@@ -59,13 +76,19 @@ namespace AussieCake.Question
 
         public static void LoadDB(Model type)
         {
-            if (type == Model.Col && Collocations == null)
-                GetCollocationsDB();
+            if (type == Model.Voc && Vocabularies == null)
+                SqLiteHelper.GetVocabulariesDB();
+            else if (type == Model.Pron && Pronunciations == null)
+                SqLiteHelper.GetPronunciationsDB();
+            else if (type == Model.Spell && Spellings == null)
+                SqLiteHelper.GetSpellingsDB();
         }
 
         public static void LoadEveryQuestionDB()
         {
-            LoadDB(Model.Col);
+            LoadDB(Model.Voc);
+            LoadDB(Model.Pron);
+            LoadDB(Model.Spell);
         }
 
         private static void LoadRealChances(Model type)
@@ -107,6 +130,10 @@ namespace AussieCake.Question
             return selected;
         }
 
-
+        public static List<string> GetSentences(IQuest quest)
+        {
+            var words = quest.Text.SplitSentence().ToList();
+            return SqLiteHelper.GetSentenceWhichContains(words);
+        }
     }
 }

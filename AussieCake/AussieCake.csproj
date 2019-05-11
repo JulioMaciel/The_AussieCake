@@ -140,6 +140,9 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="NAudio, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.9.0\lib\net35\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -173,23 +176,50 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Challenge\Sentences.cs" />
+    <Compile Include="Challenge\SpellingChallenge.xaml.cs">
+      <DependentUpon>SpellingChallenge.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Challenge\WPF\ChallengeWpfItem.cs" />
     <Compile Include="Context\ScriptFileCommands.cs" />
     <Compile Include="Context\SqLiteCommands.cs" />
     <Compile Include="Attempt\AttemptsController.cs" />
     <Compile Include="Challenge\WPF\ChallengeWPFController.cs" />
-    <Compile Include="Challenge\CollocationChallenge.xaml.cs">
-      <DependentUpon>CollocationChallenge.xaml</DependentUpon>
+    <Compile Include="Challenge\VocabularyChallenge.xaml.cs">
+      <DependentUpon>VocabularyChallenge.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Question\Collocation\CollocationFilter.cs" />
-    <Compile Include="Question\Collocation\CollocationModel.cs" />
-    <Compile Include="Question\Collocation\CollocationsController.cs" />
-    <Compile Include="Question\Collocation\WPF\CollocationWpfHeader.cs" />
-    <Compile Include="Question\Collocation\WPF\CollocationWpfItem.cs" />
+    <Compile Include="Question\Pronunciation\Practicing\PronunciationPracticing.xaml.cs">
+      <DependentUpon>PronunciationPracticing.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Question\Spelling\SpellingController.cs" />
+    <Compile Include="Question\Spelling\SpellingFilter.cs" />
+    <Compile Include="Question\Spelling\SpellingModel.cs" />
+    <Compile Include="Question\Spelling\Spellings.xaml.cs">
+      <DependentUpon>Spellings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Question\Spelling\SpellingVM.cs" />
+    <Compile Include="Question\Spelling\WPF\SpellingWpfController.cs" />
+    <Compile Include="Question\Spelling\WPF\SpellingWpfHeader.cs" />
+    <Compile Include="Question\Spelling\WPF\SpellingWpfItem.cs" />
+    <Compile Include="Question\Pronunciation\Pronunciations.xaml.cs">
+      <DependentUpon>Pronunciations.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Question\Pronunciation\PronunciationController.cs" />
+    <Compile Include="Question\Pronunciation\PronunciationFilter.cs" />
+    <Compile Include="Question\Pronunciation\PronunciationModel.cs" />
+    <Compile Include="Question\Pronunciation\PronunciationVM.cs" />
+    <Compile Include="Question\Pronunciation\WPF\PronunciationWpfController.cs" />
+    <Compile Include="Question\Pronunciation\WPF\PronunciationWpfHeader.cs" />
+    <Compile Include="Question\Pronunciation\WPF\PronunciationWpfItem.cs" />
+    <Compile Include="Question\Vocabulary\VocabularyFilter.cs" />
+    <Compile Include="Question\Vocabulary\VocabularyModel.cs" />
+    <Compile Include="Question\Vocabulary\VocabularyController.cs" />
+    <Compile Include="Question\Vocabulary\WPF\VocabularyWpfHeader.cs" />
+    <Compile Include="Question\Vocabulary\WPF\VocabularyWpfItem.cs" />
     <Compile Include="Question\QuestionModel.cs" />
     <Compile Include="Question\QuestionsController.cs" />
     <Compile Include="Question\QuestionVM.cs" />
     <Compile Include="Question\QuestionFilter.cs" />
+    <Compile Include="Question\WPF\IQuestWpfHeader.cs" />
     <Compile Include="Question\WPF\QuestionWpfHeader.cs" />
     <Compile Include="Question\WPF\QuestionWpfItem.cs" />
     <Compile Include="Deprecated\Sentence\AutoGetSentences.cs" />
@@ -236,19 +266,23 @@
     <Compile Include="Util\CakePaths.cs" />
     <Compile Include="Util\UtilExtensions.cs" />
     <Compile Include="Util\Importance.cs" />
-    <Compile Include="Question\Collocation\WPF\CollocationWpfController.cs" />
+    <Compile Include="Question\Vocabulary\WPF\VocabularyWpfController.cs" />
     <Compile Include="Deprecated\Sentence\SentenceWPFController.cs" />
     <Compile Include="Util\WPF\UtilWPF.cs" />
     <Compile Include="Question\IQuestion.cs" />
     <Compile Include="Attempt\AttemptVM.cs" />
-    <Compile Include="Question\Collocation\CollocationVM.cs" />
+    <Compile Include="Question\Vocabulary\VocabularyVM.cs" />
     <Compile Include="Deprecated\Sentence\SentenceVM.cs" />
-    <Compile Include="Question\Collocation\Collocations.xaml.cs">
-      <DependentUpon>Collocations.xaml</DependentUpon>
+    <Compile Include="Question\Vocabulary\Vocabularies.xaml.cs">
+      <DependentUpon>Vocabularies.xaml</DependentUpon>
     </Compile>
     <Compile Include="Deprecated\Sentence\Sentences.xaml.cs">
       <DependentUpon>Sentences.xaml</DependentUpon>
     </Compile>
+    <Page Include="Challenge\SpellingChallenge.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -262,11 +296,23 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Challenge\CollocationChallenge.xaml">
+    <Page Include="Challenge\VocabularyChallenge.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Question\Collocation\Collocations.xaml">
+    <Page Include="Question\Pronunciation\Practicing\PronunciationPracticing.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Question\Spelling\Spellings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Question\Pronunciation\Pronunciations.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Question\Vocabulary\Vocabularies.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -386,6 +432,15 @@
       <VersionMinor>3</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>

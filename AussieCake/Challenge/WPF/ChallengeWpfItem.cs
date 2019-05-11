@@ -19,6 +19,7 @@ namespace AussieCake.Challenge
 
         public List<Label> Quest_words { get; set; }
         public ComboChallenge Cb_Answer { get; set; }
+        public TextBox Txt_Spell { get; set; }
 
         public Label Avg_w { get; set; }
         public Label Avg_m { get; set; }
@@ -26,7 +27,7 @@ namespace AussieCake.Challenge
         public Label Tries { get; set; }
         public Label Importante { get; set; }
         public Label Chance { get; set; }
-        public Label Id_col { get; set; }
+        public Label Id_Voc { get; set; }
         public Button Disable_quest { get; set; }
         public Button Remove_att { get; set; }
 
@@ -53,7 +54,7 @@ namespace AussieCake.Challenge
             Importante = new Label();
             Chance = new Label();
 
-            Id_col = new Label();
+            Id_Voc = new Label();
             Disable_quest = new Button();
             Remove_att = new Button();
         }

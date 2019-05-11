@@ -46,28 +46,32 @@ namespace AussieCake
             frame_content.Content = stk;
         }
 
-        private void btnCollocations_Click(object sender, RoutedEventArgs e)
+        private void btnVocabulary_Click(object sender, RoutedEventArgs e)
         {
             EnableButtons();
-            frame_content.Content = new Collocations();
-            btnCollocations.IsEnabled = false;
+            frame_content.Content = new Vocabularies();
+            btnVocabulary.IsEnabled = false;
         }
 
-        private void btnColChallenge_Click(object sender, RoutedEventArgs e)
+        private void btnVocChallenge_Click(object sender, RoutedEventArgs e)
         {
             EnableButtons();
-            frame_content.Content = new ColChallenge();
-            btnColChallenge.IsEnabled = false;
+            frame_content.Content = new VocChallenge();
+            btnVocChallenge.IsEnabled = false;
         }
 
         private void EnableButtons()
         {
-            btnCollocations.IsEnabled = true;
-            btnColChallenge.IsEnabled = true;
+            btnVocabulary.IsEnabled = true;
+            btnVocChallenge.IsEnabled = true;
             btnEssay.IsEnabled = true;
             btnEssayByTopic.IsEnabled = true;
             btnSumRetell.IsEnabled = true;
             btnDescImg.IsEnabled = true;
+            btnPronunciation.IsEnabled = true;
+            btnPronunPract.IsEnabled = true;
+            btnSpelling.IsEnabled = true;
+            btnSpellChallenge.IsEnabled = true;
         }
 
         private void btnEssay_Click(object sender, RoutedEventArgs e)
@@ -96,6 +100,34 @@ namespace AussieCake
             EnableButtons();
             frame_content.Content = new DescImg();
             btnDescImg.IsEnabled = false;
+        }
+
+        private void BtnPronunciation_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new Pronunciations();
+            btnPronunciation.IsEnabled = false;
+        }
+
+        private void BtnPronunPract_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new PronunPract();
+            btnPronunPract.IsEnabled = false;
+        }
+
+        private void BtnSpelling_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new Spellings();
+            btnSpelling.IsEnabled = false;
+        }
+
+        private void BtnSpellChallenge_Click(object sender, RoutedEventArgs e)
+        {
+            EnableButtons();
+            frame_content.Content = new SpellChallenge();
+            btnSpellChallenge.IsEnabled = false;
         }
     }
 }

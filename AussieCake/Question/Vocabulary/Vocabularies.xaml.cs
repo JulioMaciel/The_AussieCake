@@ -7,22 +7,22 @@ using System.Windows.Controls;
 namespace AussieCake.Question
 {
     /// <summary>
-    /// Interaction logic for Collocations.xaml
+    /// Interaction logic for Vocabularies.xaml
     /// </summary>
-    public partial class Collocations : UserControl
+    public partial class Vocabularies : UserControl
     {
-        public Collocations()
+        public Vocabularies()
         {
             InitializeComponent();
 
-            QuestControl.LoadCrossData(Model.Col);
+            QuestControl.LoadCrossData(Model.Voc);
 
             BuildHeader();
         }
 
         private void BuildHeader()
         {
-            var wpf = new ColWpfHeader();
+            var wpf = new VocWpfHeader();
 
             var stk_insert = MyStacks.GetHeaderInsertFilter(wpf.Stk_insert, 0, 0, userControlGrid);
             wpf.Stk_items = stk_insert;
@@ -31,7 +31,7 @@ namespace AussieCake.Question
             MyTxts.Bulk_Insert(wpf.Txt_bulk_insert, wpf.Grid_bulk_insert);
             var bulk_imp = MyCbBxs.Importance(wpf.Cob_bulk_imp, 0, 1, wpf.Grid_bulk_insert, Importance.Just_to_be, false);
             bulk_imp.Height = 28;
-            MyBtns.Insert_Bulk_Col(wpf.Grid_bulk_insert, wpf);
+            MyBtns.Insert_Bulk(wpf.Grid_bulk_insert, wpf);
             MyBtns.Bulk_back(wpf.Grid_bulk_insert, wpf);
 
             var stk_items = MyStacks.GetListItems(1, 0, userControlGrid);
@@ -47,7 +47,7 @@ namespace AussieCake.Question
             grid_filter.Margin = new Thickness(2, 0, 2, 0);
             wpf.Stk_items = stk_items;
 
-            var filter = new ColFilter();
+            var filter = new VocFilter();
 
             MyLbls.Header(wpf.Lbl_words, 0, 0, grid_insert, SortLbl.Words, wpf.Txt_words, filter, stk_items);
             MyLbls.Header(wpf.Lbl_answer, 0, 1, grid_insert, SortLbl.Answer, wpf.Txt_answer, filter, stk_items);

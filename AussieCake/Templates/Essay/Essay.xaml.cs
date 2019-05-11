@@ -16,6 +16,8 @@ namespace AussieCake.Templates
     {
         List<CellTemplate> CellList;
 
+        double percentageTxt = 100;
+
         public Essay()
         {
             InitializeComponent();
@@ -57,7 +59,10 @@ namespace AussieCake.Templates
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
-            var percentageTxt = 100 - slider.Value;
+            if (cb_33.IsChecked.Value)
+                percentageTxt = 33;
+            else
+                percentageTxt = 100 - slider.Value;
 
             CellList = TemplateWPF.BuildTemplate(TemplateEssay.Words, percentageTxt, StkTemplate);
             //HighlightEssayType();
@@ -66,30 +71,51 @@ namespace AussieCake.Templates
             lblScore.Visibility = Visibility.Hidden;
         }
 
+        private void Cb_33_Click(object sender, RoutedEventArgs e)
+        {
+            if (Convert.ToBoolean(((CheckBox)sender).IsChecked.Value) == true)
+            {
+                slider.IsEnabled = false;
+                btnStart.Content = "Start 33%";
+            }
+            else
+            {
+                slider.IsEnabled = true;
+                percentageTxt = 100;
+                btnStart.Content = "Start " + slider.Value + "%";
+            }
+
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            btnStart.Content = "Start 33%";
+        }
+
         //private void HighlightEssayType()
         //{
         //    foreach (var quest in CellList)
         //    {
         //        if (TemplateEssay.ProblemSolutionExclusives.Any(x => x == quest.Quest.Id))
         //        {
-        //            var colour = Brushes.LightSkyBlue;
-        //            quest.Lbl.Background = colour;
+        //            var Vocour = Brushes.LightSkyBlue;
+        //            quest.Lbl.Background = Vocour;
         //            if (quest.Txt != null)
-        //                quest.Txt.Background = colour;
+        //                quest.Txt.Background = Vocour;
         //        }
         //        else if (TemplateEssay.OneTwoTopicsExclusives.Any(x => x == quest.Quest.Id))
         //        {
-        //            var colour = Brushes.Moccasin;
-        //            quest.Lbl.Background = colour;
+        //            var Vocour = Brushes.Moccasin;
+        //            quest.Lbl.Background = Vocour;
         //            if (quest.Txt != null)
-        //                quest.Txt.Background = colour;
+        //                quest.Txt.Background = Vocour;
         //        }
         //        else if (TemplateEssay.GeneralOptionalExclusives.Any(x => x == quest.Quest.Id))
         //        {
-        //            var colour = Brushes.Silver;
-        //            quest.Lbl.Background = colour;
+        //            var Vocour = Brushes.Silver;
+        //            quest.Lbl.Background = Vocour;
         //            if (quest.Txt != null)
-        //                quest.Txt.Background = colour;
+        //                quest.Txt.Background = Vocour;
         //        }
         //    }
         //}

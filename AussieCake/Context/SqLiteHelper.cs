@@ -18,12 +18,15 @@ namespace AussieCake.Context
 
         private static readonly string Null = "NULL";
 
-        protected static List<ColVM> Collocations { get; private set; }
-        protected static List<AttemptVM> CollocationAttempts { get; private set; }
+        protected static List<VocVM> Vocabularies { get; private set; }
+        protected static List<AttemptVM> VocabularyAttempts { get; private set; }
         protected static List<VerbModel> Verbs { get; private set; }
         protected static List<AttemptVM> EssayAttempts { get; private set; }
         protected static List<AttemptVM> SumRetellAttempts { get; private set; }
         protected static List<AttemptVM> DescImgAttempts { get; private set; }
+        protected static List<PronVM> Pronunciations { get; private set; }
+        protected static List<SpellVM> Spellings { get; private set; }
+        protected static List<AttemptVM> SpellingAttempts { get; private set; }
 
         public static void InitializeDB()
         {
@@ -33,24 +36,24 @@ namespace AussieCake.Context
 
         #region GetDB
 
-        protected static void GetCollocationsDB()
+        protected static void GetVocabulariesDB()
         {
-            var dataset = GetTable(Model.Col);
+            var dataset = GetTable(Model.Voc);
 
-            Collocations = new List<ColVM>();
+            Vocabularies = new List<VocVM>();
 
             var tables = dataset.Tables[0];
             var enumerable = tables.AsEnumerable();
-            var selected = enumerable.Select(GetDatarowCollocations());
+            var selected = enumerable.Select(GetDatarowVocabulary());
 
             foreach (var model in selected)
-                Collocations.Add(model.ToVM());
+                Vocabularies.Add(model.ToVM());
         }
 
-        protected static void GetColAttemptsDB()
+        protected static void GetVocAttemptsDB()
         {
-            var dataset = GetTable(GetDBAttemptName(Model.Col));
-            CollocationAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.Col)).ToList();
+            var dataset = GetTable(GetDBAttemptName(Model.Voc));
+            VocabularyAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.Voc)).ToList();
         }
 
         protected static void GetEssayAttemptsDB()
@@ -71,6 +74,40 @@ namespace AussieCake.Context
             DescImgAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.DescImg)).ToList();
         }
 
+        protected static void GetPronunciationsDB()
+        {
+            var dataset = GetTable(Model.Pron);
+
+            Pronunciations = new List<PronVM>();
+
+            var tables = dataset.Tables[0];
+            var enumerable = tables.AsEnumerable();
+            var selected = enumerable.Select(GetDatarowPronunciation());
+
+            foreach (var model in selected)
+                Pronunciations.Add(model.ToVM());
+        }
+
+        protected static void GetSpellingsDB()
+        {
+            var dataset = GetTable(Model.Spell);
+
+            Spellings = new List<SpellVM>();
+
+            var tables = dataset.Tables[0];
+            var enumerable = tables.AsEnumerable();
+            var selected = enumerable.Select(GetDatarowSpelling());
+
+            foreach (var model in selected)
+                Spellings.Add(model.ToVM());
+        }
+
+        protected static void GetSpellAttemptsDB()
+        {
+            var dataset = GetTable(GetDBAttemptName(Model.Spell));
+            SpellingAttempts = dataset.Tables[0].AsEnumerable().Select(GetDatarowAttempts(Model.Spell)).ToList();
+        }
+
         protected static void GetVerbsDB()
         {
             var dataset = GetTable(Model.Verb);
@@ -80,20 +117,61 @@ namespace AussieCake.Context
 
         #endregion
 
+        #region Get
+
+        protected static List<string> GetSentenceWhichContains(List<string> whichContains)
+        {
+            return GetFromDB(Model.Sen.ToDesc(), "Text", whichContains);
+        }
+
+        #endregion
+
         #region Inserts
 
-        protected static bool InsertCollocation(ColModel col)
+        protected static bool InsertVocabulary(VocModel Voc)
         {
             string query = string.Format(InsertSQL + "'{1}', '{2}', {3}, '{4}', '{5}', {6})",
-                                        Model.Col.ToDesc(),
-                                        col.Text, col.Answer,
-                                        Null, Null, col.Importance, col.IsActive);
+                                        Model.Voc.ToDesc(),
+                                        Voc.Text, Voc.Answer,
+                                        Null, Null, Voc.Importance, Voc.IsActive);
             if (!SendQuery(query))
                 return false;
 
-            var inserted = GetLast(Model.Col.ToDesc());
-            Collocations.Add(inserted.Tables[0].AsEnumerable().
-                                Select(GetDatarowCollocations()).First().ToVM());
+            var inserted = GetLast(Model.Voc.ToDesc());
+            Vocabularies.Add(inserted.Tables[0].AsEnumerable().
+                                Select(GetDatarowVocabulary()).First().ToVM());
+
+            return true;
+        }
+
+        protected static bool InsertPronunciation(PronModel Pron)
+        {
+            string query = string.Format(InsertSQL + "'{1}', '{2}', {3}, '{4}')",
+                                        Model.Pron.ToDesc(),
+                                        Pron.Text, Pron.Phonemes,
+                                        Pron.Importance, Pron.IsActive);
+            if (!SendQuery(query))
+                return false;
+
+            var inserted = GetLast(Model.Pron.ToDesc());
+            Pronunciations.Add(inserted.Tables[0].AsEnumerable().
+                                Select(GetDatarowPronunciation()).First().ToVM());
+
+            return true;
+        }
+
+        protected static bool InsertSpelling(SpellModel Spell)
+        {
+            string query = string.Format(InsertSQL + "'{1}', '{2}', {3})",
+                                        Model.Spell.ToDesc(),
+                                        Spell.Text, 
+                                        Spell.Importance, Spell.IsActive);
+            if (!SendQuery(query))
+                return false;
+
+            var inserted = GetLast(Model.Spell.ToDesc());
+            Spellings.Add(inserted.Tables[0].AsEnumerable().
+                                Select(GetDatarowSpelling()).First().ToVM());
 
             return true;
         }
@@ -108,12 +186,12 @@ namespace AussieCake.Context
 
             var inserted = GetLast(GetDBAttemptName(att.Type));
 
-            if (att.Type == Model.Col)
+            if (att.Type == Model.Voc)
             {
-                if (CollocationAttempts == null)
-                    CollocationAttempts = new List<AttemptVM>();
+                if (VocabularyAttempts == null)
+                    VocabularyAttempts = new List<AttemptVM>();
 
-                CollocationAttempts.Add(inserted.Tables[0].AsEnumerable().
+                VocabularyAttempts.Add(inserted.Tables[0].AsEnumerable().
                                         Select(GetDatarowAttempts(att.Type)).First());
             }
             else if (att.Type == Model.Essay)
@@ -140,6 +218,14 @@ namespace AussieCake.Context
                 DescImgAttempts.Add(inserted.Tables[0].AsEnumerable().
                                         Select(GetDatarowAttempts(att.Type)).First());
             }
+            if (att.Type == Model.Spell)
+            {
+                if (SpellingAttempts == null)
+                    SpellingAttempts = new List<AttemptVM>();
+
+                SpellingAttempts.Add(inserted.Tables[0].AsEnumerable().
+                                        Select(GetDatarowAttempts(att.Type)).First());
+            }
 
             return true;
         }
@@ -163,21 +249,23 @@ namespace AussieCake.Context
 
         #region Updates
 
-        protected static bool UpdateCollocation(ColModel col)
+        protected static bool UpdateVocabulary(VocModel Voc)
         {
-            var oldCol = Collocations.First(c => c.Id == col.Id).ToModel();
+            var oldVoc = Vocabularies.First(c => c.Id == Voc.Id).ToModel();
             int field = 0;
-            string columnsToUpdate = string.Empty;
+            string ColumnsToUpdate = string.Empty;
 
-            CheckFieldUpdate("Words", col.Text, oldCol.Text, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("Answer", col.Answer, oldCol.Answer, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("Words", Voc.Text, oldVoc.Text, ref field, ref ColumnsToUpdate);
+            CheckFieldUpdate("Answer", Voc.Answer, oldVoc.Answer, ref field, ref ColumnsToUpdate);
+            CheckFieldUpdate("Definition", Voc.Definition, oldVoc.Definition, ref field, ref ColumnsToUpdate);
+            CheckFieldUpdate("PtBr", Voc.PtBr, oldVoc.PtBr, ref field, ref ColumnsToUpdate);
 
-            CheckQuestionChanges(col, oldCol, ref field, ref columnsToUpdate);
+            CheckQuestionChanges(Voc, oldVoc, ref field, ref ColumnsToUpdate);
 
-            if (columnsToUpdate.IsEmpty())
-                return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, columnsToUpdate);
+            if (ColumnsToUpdate.IsEmpty())
+                return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, ColumnsToUpdate);
 
-            string query = string.Format(UpdateSQL, Model.Col.ToDesc(), columnsToUpdate, col.Id);
+            string query = string.Format(UpdateSQL, Model.Voc.ToDesc(), ColumnsToUpdate, Voc.Id);
 
             if (!SendQuery(query))
                 return false;
@@ -185,38 +273,98 @@ namespace AussieCake.Context
             return true;
         }
 
-        private static void CheckFieldUpdate(string fieldName, object newValue, object oldValue, ref int field, ref string columnsToUpdate)
+        protected static bool UpdatePronunciation(PronModel Pron)
+        {
+            var oldPron = Pronunciations.First(c => c.Id == Pron.Id).ToModel();
+            int field = 0;
+            string ColumnsToUpdate = string.Empty;
+
+            CheckFieldUpdate("Words", Pron.Text, oldPron.Text, ref field, ref ColumnsToUpdate);
+            CheckFieldUpdate("Phonemes", Pron.Phonemes, oldPron.Phonemes, ref field, ref ColumnsToUpdate);
+
+            CheckQuestionChanges(Pron, oldPron, ref field, ref ColumnsToUpdate);
+
+            if (ColumnsToUpdate.IsEmpty())
+                return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, ColumnsToUpdate);
+
+            string query = string.Format(UpdateSQL, Model.Pron.ToDesc(), ColumnsToUpdate, Pron.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            return true;
+        }
+
+        protected static bool UpdateSpelling(SpellModel spell)
+        {
+            var oldSpell = Spellings.First(c => c.Id == spell.Id).ToModel();
+            int field = 0;
+            string ColumnsToUpdate = string.Empty;
+
+            CheckFieldUpdate("Words", spell.Text, oldSpell.Text, ref field, ref ColumnsToUpdate);
+
+            CheckQuestionChanges(spell, oldSpell, ref field, ref ColumnsToUpdate);
+
+            if (ColumnsToUpdate.IsEmpty())
+                return Errors.ThrowErrorMsg(ErrorType.NullOrEmpty, ColumnsToUpdate);
+
+            string query = string.Format(UpdateSQL, Model.Spell.ToDesc(), ColumnsToUpdate, spell.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            return true;
+        }
+
+        private static void CheckFieldUpdate(string fieldName, object newValue, object oldValue, ref int field, ref string ColumnsToUpdate)
         {
             if (newValue != oldValue)
             {
                 var ToInt = newValue is bool || newValue is Int16;
-                columnsToUpdate += field > 0 ? ", " : string.Empty;
-                columnsToUpdate += fieldName + " = " + "'" + (ToInt ? Convert.ToInt16(newValue) : newValue) + "'";
+                ColumnsToUpdate += field > 0 ? ", " : string.Empty;
+                ColumnsToUpdate += fieldName + " = " + "'" + (ToInt ? Convert.ToInt16(newValue) : newValue) + "'";
 
                 field++;
             }
         }
 
-        private static void CheckQuestionChanges(QuestionModel quest, QuestionModel oldQuest, ref int field, ref string columnsToUpdate)
+        private static void CheckQuestionChanges(QuestionModel quest, QuestionModel oldQuest, ref int field, ref string ColumnsToUpdate)
         {
-            CheckFieldUpdate("Definition", quest.Definition, oldQuest.Definition, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("PtBr", quest.PtBr, oldQuest.PtBr, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("Importance", quest.Importance, oldQuest.Importance, ref field, ref columnsToUpdate);
-            CheckFieldUpdate("IsActive", quest.IsActive, oldQuest.IsActive, ref field, ref columnsToUpdate);
+            CheckFieldUpdate("Importance", quest.Importance, oldQuest.Importance, ref field, ref ColumnsToUpdate);
+            CheckFieldUpdate("IsActive", quest.IsActive, oldQuest.IsActive, ref field, ref ColumnsToUpdate);
         }
 
         #endregion
 
         #region Private Members
 
-        private static Func<DataRow, ColModel> GetDatarowCollocations()
+        private static Func<DataRow, VocModel> GetDatarowVocabulary()
         {
-            return dataRow => new ColModel(
+            return dataRow => new VocModel(
                                 Convert.ToInt16(dataRow.Field<Int64>("Id")),
                                 dataRow.Field<string>("Words"),
                                 dataRow.Field<string>("Answer"),
                                 dataRow.Field<string>("PtBr"),
                                 dataRow.Field<string>("Definition"),
+                                Convert.ToInt16(dataRow.Field<Int64>("Importance")),
+                                Convert.ToInt16(dataRow.Field<Int64>("IsActive")));
+        }
+
+        private static Func<DataRow, PronModel> GetDatarowPronunciation()
+        {
+            return dataRow => new PronModel(
+                                Convert.ToInt16(dataRow.Field<Int64>("Id")),
+                                dataRow.Field<string>("Words"),
+                                dataRow.Field<string>("Phonemes"),
+                                Convert.ToInt16(dataRow.Field<Int64>("Importance")),
+                                Convert.ToInt16(dataRow.Field<Int64>("IsActive")));
+        }
+
+        private static Func<DataRow, SpellModel> GetDatarowSpelling()
+        {
+            return dataRow => new SpellModel(
+                                Convert.ToInt16(dataRow.Field<Int64>("Id")),
+                                dataRow.Field<string>("Words"),
                                 Convert.ToInt16(dataRow.Field<Int64>("Importance")),
                                 Convert.ToInt16(dataRow.Field<Int64>("IsActive")));
         }
@@ -247,14 +395,38 @@ namespace AussieCake.Context
 
         #region Removes
 
-        protected static bool RemoveCollocation(ColVM col)
+        protected static bool RemoveVocabulary(VocVM Voc)
         {
-            string query = string.Format(RemoveSQL, Model.Col.ToDesc(), col.Id);
+            string query = string.Format(RemoveSQL, Model.Voc.ToDesc(), Voc.Id);
 
             if (!SendQuery(query))
                 return false;
 
-            Collocations.Remove(col);
+            Vocabularies.Remove(Voc);
+
+            return true;
+        }
+
+        protected static bool RemovePronunciation(PronVM Pron)
+        {
+            string query = string.Format(RemoveSQL, Model.Pron.ToDesc(), Pron.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            Pronunciations.Remove(Pron);
+
+            return true;
+        }
+
+        protected static bool RemoveSpelling(SpellVM Spell)
+        {
+            string query = string.Format(RemoveSQL, Model.Spell.ToDesc(), Spell.Id);
+
+            if (!SendQuery(query))
+                return false;
+
+            Spellings.Remove(Spell);
 
             return true;
         }
@@ -266,7 +438,10 @@ namespace AussieCake.Context
             if (!SendQuery(query))
                 return false;
 
-            CollocationAttempts.Remove(att);
+            if (att.Type == Model.Voc)
+                VocabularyAttempts.Remove(att);
+            else if (att.Type == Model.Spell)
+                SpellingAttempts.Remove(att);
 
             return true;
         }
@@ -275,7 +450,7 @@ namespace AussieCake.Context
 
         private static bool CreateIfEmptyDB()
         {
-            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Collocation' " +
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Vocabulary' " +
                 "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                 "'Words' TEXT NOT NULL, " +
                 "'Answer' TEXT NOT NULL, " +
@@ -285,12 +460,35 @@ namespace AussieCake.Context
                 "'IsActive' INTEGER NOT NULL )"))
                 return false;
 
-            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'CollocationAttempt' " +
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'VocabularyAttempt' " +
                 "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-                "'IdCollocation' INTEGER NOT NULL, " +
+                "'IdVocabulary' INTEGER NOT NULL, " +
                 "'Score' INTEGER NOT NULL, " +
                 "'When' TEXT NOT NULL, " +
-                "FOREIGN KEY(`IdCollocation`) REFERENCES `Collocation`(`Id`) )"))
+                "FOREIGN KEY(`IdVocabulary`) REFERENCES `Vocabulary`(`Id`) )"))
+                return false;
+
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Pronunciation' " +
+                "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "'Words' TEXT NOT NULL, " +
+                "'Phonemes' TEXT NOT NULL, " +
+                "'Importance' INTEGER NOT NULL, " +
+                "'IsActive' INTEGER NOT NULL )"))
+                return false;
+
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'Spelling' " +
+                "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "'Words' TEXT NOT NULL, " +
+                "'Importance' INTEGER NOT NULL, " +
+                "'IsActive' INTEGER NOT NULL )"))
+                return false;
+
+            if (!SendQuery("CREATE TABLE IF NOT EXISTS 'SpellingAttempt' " +
+                "( 'Id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "'IdSpelling' INTEGER NOT NULL, " +
+                "'Score' INTEGER NOT NULL, " +
+                "'When' TEXT NOT NULL, " +
+                "FOREIGN KEY(`IdSpelling`) REFERENCES `Spelling`(`Id`) )"))
                 return false;
 
             if (!SendQuery(GetCreatingQueryForTemplate(Model.Essay)))
@@ -312,7 +510,7 @@ namespace AussieCake.Context
                 return false;
 
             InsertStaticValuesIfEmpty(Model.Verb, CakePaths.ScriptVerbs);
-            InsertStaticValuesIfEmpty(Model.Col, CakePaths.ScriptCollocations);
+            InsertStaticValuesIfEmpty(Model.Voc, CakePaths.ScriptVocabulary);
 
             return true;
         }

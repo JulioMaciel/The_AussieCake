@@ -24,15 +24,15 @@ namespace AussieCake.Context
 			}
 		}
 
-        // Collocations script é fixo e não tem insert, pq são do pdf do PTE
+        // Vocabulary script é fixo e não tem insert, pq são do pdf do PTE
         // ou seja, sempre que quiser add algo nos scripts que não seja Verb, 
         // faz manualmente, direto no arquivo
 
         public static string GetStringFromScriptFile(string scriptPath)
         {
-            var col_lines = File.ReadAllLines(scriptPath);
-            var col_joined = String.Join(Environment.NewLine, col_lines);
-            return col_joined;
+            var Voc_lines = File.ReadAllLines(scriptPath);
+            var Voc_joined = String.Join(Environment.NewLine, Voc_lines);
+            return Voc_joined;
         }
     }
 }

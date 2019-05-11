@@ -2,12 +2,12 @@
 
 namespace AussieCake.Question
 {
-    public class ColWpfItem : QuestWpfItem
+    public class SpellWpfItem : QuestWpfItem
     {
         public TextBox Words { get; set; }
         public TextBox Answer { get; set; }
 
-        public ColWpfItem()
+        public SpellWpfItem()
         {
             Words = new TextBox();
             Answer = new TextBox();

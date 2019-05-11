@@ -62,15 +62,15 @@ namespace AussieCake.Sentence
         {
             //RemoveSentence(sentence);
 
-            var qs_from_sentence = QuestSenControl_Deprecated.Get(Model.Col).Where(x => x.IdSen == sentence.Id).ToList();
+            var qs_from_sentence = QuestSenControl_Deprecated.Get(Model.Voc).Where(x => x.IdSen == sentence.Id).ToList();
 
             if (qs_from_sentence.Any())
             {
                 foreach (var qs in qs_from_sentence)
                 {
                     QuestSenControl_Deprecated.Remove(qs);
-                    var changedCol = QuestControl.Get(Model.Col).Where(y => y.Id == qs.IdQuest).First();
-                    changedCol.LoadCrossData();
+                    var changedVoc = QuestControl.Get(Model.Voc).Where(y => y.Id == qs.IdQuest).First();
+                    changedVoc.LoadCrossData();
                 }
             }
         }
@@ -98,25 +98,25 @@ namespace AussieCake.Sentence
                     Remove(sen);
             }
 
-            CheckCols(ref updated_questions);
+            CheckVocs(ref updated_questions);
 
             if (updated_questions >= 1)
                 MessageBox.Show(updated_questions + " questions were updated.");
         }
 
-        private static void CheckCols(ref int updated_questions)
+        private static void CheckVocs(ref int updated_questions)
         {
-            var cols = QuestControl.Get(Model.Col).ToList();
-            foreach (ColVM col in cols)
+            var Vocs = QuestControl.Get(Model.Voc).ToList();
+            foreach (VocVM Voc in Vocs)
             {
                 foreach (var sen in Get())
                 {
-                    //if (AutoGetSentences_Deprecated.DoesSenContainsCol(col, sen.Text))
+                    //if (AutoGetSentences_Deprecated.DoesSenContainsVoc(Voc, sen.Text))
                     //{
-                    //    QuestSenControl_Deprecated.Insert(new QuestSenVM_Deprecated(col.Id, sen.Id, col.Type));
-                    //    col.LoadCrossData();
-                    //    col.Sentences_off.Add(sen);
-                    //    QuestControl.Update(col);
+                    //    QuestSenControl_Deprecated.Insert(new QuestSenVM_Deprecated(Voc.Id, sen.Id, Voc.Type));
+                    //    Voc.LoadCrossData();
+                    //    Voc.Sentences_off.Add(sen);
+                    //    QuestControl.Update(Voc);
                     //    updated_questions++;
                     //}
                 }

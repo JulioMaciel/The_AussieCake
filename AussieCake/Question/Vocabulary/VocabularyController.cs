@@ -7,55 +7,55 @@ using System.Linq;
 
 namespace AussieCake.Question
 {
-    public class ColControl : SqLiteHelper
+    public class VocControl : QuestControl
     {
-        protected static bool Insert(ColVM collocation)
+        public static bool Insert(VocVM Vocabulary)
 		{
-            if (Collocations.Any(s => s.Text == collocation.Text))
+            if (Vocabularies.Any(s => s.Text == Vocabulary.Text))
             {
-                var old_col = Collocations.First(s => s.Text == collocation.Text);
-                var old_score = ScoreHelper.GetScoreFromImportance(old_col.Importance);
-                var new_score = ScoreHelper.GetScoreFromImportance(collocation.Importance);
+                var old_Voc = Vocabularies.First(s => s.Text == Vocabulary.Text);
+                var old_score = ScoreHelper.GetScoreFromImportance(old_Voc.Importance);
+                var new_score = ScoreHelper.GetScoreFromImportance(Vocabulary.Importance);
 
                 if (new_score > old_score)
                 {
-                    var to_update = new ColVM(old_col.Id, old_col.Text, old_col.Answer, old_col.Definition, 
-                                              old_col.PtBr, collocation.Importance, old_col.IsActive);
+                    var to_update = new VocVM(old_Voc.Id, old_Voc.Text, old_Voc.Answer, old_Voc.Definition, 
+                                              old_Voc.PtBr, Vocabulary.Importance, old_Voc.IsActive);
                     return Update(to_update);
                 }
                 else
-                return Errors.ThrowErrorMsg(ErrorType.AlreadyInserted, collocation.Text);
+                return Errors.ThrowErrorMsg(ErrorType.AlreadyInserted, Vocabulary.Text);
             }
 
-            if (!ValidWordsAndAnswerSize(collocation.Text, collocation.Answer))
+            if (!ValidWordsAndAnswerSize(Vocabulary.Text, Vocabulary.Answer))
                 return false;
 
-            if (!InsertCollocation(collocation.ToModel()))
+            if (!InsertVocabulary(Vocabulary.ToModel()))
                 return false;
 
-            collocation.LoadCrossData();
+            Vocabulary.LoadCrossData();
 
             return true;
 		}
 
-        protected static bool Update(ColVM collocation)
+        public static bool Update(VocVM Vocabulary)
 		{
-            if (!ValidWordsAndAnswerSize(collocation.Text, collocation.Answer))
+            if (!ValidWordsAndAnswerSize(Vocabulary.Text, Vocabulary.Answer))
                 return false;
 
-            if (!UpdateCollocation(collocation.ToModel()))
+            if (!UpdateVocabulary(Vocabulary.ToModel()))
                 return false;
 
 
-			var oldVM = Collocations.FindIndex(x => x.Id == collocation.Id);
-            Collocations.Insert(oldVM, collocation);
+			var oldVM = Vocabularies.FindIndex(x => x.Id == Vocabulary.Id);
+            Vocabularies.Insert(oldVM, Vocabulary);
 
             return true;
 		}
 
-        protected static bool Remove(ColVM collocation)
+        public static bool Remove(VocVM Vocabulary)
 		{
-            if (!RemoveCollocation(collocation))
+            if (!RemoveVocabulary(Vocabulary))
                 return false;
 
             return true;

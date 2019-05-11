@@ -2,19 +2,16 @@
 using AussieCake.Util;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace AussieCake.Question
 {
-    public abstract class QuestVM : IQuest
+    public class QuestVM : IQuest
     {
         public int Id { get; protected set; }
 
         public bool IsActive { get; protected set; }
         public string Text { get; protected set; }
-        public string PtBr { get; protected set; }
-        public string Definition { get; protected set; }
         public Importance Importance { get; protected set; }
 
         public Model Type { get; protected set; }
@@ -34,28 +31,32 @@ namespace AussieCake.Question
 
         protected bool IsReal { get; set; } = false;
 
-        protected QuestVM(int id, string text, string definition, string ptBr, Importance importance, bool isActive, Model type)
-            : this(text, definition, ptBr, importance, isActive, type)
+        protected QuestVM(int id, string text, Importance importance, bool isActive, Model type)
+            : this(text, importance, isActive, type)
         {
             Id = id;
 
             IsReal = true;
         }
 
-        protected QuestVM(string text, string definition, string ptBr, Importance importance, bool isActive, Model type)
+        protected QuestVM(string text, Importance importance, bool isActive, Model type)
         {
             Text = text;
-            Definition = definition;
-            PtBr = ptBr;
             Importance = importance;
             IsActive = isActive;
 
             Type = type;
         }
 
+        public QuestVM()
+        {
+        }
+
         public virtual void LoadCrossData()
         {
-            LoadTries();
+            if (Type != Model.Pron)
+                LoadTries();
+
             LoadChanceToAppear();
         }
 
@@ -94,18 +95,11 @@ namespace AussieCake.Question
 
         private void GetAttempts()
         {
-            //var attempts = AttemptsControl.Get(Type).Where(x => x.IdQuestion == Id);
-            //debuging
             var att = AttemptsControl.Get(Type);
-            Console.WriteLine("att: " + att.Count());
             var attempts = att.Where(x => x.IdQuestion == Id);
-            Console.WriteLine("attemps: " + attempts.Count());
-
 
             foreach (var item in attempts)
                 Tries.Add(new DateTry(item.Score, item.When));
-
-            Console.WriteLine("Tries: " + Tries.Count());
         }
 
         public void RemoveAllAttempts()
@@ -140,7 +134,7 @@ namespace AussieCake.Question
                 inv_avg -= ((40 * Avg_all) / 100);
 
             // peso 1
-            var lastWasWrong = Tries.Any() ? (LastTry.Score == 100 ? 0 : 10) : 10;
+            var lastWasWrong = Tries != null && Tries.Any() ? (LastTry.Score == 100 ? 0 : 10) : 10;
 
             // peso 3
             var imp_score = ScoreHelper.GetScoreFromImportance(Importance) * 3;
@@ -158,9 +152,34 @@ namespace AussieCake.Question
             return string.Empty;
         }
 
-        public virtual string ToLudwigUrl()
+        public string ToLudwigUrl()
         {
-            return string.Empty;
+            var original = "https://ludwig.guru/s/";
+
+            if (Text.Contains(' '))
+            {
+                var words = Text.Split(' ');
+                original += string.Join("+", words);
+            }
+            else
+            {
+                original += Text;
+            }
+
+            return original;
+        }
+
+        public string ToBritannicaUrl()
+        {
+            if (Text.Contains(' '))
+                return string.Empty;
+
+            return "https://www.britannica.com/search?query=" + Text;
+        }
+
+        public List<string> GetSentences()
+        {
+            return QuestControl.GetSentences(this);
         }
     }
 

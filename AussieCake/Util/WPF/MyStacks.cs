@@ -18,9 +18,9 @@ namespace AussieCake.Util.WPF
         {
             var stack = new StackPanel();
             stack.Margin = new Thickness(0, 2, 2, 2);
-            stack.Background = UtilWPF.GetColourLine(false, isGridUpdate);
-            stack.MouseEnter += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetColourLine(true, isGridUpdate));
-            stack.MouseLeave += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetColourLine(false, isGridUpdate));
+            stack.Background = UtilWPF.GetVocourLine(false, isGridUpdate);
+            stack.MouseEnter += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetVocourLine(true, isGridUpdate));
+            stack.MouseLeave += new MouseEventHandler((source, e) => stack.Background = UtilWPF.GetVocourLine(false, isGridUpdate));
 
             if (isGridUpdate)
                 parent.Children.Insert(0, stack);
@@ -30,21 +30,21 @@ namespace AussieCake.Util.WPF
             return stack;
         }
 
-        public static StackPanel GetHeaderInsertFilter(StackPanel stk, int row, int column, Grid parent)
+        public static StackPanel GetHeaderInsertFilter(StackPanel stk, int row, int Column, Grid parent)
         {
-            stk.Background = UtilWPF.Colour_header;
-            UtilWPF.SetGridPosition(stk, row, column, parent);
+            stk.Background = UtilWPF.Vocour_header;
+            UtilWPF.SetGridPosition(stk, row, Column, parent);
 
             return stk;
         }
 
-        public static StackPanel GetListItems(int row, int column, Grid parent)
+        public static StackPanel GetListItems(int row, int Column, Grid parent)
         {
             var stk = new StackPanel();
-            //stk.Background = UtilWPF.Colour_row_off;
+            //stk.Background = UtilWPF.Vocour_row_off;
             var viewer = new ScrollViewer();
             viewer.Content = stk;
-            UtilWPF.SetGridPosition(viewer, row, column, parent);
+            UtilWPF.SetGridPosition(viewer, row, Column, parent);
 
             return stk;
         }
@@ -55,9 +55,9 @@ namespace AussieCake.Util.WPF
             stack_type.Orientation = Orientation.Horizontal;
             stack_type.Visibility = Visibility.Collapsed;
             parent.Children.Add(stack_type);
-            var lbl_col = new Label();
-            lbl_col.Content = type.ToDesc() + "s:";
-            stack_type.Children.Add(lbl_col);
+            var lbl_Voc = new Label();
+            lbl_Voc.Content = type.ToDesc() + "s:";
+            stack_type.Children.Add(lbl_Voc);
 
             return stack_type;
         }
@@ -74,10 +74,10 @@ namespace AussieCake.Util.WPF
             return Get(new StackPanel(), parent);
         }
 
-        public static StackPanel Get(StackPanel reference, int row, int column, Grid parent)
+        public static StackPanel Get(StackPanel reference, int row, int Column, Grid parent)
         {
             reference.Orientation = Orientation.Horizontal;
-            UtilWPF.SetGridPosition(reference, row, column, parent);
+            UtilWPF.SetGridPosition(reference, row, Column, parent);
 
             return reference;
         }

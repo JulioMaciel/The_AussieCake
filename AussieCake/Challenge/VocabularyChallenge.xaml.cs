@@ -8,20 +8,20 @@ using System.Windows.Controls;
 namespace AussieCake.Challenge
 {
     /// <summary>
-    /// Interaction logic for CollocationChallenge.xaml
+    /// Interaction logic for VocabularyChallenge.xaml
     /// </summary>
-    public partial class ColChallenge : UserControl
+    public partial class VocChallenge : UserControl
     {
         List<ChalLine> lines = new List<ChalLine>(4);
         Microsoft.Office.Interop.Word.Application WordApp;
 
-        public ColChallenge()
+        public VocChallenge()
         {
             InitializeComponent();
 
             LoadRequirements();
 
-            ChalWPFControl.PopulateRows(userControlGrid, Model.Col, lines, WordApp);
+            ChalWPFControl.PopulateRows(userControlGrid, Model.Voc, lines, WordApp);
 
             CreateFrame();
         }
@@ -29,7 +29,7 @@ namespace AussieCake.Challenge
         private void LoadRequirements()
         {
             WordApp = new Microsoft.Office.Interop.Word.Application();
-            QuestControl.LoadCrossData(Model.Col);
+            QuestControl.LoadCrossData(Model.Voc);
         }
 
         private void CreateFrame()
@@ -43,7 +43,7 @@ namespace AussieCake.Challenge
             MyBtns.Chal_verify(btn_verify, stk_btns, btn_next);
             btn_verify.Click += (source, e) => lines.ForEach(x => ChalWPFControl.Verify(x, btn_verify, btn_next));
 
-            MyBtns.Chal_next(btn_next, stk_btns, btn_verify, userControlGrid, lines, Model.Col, WordApp);
+            MyBtns.Chal_next(btn_next, stk_btns, btn_verify, userControlGrid, lines, Model.Voc, WordApp);
         }
 
 

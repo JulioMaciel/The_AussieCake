@@ -36,11 +36,11 @@ namespace AussieCake.Sentence
         {
             Questions = new List<SenQuest>();
 
-            foreach (var qs in QuestSenControl_Deprecated.Get(Model.Col))
+            foreach (var qs in QuestSenControl_Deprecated.Get(Model.Voc))
             {
                 if (qs.IdSen == Id)
                 {
-                    var quest = QuestControl.Get(Model.Col).First(x => x.Id == qs.IdQuest);
+                    var quest = QuestControl.Get(Model.Voc).First(x => x.Id == qs.IdQuest);
                     var sq = new SenQuest(quest, qs.Id);
 
                     if (!Questions.Any(x => x.QS_id == qs.Id))

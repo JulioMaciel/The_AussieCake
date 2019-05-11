@@ -12,7 +12,7 @@ namespace AussieCake.Util.WPF
 {
     public static class MyLbls
     {
-        public static Label AvgScore(Label reference, int row, int column, Grid parent, IQuest quest, int duration, bool useColours = true)
+        public static Label AvgScore(Label reference, int row, int Column, Grid parent, IQuest quest, int duration, bool useColours = true)
         {
             var isWeek = duration <= 7;
             var isMonth = duration <= 30;
@@ -20,7 +20,7 @@ namespace AussieCake.Util.WPF
             var avg = isWeek ? quest.Avg_week : (isMonth ? quest.Avg_month : quest.Avg_all);
             var content = avg + "% " + (isWeek ? "(w)" : isMonth ? "(m)" : ""); 
 
-            var lbl = Get(reference, row, column, parent, content);
+            var lbl = Get(reference, row, Column, parent, content);
 
             if (useColours)
                 lbl.Foreground = UtilWPF.GetAvgColor(avg);
@@ -30,14 +30,14 @@ namespace AussieCake.Util.WPF
             return lbl;
         }
 
-        public static Label Tries(Label reference, int row, int column, Grid parent, IQuest quest)
+        public static Label Tries(Label reference, int row, int Column, Grid parent, IQuest quest)
         {
             var content = quest.Tries.Count > 0 ? quest.Tries.Count + " tries" : "New";
 
-            return Get(reference, row, column, parent, content);
+            return Get(reference, row, Column, parent, content);
         }
 
-        public static Label LastTry(Label reference, int row, int column, Grid parent, IQuest quest)
+        public static Label LastTry(Label reference, int row, int Column, Grid parent, IQuest quest)
         {
             var content = string.Empty;
             if (quest.Tries.Any())
@@ -48,12 +48,12 @@ namespace AussieCake.Util.WPF
             else
                 content = "Never";
 
-            return Get(reference, row, column, parent, content);
+            return Get(reference, row, Column, parent, content);
         }
 
-        public static Label Chance(Label reference, int row, int column, Grid parent, IQuest quest)
+        public static Label Chance(Label reference, int row, int Column, Grid parent, IQuest quest)
         {
-            var lbl = Get(reference, row, column, parent, quest.Chance + " (" + Math.Round(quest.Chance_real, 2) + "%)");
+            var lbl = Get(reference, row, Column, parent, quest.Chance + " (" + Math.Round(quest.Chance_real, 2) + "%)");
             lbl.ToolTip = quest.Chance_toolTip;
 
             lbl.MouseEnter += new MouseEventHandler((source, e) => lbl.Foreground = Brushes.DarkRed);
@@ -62,9 +62,9 @@ namespace AussieCake.Util.WPF
             return lbl;
         }
 
-        public static Label Header(Label reference, int row, int column, Grid parent, SortLbl sort, Control control, IFilter filter, StackPanel stk_items)
+        public static Label Header(Label reference, int row, int Column, Grid parent, SortLbl sort, Control control, IFilter filter, StackPanel stk_items)
         {
-            var lbl = Get(reference, row, column, parent, sort.ToDesc());
+            var lbl = Get(reference, row, Column, parent, sort.ToDesc());
 
             lbl.MouseEnter += new MouseEventHandler((source, e) => lbl.Foreground = Brushes.DarkRed);
             lbl.MouseLeave += new MouseEventHandler((source, e) => lbl.Foreground = Brushes.Black);
@@ -79,16 +79,16 @@ namespace AussieCake.Util.WPF
 
             lbl.MouseLeftButtonDown += (source, e) => filter.SetSort(sort, stk_items);
 
-            //if (sort == SortLbl.Answer || sort == SortLbl.Col_comp2)
+            //if (sort == SortLbl.Answer || sort == SortLbl.Voc_comp2)
             //    Grid.SetColumnSpan(lbl, 2);
 
             return lbl;
         }
 
-        public static Label Get(Label reference, int row, int column, Grid parent, string content)
+        public static Label Get(Label reference, int row, int Column, Grid parent, string content)
         {
             var lbl = Get(reference, content);
-            UtilWPF.SetGridPosition(reference, row, column, parent);
+            UtilWPF.SetGridPosition(reference, row, Column, parent);
 
             return reference;
         }
@@ -113,9 +113,9 @@ namespace AussieCake.Util.WPF
             return reference;
         }
 
-        public static Label Get(int row, int column, Grid parent, string content)
+        public static Label Get(int row, int Column, Grid parent, string content)
         {
-            return Get(new Label(), row, column, parent, content);
+            return Get(new Label(), row, Column, parent, content);
         }
 
         public static Label Chal_answer(Label reference, StackPanel parent, string content)
@@ -124,11 +124,11 @@ namespace AussieCake.Util.WPF
             return lbl;
         }
 
-        public static Label Chal_quest_id(ChalLine line, int column)
+        public static Label Chal_quest_id(ChalLine line, int Column)
         {
-            var reference = line.Chal.Id_col;
+            var reference = line.Chal.Id_Voc;
             var content = "Quest Id: " + line.Quest.Id;
-            Get(reference, 0, column, line.Chal.Row_4, content);
+            Get(reference, 0, Column, line.Chal.Row_4, content);
             reference.ToolTip = "Right click to copy the Id";
             reference.MouseRightButtonDown += (source, e) => Clipboard.SetText(line.Quest.Id.ToString());
 
@@ -173,4 +173,7 @@ public enum SortLbl
 
     [Description("Answer")]
     Answer,
+
+    [Description("Phonemes")]
+    Phonemes,
 }

@@ -9,19 +9,19 @@ namespace AussieCake.Util.WPF
 {
     public static class UtilWPF
     {
-        public static Brush Colour_header { get; } = GetBrushFromHTMLColor("#6f93c3"); // azul forte
-        public static Brush Colour_row_on { get; } = GetBrushFromHTMLColor("#cad7e8"); // azul claro
-        public static Brush Colour_row_off { get; } = GetBrushFromHTMLColor("#a5bcd9"); // azul médio
-        public static Brush Colour_new_row_off { get; } = GetBrushFromHTMLColor("#95CAE4"); // azul claro médio
+        public static Brush Vocour_header { get; } = GetBrushFromHTMLColor("#6f93c3"); // azul forte
+        public static Brush Vocour_row_on { get; } = GetBrushFromHTMLColor("#cad7e8"); // azul claro
+        public static Brush Vocour_row_off { get; } = GetBrushFromHTMLColor("#a5bcd9"); // azul médio
+        public static Brush Vocour_new_row_off { get; } = GetBrushFromHTMLColor("#95CAE4"); // azul claro médio
         public static Brush Colour_Incorrect { get; } = GetBrushFromHTMLColor("#e6b3b3");
         public static Brush Colour_Correct { get; } = GetBrushFromHTMLColor("#2fb673");
 
-        public static Brush GetColourLine(bool is_on, bool isGridUpdate)
+        public static Brush GetVocourLine(bool is_on, bool isGridUpdate)
         {
             if (is_on)
-                return Colour_row_on;
+                return Vocour_row_on;
             else
-                return isGridUpdate ? Colour_new_row_off : Colour_row_off;
+                return isGridUpdate ? Vocour_new_row_off : Vocour_row_off;
         }
 
         public static Image GetIconButton(string iconFile)
@@ -52,13 +52,13 @@ namespace AussieCake.Util.WPF
             return (SolidColorBrush)(new BrushConverter().ConvertFrom(hexadecimal));
         }
 
-        private static SolidColorBrush Interpolate(Color color1, Color color2, double fraction)
+        private static SolidColorBrush Interpolate(Color Color1, Color Color2, double fraction)
         {
-            var c1 = color1.ColorContext;
+            var c1 = Color1.ColorContext;
 
-            double r = Interpolate(color1.R, color2.R, fraction);
-            double g = Interpolate(color1.G, color2.G, fraction);
-            double b = Interpolate(color1.B, color2.B, fraction);
+            double r = Interpolate(Color1.R, Color2.R, fraction);
+            double g = Interpolate(Color1.G, Color2.G, fraction);
+            double b = Interpolate(Color1.B, Color2.B, fraction);
             var dColor = System.Drawing.Color.FromArgb((int)Math.Round(r), (int)Math.Round(g), (int)Math.Round(b));
             return new SolidColorBrush(Color.FromArgb(dColor.A, dColor.R, dColor.G, dColor.B));
         }
@@ -68,13 +68,13 @@ namespace AussieCake.Util.WPF
             return d1 + (d2 - d1) * fraction;
         }
 
-        public static void SetGridPosition(FrameworkElement child, int row, int column, Grid parent)
+        public static void SetGridPosition(FrameworkElement child, int row, int Column, Grid parent)
         {
             if (parent.Children.Contains(child))
                 return;
 
             Grid.SetRow(child, row);
-            Grid.SetColumn(child, column);
+            Grid.SetColumn(child, Column);
             parent.Children.Add(child);
         }
 

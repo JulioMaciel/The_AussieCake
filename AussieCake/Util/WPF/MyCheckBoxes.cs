@@ -8,15 +8,15 @@ namespace AussieCake.Util.WPF
 {
     public static class MyChBxs
     {
-        public static CheckBox IsVerb(CheckBox reference, int row, int column, Grid parent, bool isCompVerb)
+        public static CheckBox IsVerb(CheckBox reference, int row, int Column, Grid parent, bool isCompVerb)
         {
-            return Get(reference, row, column, parent, "isVerb", isCompVerb);
+            return Get(reference, row, Column, parent, "isVerb", isCompVerb);
         }
 
-        public static CheckBox Get(CheckBox reference, int row, int column, Grid parent, string content, bool isChecked)
+        public static CheckBox Get(CheckBox reference, int row, int Column, Grid parent, string content, bool isChecked)
         {
             var cb = Get(reference, content, isChecked);
-            UtilWPF.SetGridPosition(cb, row, column, parent);
+            UtilWPF.SetGridPosition(cb, row, Column, parent);
 
             return cb;
         }
@@ -54,7 +54,7 @@ namespace AussieCake.Util.WPF
         //        MouseEnter += new MouseEventHandler((source, e) => Foreground = Brushes.DarkRed);
         //        MouseLeave += new MouseEventHandler((source, e) => Foreground = Brushes.Black);
         //        ToolTip = "Question Id " + quest.Id + "; Click to copy";
-        //        Type = Model.Col;
+        //        Type = Model.Voc;
         //        Id = quest.Id;
         //        IsChecked = isChecked;
         //        VerticalContentAlignment = VerticalAlignment.Center;

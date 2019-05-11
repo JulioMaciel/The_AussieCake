@@ -7,7 +7,7 @@ namespace AussieCake.Templates
     {
         public string Word { get; set; }
 
-        public DescImgVM(int id, string word) : base(id, word, "", "", Importance.Any, true, Model.DescImg)
+        public DescImgVM(int id, string word) : base(id, word, Importance.Any, true, Model.DescImg)
         {
         }
     }

@@ -16,6 +16,8 @@ namespace AussieCake.Templates
     {
         List<CellTemplate> CellList;
 
+        double percentageTxt = 100;
+
         public SumRetell()
         {
             InitializeComponent();
@@ -57,8 +59,10 @@ namespace AussieCake.Templates
 
         private void BtnStart_Click(object sender, RoutedEventArgs e)
         {
-            
-            var percentageTxt = 100 - slider.Value;
+            if (cb_33.IsChecked.Value)
+                percentageTxt = 33;
+            else
+                percentageTxt = 100 - slider.Value;
 
             CellList = TemplateWPF.BuildTemplate(TemplateSumRetell.Words, percentageTxt, StkTemplate, TemplateSumRetell.TemplateGaps);
             HighlightEssayType();
@@ -73,15 +77,36 @@ namespace AussieCake.Templates
             {
                 if (TemplateSumRetell.OptionalExclusives.Any(x => x == quest.Quest.Id))
                 {
-                    var colour = Brushes.Silver;
-                    quest.Lbl.Background = colour;
+                    var Vocour = Brushes.Silver;
+                    quest.Lbl.Background = Vocour;
                     if (quest.Txt != null)
-                        quest.Txt.Background = colour;
+                        quest.Txt.Background = Vocour;
                 }
 
                 if (TemplateSumRetell.TemplateGaps.Any(x => x == quest.Quest.Id))
                     quest.Lbl.FontWeight = FontWeights.Bold;
             }
+        }
+
+        private void Cb_33_Click(object sender, RoutedEventArgs e)
+        {
+            if (Convert.ToBoolean(((CheckBox)sender).IsChecked.Value) == true)
+            {
+                slider.IsEnabled = false;
+                btnStart.Content = "Start 33%";
+            }
+            else
+            {
+                slider.IsEnabled = true;
+                percentageTxt = 100;
+                btnStart.Content = "Start " + slider.Value + "%";
+            }
+
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            btnStart.Content = "Start 33%";
         }
     }
 }

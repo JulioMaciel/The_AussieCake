@@ -14,8 +14,8 @@ namespace AussieCake.Sentence
 
             switch (type)
             {
-                case Model.Col:
-                    //return  CollocationSentences;
+                case Model.Voc:
+                    //return  Vocabularyentences;
                 default:
                     Errors.ThrowErrorMsg(ErrorType.InvalidModelType, type);
                     return new List<QuestSenVM_Deprecated>();
@@ -49,13 +49,13 @@ namespace AussieCake.Sentence
 
         public static void LoadDB(Model type)
         {
-            //if (type == Model.Col && CollocationSentences == null)
-            //    GetColSentencesDB();
+            //if (type == Model.Voc && Vocabularyentences == null)
+            //    GetVocSentencesDB();
         }
 
         public static void LoadEveryQuestSenDB()
         {
-            LoadDB(Model.Col);
+            LoadDB(Model.Voc);
         }
     }
 }

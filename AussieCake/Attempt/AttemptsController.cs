@@ -14,14 +14,16 @@ namespace AussieCake.Attempt
 
             switch (type)
             {
-                case Model.Col:
-                    return CollocationAttempts;
+                case Model.Voc:
+                    return VocabularyAttempts;
                 case Model.Essay:
                     return EssayAttempts;
                 case Model.SumRetell:
                     return SumRetellAttempts;
                 case Model.DescImg:
                     return DescImgAttempts;
+                case Model.Spell:
+                    return SpellingAttempts;
                 default:
                     Errors.ThrowErrorMsg(ErrorType.InvalidModelType, type);
                     return new List<AttemptVM>();
@@ -32,7 +34,7 @@ namespace AussieCake.Attempt
         {
             InsertAttempt(att);
 
-            if (att.Type == Model.Col)
+            if (att.Type == Model.Voc)
             {
                 var idquestion = Get(att.Type).Last().IdQuestion;
                 UpdateQuestionFromLastAttempt(idquestion, att.Type);
@@ -43,7 +45,7 @@ namespace AussieCake.Attempt
         {
             RemoveQuestionAttempt(att);
 
-            if (att.Type == Model.Col)
+            if (att.Type == Model.Voc)
                 UpdateQuestionFromLastAttempt(att.IdQuestion, att.Type);
         }
 
@@ -52,7 +54,7 @@ namespace AussieCake.Attempt
             var last = Get(type).Last();
             RemoveQuestionAttempt(last);
 
-            if (type == Model.Col)
+            if (type == Model.Voc)
             {
                 UpdateQuestionFromLastAttempt(last.IdQuestion, type);
             }
@@ -60,20 +62,22 @@ namespace AussieCake.Attempt
 
         public static void LoadDB(Model type)
         {
-            if (type == Model.Col && CollocationAttempts == null)
-                GetColAttemptsDB();
+            if (type == Model.Voc && VocabularyAttempts == null)
+                GetVocAttemptsDB();
             else if (type == Model.Essay && EssayAttempts == null)
                 GetEssayAttemptsDB();
             else if (type == Model.SumRetell && SumRetellAttempts == null)
                 GetSumRetellAttemptsDB();
             else if (type == Model.DescImg && DescImgAttempts == null)
                 GetDescImgAttemptsDB();
+            else if (type == Model.Spell && SpellingAttempts == null)
+                GetSpellAttemptsDB();
         }
 
         private static void UpdateQuestionFromLastAttempt(int idQuestion, Model type)
         {
-            var col = QuestControl.Get(type).First(c => c.Id == idQuestion);
-            col.LoadCrossData();
+            var quest = QuestControl.Get(type).First(c => c.Id == idQuestion);
+            quest.LoadCrossData();
         }
     }
 }

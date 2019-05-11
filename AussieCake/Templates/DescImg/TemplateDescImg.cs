@@ -76,7 +76,7 @@ namespace AussieCake.Templates
             //new DescImgVM(45, "["),
             new DescImgVM(46, "cat-max"), //0?
             //new DescImgVM(47, "/"), //*
-            //new DescImgVM(48, "colour"), //0?
+            //new DescImgVM(48, "Vocour"), //0?
             //new DescImgVM(49, "]"), 
             new DescImgVM(50, "has"),
             new DescImgVM(51, "the"),
@@ -99,7 +99,7 @@ namespace AussieCake.Templates
             //new DescImgVM(68, "["),
             new DescImgVM(69, "cat-min"), //0?
             //new DescImgVM(70, "/"), //*
-            //new DescImgVM(71, "colour"), //0?
+            //new DescImgVM(71, "Vocour"), //0?
             //new DescImgVM(72, "]"),
             new DescImgVM(73, "has"),
             new DescImgVM(74, "the"),
