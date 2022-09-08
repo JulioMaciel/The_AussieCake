@@ -1,19 +1,17 @@
 # The_AussieCake
 
-This is an application focused on learn some templates to improve your score on IELTS and PTE English Tests.
+This is an application focused on learning templates and improve people score on IELTS and PTE English Tests.
 
-At the moment, there are four sections: Collocations, Template Essay, Template Describe Image and Template Summarize Written Text.
+The sections were built to train and master several modules from PTE, such as Collocations, Template Essay, Template Describe Image and Template Summarize Written Text.
 
-I started this project on Mid 2018, and released the version 1.0 on March, 2019.
+The project started in Mid 2018 and had its first version 1.0 released in March 2019.
 
-The idead is keeping improving with new features as long as I don't achieve my desired score. After that, the code will be full release to the community who also is studiyng for some of these exams.
-
-![entrance](https://user-images.githubusercontent.com/12513988/54864486-3d51de80-4dac-11e9-883f-3fa2d461b128.jpg)
-
-![topic](https://user-images.githubusercontent.com/12513988/54864487-3dea7500-4dac-11e9-9d84-020f5d90fa89.jpg)
-
-![challenge](https://user-images.githubusercontent.com/12513988/54864488-3dea7500-4dac-11e9-8c5a-c502a09c3992.jpg)
-
-![cols](https://user-images.githubusercontent.com/12513988/54864489-3dea7500-4dac-11e9-9f4a-be06f736a68f.jpg)
-
-![describe_image](https://user-images.githubusercontent.com/12513988/54864490-3e830b80-4dac-11e9-9cc6-b5c107a4a5b6.jpg)
+![image](https://user-images.githubusercontent.com/12513988/189042385-701b07aa-dd6f-4174-97c2-532f1ce9d2ba.png)
+![image](https://user-images.githubusercontent.com/12513988/189041448-470e8314-c34f-4ab0-8e7a-c8acc9620eec.png)
+![image](https://user-images.githubusercontent.com/12513988/189041531-f648efe9-c5f3-476a-98dd-6e7d18b5beb7.png)
+![image](https://user-images.githubusercontent.com/12513988/189041629-c0096ac9-9e92-415d-bf03-3cfb873bcee0.png)
+![image](https://user-images.githubusercontent.com/12513988/189041655-b18b606c-542c-492a-9875-90075dcc9109.png)
+![image](https://user-images.githubusercontent.com/12513988/189042044-6e516a26-d7a9-43a8-a48f-cb062e012e2d.png)
+![image](https://user-images.githubusercontent.com/12513988/189042195-32a928ae-1a06-46bb-b08d-778c4ed71de6.png)
+![image](https://user-images.githubusercontent.com/12513988/189042252-6c5dc1fe-2cfa-492b-b199-e756b917e8c9.png)
+![image](https://user-images.githubusercontent.com/12513988/189042327-32f12e5e-759e-42ea-acb7-95a000f776db.png)
